@@ -10,19 +10,28 @@ M8002 -> MOV K0  D320
 M8002 -> MOV K0  D330
 M8002 -> MOV K0  D350
 M8002 -> MOV K0  D351
+M8002 -> MOV K10 D520
+M8002 -> MOV K0  D521
+M8002 -> MOV K0  D522
+M8002 -> MOV K0  D523
+M8002 -> MOV K0  D524
+M8002 -> MOV K0  D525
+M8002 -> MOV K0  D526
+M8002 -> MOV K31990 D527
 
 M8002 -> MOV H3156 D500   ; V1
-M8002 -> MOV H302E D501   ; .0
+M8002 -> MOV H312E D501   ; .1
 M8002 -> MOV H302E D502   ; .0
 M8002 -> MOV H0000 D503   ; terminator
 M8002 -> MOV K1 D516
-M8002 -> MOV K0 D517
+M8002 -> MOV K1 D517
 M8002 -> MOV K0 D518
 
 M8002 -> RST M321
 M8002 -> RST M330
 M8002 -> RST M331
 M8002 -> RST M410
+M8002 -> RST M411
 M8002 -> RST M420
 M8002 -> RST M421
 M8002 -> RST M422
@@ -44,21 +53,35 @@ Powód:
 X0 ---------------- (M300)
 X1 ---------------- (M301)
 
-/M300 -------------- (Y23)
+D520 > 0 AND D520 <= 600 ---- (M413)
+
+/M300 OR /M413 -------------- (Y23)
 ```
 
-X1/PRACA jest tylko statusem i nie blokuje RM5.
+X1/PRACA jest tylko statusem i nie blokuje RM5. Niepoprawny parametr czasu blokuje RM5.
 
 ## 3. Zbieranie impulsów RM5
 
 ```text
-X27 ---------------- (M320)
+LDP X27 ------------ (M320)
 
 M320 --------------- [INC D320]
+M320 --------------- [INC D524]
+
+M413 --------------- [SUB K32000 D520 D527]
+
+M320 AND M413 AND D350 <= D527
+--------------------- [ADD D350 D520 D350]
+
+M320 AND M413 AND D350 > D527
+--------------------- [MOV K32000 D350]
+
 M320 --------------- [SET M321]
 M320 --------------- [RST T200]
 
 M321 --------------- [T200 K100]
+
+M8000 -------------- [MUL D524 D520 D525]
 ```
 
 Jeśli X27 jest dłuższym poziomem, a nie jednocyklowym impulsem, wejście M320 należy realizować zboczem zgodnym z rzeczywistą polaryzacją RM5.
@@ -66,7 +89,8 @@ Jeśli X27 jest dłuższym poziomem, a nie jednocyklowym impulsem, wejście M320
 ## 4. Koniec paczki
 
 ```text
-T200 --------------- [MUL D320 D300 D350]
+T200 --------------- [MOV D320 D521]
+T200 --------------- [MUL D320 D520 D522]
 T200 --------------- [MOV D320 D330]
 T200 --------------- [MOV K0 D320]
 T200 --------------- [RST M321]
@@ -87,6 +111,16 @@ T201 --------------- [SET M331]
 M331 --------------- [T202 K10]
 T202 --------------- [RST M331]
 ```
+
+## 6a. Reset licznika sesji z HMI
+
+```text
+M411 -> MOV K0 D524
+M411 -> MOV K0 D525
+M411 -> MOV K0 D526
+```
+
+`M411` powinien być przyciskiem chwilowym w HMI.
 
 ## 6. Odliczanie D350
 
@@ -242,17 +276,30 @@ Oświetlenie działa podczas aktywnej pracy niezależnie od Pilotaggio.
 
 ## 15. Wersja PLC dla HMI
 
-Aktualna wersja: `V1.0.0`.
+Aktualna wersja: `V1.1.0`.
 
 ```text
 D500 = "V1"
-D501 = ".0"
+D501 = ".1"
 D502 = ".0"
 D503 = 0
 
 D516 = 1
-D517 = 0
+D517 = 1
 D518 = 0
 ```
 
 HMI czyta tekst od `D500`. Rejestry `D516…D518` pozwalają dodatkowo porównywać wersję liczbowo.
+
+## 16. Licznik RM5 i parametr czasu
+
+- `D520` — sekundy na impuls, HMI RW, 1…600,
+- `D521` — impulsy ostatniej paczki,
+- `D522:D523` — czas ostatniej paczki,
+- `D524` — licznik impulsów sesji,
+- `D525:D526` — równoważny czas sesji,
+- `D527` — roboczy próg saturacji czasu,
+- `M411` — reset licznika sesji,
+- `M413` — parametr czasu poprawny.
+
+Każdy impuls dodaje `D520` sekund do `D350`; wartość jest ograniczona do 32000 s.
