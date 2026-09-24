@@ -1,72 +1,94 @@
 # Schemat połączeniowy
 
-## RM5 -> PLC
+## RM5 -> PLC X27
 
 ```text
-                 ZASILACZ 24 VDC
-               +24V          0V
-                 |            |
-                 |            +-----------------------------+
-                 |                                          |
-                 v                                          v
-          +-------------+                            +---------------+
-          | RM5         |                            | PLC SEEKU     |
-pin 2 ----| +12..24 V   |                            |               |
-pin 1 ----| GND         |----------------------------| INPUT COM/0V  |
-pin 7 ----| CH1         |----------------------------| X27           |
-          | open coll.  |                            |               |
-          +-------------+                            +---------------+
+RM5 pin 2 +12...24 V  -> zasilanie +
+RM5 pin 1 GND         -> 0 V / COM wejść PLC
+RM5 pin 7 CH1         -> X27
 ```
 
-RM5 podczas impulsu zwiera CH1 do GND.
+RM5 podczas impulsu zwiera wyjście kanału do GND.
 
-## Sterowanie INHIBIT
+## RM5 -> PLC AD0...AD5 (opcjonalnie)
+
+Nie łączyć kanału open-collector RM5 bezpośrednio z wejściem analogowym bez
+dopasowania.
+
+Dla kanału 0-10V koncepcja jest następująca:
 
 ```text
-          +24 V
-            |
-            +---------------------+
-                                  |
-                          PLC OUTPUT COM
-                                  |
-                              [ relay ]
-                                  |
-                                Y23
-                                  |
-                                  +---------- RM5 pin 6 INHIBIT
-
-RM5 pin 1 GND ------------------------------ 0 V
+zewnętrzne napięcie <=10V
+          |
+       pull-up / interfejs
+          |
+          +---------------- ADx
+          |
+RM5 CHx --+   (open collector do GND)
+RM5 GND ------------------ AGND/0V
 ```
 
-- `Y23 = 1` -> HIGH na INHIBIT -> RM5 zablokowany.
-- `Y23 = 0` -> RM5 aktywny, o ile INHIBIT pozostaje LOW.
+W spoczynku ADx ma wartość wysoką, a podczas impulsu RM5 jest ściągane do 0V.
+Próg jest wykrywany programowo.
 
-Aktualna logika: `/M300 -> Y23`.
+Dla AD3...AD5, jeśli kanały są skonfigurowane jako 0-20mA, potrzebny jest
+interfejs prądowy lub zmiana konfiguracji kanału.
 
-## PLC -> PITStart
-
-Jeżeli Y1 jest przekaźnikiem, traktować je jako styk bezpotencjałowy:
+## RM5 INHIBIT
 
 ```text
-PITStart PULSE/COIN IN  -------- Y1
-PITStart PULSE COMMON   -------- COM grupy Y1
++24 V -> COM grupy Y23
+Y23   -> RM5 pin 6 INHIBIT
+0 V   -> RM5 pin 1 GND
 ```
 
-Nie podawać 24 V na wejście PITStart bez potwierdzenia parametrów wejścia.
+- Y23=1 -> INHIBIT HIGH -> RM5 zablokowany.
+- Y23=0 -> RM5 aktywny.
 
-Aktualny timing:
-- ON: `T201 K10` ≈ 100 ms,
-- OFF: `T202 K10` ≈ 100 ms,
-- okres: ≈ 200 ms.
-
-## Sygnały sterownika myjni
+## Wyjścia do sterownika myjni / emulacja PitStart
 
 ```text
-Sterownik myjni                     PLC
-----------------------------------------
-INVERTER_OK / status 1  ---------- X0
-PRACA / status 2        ---------- X1
-status 3                ---------- X2
-status 4                ---------- X3
-wspólny sygnałów NPN    ---------- COM/0V
+Y0  -> CREDIT / COMPTEUR
+Y1  -> PILOTAGGIO POMPA
+Y2  -> PROGRAM 1
+Y3  -> PROGRAM 2
+Y4  -> PROGRAM 3
+Y5  -> PROGRAM 4
+Y6  -> PROGRAM 5
+Y7  -> PROGRAM 6
+Y27 -> OŚWIETLENIE W CZASIE PRACY
 ```
+
+Oryginalny PitStart realizuje wyjścia jako suche styki NO. Jeżeli wyjścia SEEKU są
+przekaźnikowe, należy używać ich jako styków bezpotencjałowych zgodnie z wymaganiami
+wejść sterownika myjni.
+
+UWAGA: Y4 jest używane w starej logice analogowej D6/D7 i trzeba ten konflikt usunąć.
+
+## Pilotaggio i oświetlenie
+
+Proponowane:
+- M410 = PILOTAGGIO_ENABLE z HMI
+- M412 = WORK_ACTIVE
+
+```text
+M410 AND M412 -> Y1
+M412          -> Y27
+```
+
+WORK_ACTIVE:
+- SET po uruchomieniu P1...P6,
+- SET podczas aktywnego trybu ręcznego/free,
+- RST przez STOP,
+- RST po zakończeniu kredytu/pracy.
+
+Dzięki temu oświetlenie działa podczas pracy nawet wtedy, gdy funkcja Pilotaggio jest wyłączona.
+
+## Wejścia z myjni
+
+Z dokumentacji PitStart:
+- AUTOMATE PRESENT / obecność urządzenia automatycznego,
+- MANUAL/FREE / uruchomienie ręczne bez monety.
+
+Projekt może dodatkowo wykorzystywać X0...X3 jako statusy specyficzne dla istniejącego
+sterownika myjni, ale ich znaczenie trzeba potwierdzić na obiekcie.
