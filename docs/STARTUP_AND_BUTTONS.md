@@ -16,7 +16,8 @@ Ta część projektu rozwiązuje dwa problemy:
 - X11 = P5
 - X12 = rezerwa
 - X13 = rezerwa
-- X14 = RM5 CH1
+- X14 = rezerwa
+- X27 = RM5 CH1
 
 HMI:
 - M400 = STOP
@@ -126,6 +127,7 @@ M421 AND D350>0 -> Y3
 M422 AND D350>0 -> Y4
 M423 AND D350>0 -> Y5
 M424 AND D350>0 -> Y6
+; Y7 = Program 6 (sterowanie osobne / HMI)
 
 M410 AND M412 -> Y1
 M412          -> Y27
