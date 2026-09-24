@@ -95,14 +95,3 @@ M410 AND M412 -> Y1
 ```text
 M412 -> Y27
 ```
-
-## 8. Czego nie przenosimy z demo
-
-Finalny projekt nie wykorzystuje:
-- AD0…AD5,
-- RD3A,
-- WR3A,
-- D0…D10 z demo-bloku analogowego,
-- testowych zależności Y4 -> D6/D7.
-
-Dzięki temu Y4 może być użyte bez konfliktu jako Program 3.
