@@ -63,7 +63,7 @@ WSStudio should use an ASCII/String display starting at `D500`, e.g. 16 characte
 - `D520` — seconds per RM5 pulse, HMI RW, default 10, valid 1…600
 - `D521` — last packet pulse count
 - `D522:D523` — last packet converted seconds
-- `D524` — session pulse counter
+- `D524` — session pulse counter, capped at 30000
 - `D525:D526` — session equivalent seconds
 - `M411` — momentary reset for session counter
 - `M413` — time parameter valid
