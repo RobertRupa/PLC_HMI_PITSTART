@@ -8,8 +8,6 @@ Projekt korzysta z jednego kanału RM5.
 - PLC `Y23` -> RM5 `INHIBIT`
 - RM5 GND -> wspólne 0 V / COM wejść
 
-Nie używamy AD0…AD5 ani dodatkowych kanałów RM5.
-
 ## Standardowe złącze 10-pin
 
 | Pin | Funkcja |
