@@ -15,12 +15,12 @@ SEEKU PLC/HMI realizuje logikę zgodną funkcjonalnie z Comestero PitStart:
 ## Wejścia użytkownika
 
 Mechaniczne:
-- X20 = STOP,
-- X21 = P1,
-- X22 = P2,
-- X23 = P3,
-- X24 = P4,
-- X25 = P5.
+- X4 = STOP,
+- X5 = P1,
+- X6 = P2,
+- X7 = P3,
+- X10 = P4,
+- X11 = P5.
 
 HMI:
 - M400 = STOP,
@@ -29,12 +29,12 @@ HMI:
 PLC scala oba źródła:
 
 ```text
-X20 OR M400 -> M440 STOP_CMD
-X21 OR M401 -> M441 P1_CMD
-X22 OR M402 -> M442 P2_CMD
-X23 OR M403 -> M443 P3_CMD
-X24 OR M404 -> M444 P4_CMD
-X25 OR M405 -> M445 P5_CMD
+X4 OR M400 -> M440 STOP_CMD
+X5 OR M401 -> M441 P1_CMD
+X6 OR M402 -> M442 P2_CMD
+X7 OR M403 -> M443 P3_CMD
+X10 OR M404 -> M444 P4_CMD
+X11 OR M405 -> M445 P5_CMD
 ```
 
 Dzięki temu:
@@ -88,7 +88,7 @@ Kluczowa zmiana to `D330=0`: PLC nie kontynuuje po restarcie wcześniej rozpocz�
 
 ## RM5
 
-- CH1 -> X27,
+- CH1 -> X14,
 - INHIBIT <- Y23,
 - brak X0/AUTOMATE_PRESENT blokuje RM5,
 - X1/PRACA nie blokuje RM5.
