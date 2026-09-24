@@ -1,27 +1,56 @@
-PLC_HMI_PITSTART - AKTUALNA TABELA ADRESÓW
-================================================
+PLC_HMI_PITSTART - AKTUALNA / PLANOWANA TABELA ADRESÓW
+=========================================================
 
 WEJŚCIA CYFROWE
 ---------------
-X000    INVERTER_OK / STATUS_1           -> M300
-X001    PRACA / STATUS_2                 -> M301
-X002    STATUS_3                         -> M302
-X003    STATUS_4                         -> M303
-X027    RM5 CH1 / wejście impulsów       -> M320
+X000    INVERTER_OK / AUTOMATE_PRESENT      -> M300
+X001    PRACA / MANUAL_FREE (do ustalenia) -> M301
+X002    STATUS_3                            -> M302
+X003    STATUS_4                            -> M303
+X027    RM5 CH1 / główne wejście impulsów  -> M320
 
-WYJŚCIA CYFROWE
----------------
-Y001    PITStart - impulsy kredytu
-        T201 K10 = około 0,1 s ON
-        T202 K10 = około 0,1 s OFF
-        okres start-start około 0,2 s
+OPCJONALNE WEJŚCIA RM5 PRZEZ AD
+--------------------------------
+AD0 -> D010   opcjonalny kanał RM5 (0-10V po interfejsie)
+AD1 -> D000   opcjonalny kanał RM5 (0-10V po interfejsie)
+AD2 -> D001   opcjonalny kanał RM5 (0-10V po interfejsie)
+AD3 -> D002   opcjonalny kanał RM5; domyślnie wejście prądowe - wymaga konwersji/re-konfiguracji
+AD4 -> D003   opcjonalny kanał RM5; domyślnie wejście prądowe - wymaga konwersji/re-konfiguracji
+AD5 -> D004   opcjonalny kanał RM5; domyślnie wejście prądowe - wymaga konwersji/re-konfiguracji
+
+UWAGA:
+RM5 daje wyjścia NPN open-collector. Nie wolno traktować AD0...AD5 jak wejść cyfrowych
+i łączyć ich bezpośrednio bez dopasowania elektrycznego.
+Dla wejść 0-10V trzeba wytworzyć stan napięciowy 0/5-10V (np. pull-up/interfejs).
+Dla wejść 0-20mA potrzebny jest interfejs prądowy albo kanał musi być skonfigurowany
+jako napięciowy, jeśli dana wersja sprzętu na to pozwala.
+
+WYJŚCIA - EMULACJA PITSTART
+---------------------------
+Y000    CREDIT / COMPTEUR
+        impulsy kredytowe; 1 impuls odpowiada jednostce ustawionej przez projekt
+        obecny generator: T201 K10 ON, T202 K10 OFF
+
+Y001    PILOTAGGIO POMPA
+        aktywne podczas pracy, jeśli opcja PILOTAGGIO_ENABLE jest włączona
+
+Y002    PROGRAM 1
+Y003    PROGRAM 2
+Y004    PROGRAM 3
+Y005    PROGRAM 4
+Y006    PROGRAM 5
+Y007    PROGRAM 6
 
 Y023    RM5 INHIBIT
-        Aktualnie sterowane przez /M300:
-        M300=0 -> Y23=1 -> INHIBIT HIGH -> RM5 zablokowany
-        M300=1 -> Y23=0 -> RM5 odblokowany
+        /M300 -> Y23
+        brak AUTOMATE_PRESENT/INVERTER_OK -> RM5 zablokowany
 
-Y004    ZAJĘTE przez istniejącą logikę analogową.
+Y027    OŚWIETLENIE W CZASIE PRACY
+        Y27 = WORK_ACTIVE
+
+WAŻNE:
+Y004 było używane w oryginalnej logice analogowej do MOV D6/D7.
+Przed przeznaczeniem Y004 na PROGRAM 3 należy usunąć/przenieść stare zależności Y004 -> D6/D7.
 
 BITY M
 ------
@@ -29,49 +58,47 @@ M300    status/kopia X000
 M301    status/kopia X001
 M302    status/kopia X002
 M303    status/kopia X003
-M304    X000 AND /X001 AND X002 AND X003
-M320    stan/impuls roboczy RM5 z X027
+M304    status złożony
+M320    impuls roboczy RM5 z X027
 M321    flaga zbierania paczki impulsów RM5
-M330    generator Y1 - faza ON
-M331    generator Y1 - faza OFF
+M330    generator CREDIT Y0 - faza ON
+M331    generator CREDIT Y0 - faza OFF
+
+M340    opcjonalny cyfrowy stan utworzony z AD0
+M341    opcjonalny cyfrowy stan utworzony z AD1
+M342    opcjonalny cyfrowy stan utworzony z AD2
+M343    opcjonalny cyfrowy stan utworzony z AD3
+M344    opcjonalny cyfrowy stan utworzony z AD4
+M345    opcjonalny cyfrowy stan utworzony z AD5
+
+M410    PILOTAGGIO_ENABLE - opcja z HMI
+M412    WORK_ACTIVE - wewnętrzny stan pracy myjni
 
 REJESTRY D - ANALOG / PROGRAM ORYGINALNY
 ----------------------------------------
-D010    RD3A kanał K0
-D000    RD3A kanał K1
-D001    RD3A kanał K2
-D002    RD3A kanał K3
-D003    RD3A kanał K4
-D004    RD3A kanał K5
+D010    RD3A kanał K0 / AD0
+D000    RD3A kanał K1 / AD1
+D001    RD3A kanał K2 / AD2
+D002    RD3A kanał K3 / AD3
+D003    RD3A kanał K4 / AD4
+D004    RD3A kanał K5 / AD5
 D006    WR3A K0
 D007    WR3A K1
 
-Sterowanie D6:
-M0   -> MOV K1000 D6
-M1   -> MOV K2000 D6
-Y4   -> MOV K1000 D6
-/Y4  -> MOV K0 D6
-
-Sterowanie D7:
-M2   -> MOV K1000 D7
-M3   -> MOV K2000 D7
-Y4   -> MOV K2000 D7
-/Y4  -> MOV K0 D7
-
 REJESTRY D - RM5 / PITSTART
 ---------------------------
-D200    aktualnie inkrementowany przy X001 (pomocniczy/testowy)
-D300    mnożnik / parametr roboczy; aktualnie także inkrementowany przy X001
+D300    mnożnik / parametr roboczy z HMI
 D320    liczba impulsów bieżącej paczki RM5
-D330    liczba impulsów oczekujących do wysłania na Y001
+D330    liczba impulsów oczekujących do wysłania na Y000
 D350    wynik MUL D320 * D300 / wartość robocza HMI
 D351    starsze słowo wyniku 32-bit MUL
+D360    opcjonalny próg detekcji dla analogowego wejścia RM5
 
 TIMERY
 ------
 T200 K100    timeout końca paczki RM5, około 1,0 s
-T201 K10     Y001 ON, około 0,1 s
-T202 K10     Y001 OFF, około 0,1 s
+T201 K10     CREDIT Y000 ON, około 0,1 s
+T202 K10     CREDIT Y000 OFF, około 0,1 s
 
 BITY SYSTEMOWE
 --------------
@@ -87,7 +114,13 @@ Pin 3    CH5
 Pin 4    CH6
 Pin 5    N.U. / zależne od konfiguracji
 Pin 6    INHIBIT
-Pin 7    CH1 -> X027
+Pin 7    CH1
 Pin 8    CH2
 Pin 9    CH3
 Pin 10   CH4
+
+PRZYKŁADOWE MAPOWANIE OPCJONALNE RM5 -> AD
+-------------------------------------------
+CH1 -> X027 (główne)
+CH1..CH6 mogą alternatywnie zostać skierowane na AD0..AD5 po odpowiednim
+dopasowaniu elektrycznym. Nie jest to połączenie bezpośrednie open-collector -> AD.
