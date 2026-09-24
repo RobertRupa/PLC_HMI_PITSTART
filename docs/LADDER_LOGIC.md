@@ -20,6 +20,7 @@ M8002 -> RST M421
 M8002 -> RST M422
 M8002 -> RST M423
 M8002 -> RST M424
+M8002 -> RST M425
 ```
 
 Powód:
@@ -95,7 +96,8 @@ Przyciski fizyczne:
 - X6 P2,
 - X7 P3,
 - X10 P4,
-- X11 P5.
+- X11 P5,
+- X12 P6.
 
 HMI:
 - M400 STOP,
@@ -103,7 +105,8 @@ HMI:
 - M402 P2,
 - M403 P3,
 - M404 P4,
-- M405 P5.
+- M405 P5,
+- M406 P6.
 
 Scalanie:
 
@@ -114,6 +117,7 @@ X6 OR M402 -> M442
 X7 OR M403 -> M443
 X10 OR M404 -> M444
 X11 OR M405 -> M445
+X12 OR M406 -> M446
 ```
 
 ## 8. STOP — najwyższy priorytet
@@ -126,13 +130,14 @@ M440 -> RST M421
 M440 -> RST M422
 M440 -> RST M423
 M440 -> RST M424
+M440 -> RST M425
 ```
 
 Dzięki temu trzymany STOP blokuje wszystkie programy.
 
 STOP nie zeruje `D350`.
 
-## 9. Wybór P1…P5
+## 9. Wybór P1…P6
 
 Komendy programów powinny być obsługiwane zboczem narastającym połączonego bitu M441…M445. Zapobiega to automatycznemu ponownemu startowi programu, gdy przycisk jest nadal trzymany.
 
@@ -171,7 +176,7 @@ RST M424
 SET M421
 ```
 
-Analogicznie P3…P5.
+Analogicznie P3…P6.
 
 ## 10. Automatyczne skasowanie wyboru po końcu kredytu
 
@@ -182,6 +187,7 @@ RST M421
 RST M422
 RST M423
 RST M424
+RST M425
 ```
 
 To jest istotne bezpieczeństwo: po późniejszym doładowaniu kredytu poprzedni program nie wystartuje sam.
@@ -194,14 +200,15 @@ M421 AND D350>0 -> Y3
 M422 AND D350>0 -> Y4
 M423 AND D350>0 -> Y5
 M424 AND D350>0 -> Y6
+M425 AND D350>0 -> Y7
 ```
 
-Y7 = Program 6. Aktualna lokalna obsługa mechaniczna obejmuje P1…P5; P6 może zostać sterowany osobnym bitem HMI/logiki.
+Y7 = Program 6, sterowany przez M425.
 
 ## 12. WORK_ACTIVE
 
 ```text
-(M420 OR M421 OR M422 OR M423 OR M424)
+(M420 OR M421 OR M422 OR M423 OR M424 OR M425)
 AND D350>0
 AND /M440
 ---------------- (M412)
