@@ -181,7 +181,7 @@ STOP nie zeruje `D350`.
 
 ## 9. Wybór P1…P6
 
-Komendy programów powinny być obsługiwane zboczem narastającym połączonego bitu M441…M445. Zapobiega to automatycznemu ponownemu startowi programu, gdy przycisk jest nadal trzymany.
+Komendy programów powinny być obsługiwane zboczem narastającym połączonego bitu M441…M446. Zapobiega to automatycznemu ponownemu startowi programu, gdy przycisk jest nadal trzymany.
 
 Warunki startu:
 - STOP nieaktywny,
