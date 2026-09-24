@@ -103,6 +103,16 @@ D350    wynik MUL D320 * D300 / wartość wyświetlana na HMI
 D351    starsze słowo wyniku 32-bit MUL
         wartość startowa = 0
 
+D500    PLC_VERSION_STRING word 0 = "V1"
+D501    PLC_VERSION_STRING word 1 = ".0"
+D502    PLC_VERSION_STRING word 2 = ".0"
+D503    PLC_VERSION_STRING terminator = 0
+D504-D507 zarezerwowane dla dłuższego stringu wersji
+
+D516    VERSION_MAJOR = 1
+D517    VERSION_MINOR = 0
+D518    VERSION_PATCH = 0
+
 TIMERY
 ------
 T200 K100    timeout końca paczki RM5 ≈ 1,0 s
@@ -121,6 +131,13 @@ D320 = 0
 D330 = 0
 D350 = 0
 D351 = 0
+D500 = H3156    ("V1")
+D501 = H302E    (".0")
+D502 = H302E    (".0")
+D503 = H0000    terminator
+D516 = 1
+D517 = 0
+D518 = 0
 
 RST M321
 RST M330
