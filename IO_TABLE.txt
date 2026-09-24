@@ -11,14 +11,15 @@ X001    PRACA
         Sygnał informacyjny z myjni.
         NIE jest blokerem RM5.
 
-X020    PRZYCISK MECHANICZNY STOP
-X021    PRZYCISK MECHANICZNY PROGRAM 1
-X022    PRZYCISK MECHANICZNY PROGRAM 2
-X023    PRZYCISK MECHANICZNY PROGRAM 3
-X024    PRZYCISK MECHANICZNY PROGRAM 4
-X025    PRZYCISK MECHANICZNY PROGRAM 5
-X026    REZERWA
-X027    RM5 CH1 - wejście impulsów
+X004    PRZYCISK MECHANICZNY STOP
+X005    PRZYCISK MECHANICZNY PROGRAM 1
+X006    PRZYCISK MECHANICZNY PROGRAM 2
+X007    PRZYCISK MECHANICZNY PROGRAM 3
+X010    PRZYCISK MECHANICZNY PROGRAM 4
+X011    PRZYCISK MECHANICZNY PROGRAM 5
+X012    REZERWA
+X013    REZERWA
+X014    RM5 CH1 - wejście impulsów
 
 WYJŚCIA PLC
 -----------
@@ -47,7 +48,7 @@ BITY M - STATUS / RM5
 ---------------------
 M300    kopia/status X000
 M301    kopia/status X001
-M320    impuls roboczy RM5 z X027
+M320    impuls roboczy RM5 z X014
 M321    aktywne zbieranie paczki RM5
 M330    faza ON generatora CREDIT Y000
 M331    faza OFF generatora CREDIT Y000
@@ -64,12 +65,12 @@ M410    PILOTAGGIO_ENABLE
 
 BITY M - POŁĄCZENIE PRZYCISKÓW HMI + FIZYCZNYCH
 ------------------------------------------------
-M440    STOP_CMD = X020 OR M400
-M441    P1_CMD   = X021 OR M401
-M442    P2_CMD   = X022 OR M402
-M443    P3_CMD   = X023 OR M403
-M444    P4_CMD   = X024 OR M404
-M445    P5_CMD   = X025 OR M405
+M440    STOP_CMD = X004 OR M400
+M441    P1_CMD   = X005 OR M401
+M442    P2_CMD   = X006 OR M402
+M443    P3_CMD   = X007 OR M403
+M444    P4_CMD   = X010 OR M404
+M445    P5_CMD   = X011 OR M405
 
 BITY M - AKTYWNY PROGRAM
 ------------------------
@@ -135,7 +136,7 @@ Pin 3    CH5
 Pin 4    CH6
 Pin 5    N.U. / zależne od konfiguracji
 Pin 6    INHIBIT
-Pin 7    CH1 -> X027
+Pin 7    CH1 -> X014
 Pin 8    CH2
 Pin 9    CH3
 Pin 10   CH4
@@ -146,5 +147,5 @@ CN8 1-2    Presence automatic device
 CN8 3-4    Manual / Free
 
 UWAGA:
-X020...X025 to przyjęte mapowanie projektu dla przycisków mechanicznych.
-Należy potwierdzić dostępność tych fizycznych zacisków w używanym wariancie PLC.
+PLC posiada wejścia X000...X007 oraz X010...X014 (adresacja ósemkowa FX).
+Nie występują fizyczne X008/X009.
