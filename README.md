@@ -23,20 +23,21 @@ PLC i HMI są programowane osobno. Sterowanie podstawowe działa również bez H
 
 ### Wejścia
 
+PLC ma fizyczne wejścia `X0…X7` oraz `X10…X14` (adresacja FX jest ósemkowa, dlatego nie występują X8/X9).
+
 | Adres | Funkcja |
 |---|---|
 | `X0` | `AUTOMATE_PRESENT / INVERTER_OK` — główny sygnał zezwolenia |
 | `X1` | `PRACA` — sygnał informacyjny; nie blokuje RM5 |
-| `X20` | mechaniczny STOP |
-| `X21` | mechaniczny Program 1 |
-| `X22` | mechaniczny Program 2 |
-| `X23` | mechaniczny Program 3 |
-| `X24` | mechaniczny Program 4 |
-| `X25` | mechaniczny Program 5 |
-| `X26` | rezerwa |
-| `X27` | impulsy z jednego kanału RM5 |
-
-Mapowanie X20…X25 jest przyjętym mapowaniem projektu; należy je stosować, jeżeli te zaciski są fizycznie dostępne i wolne w używanym wariancie PLC.
+| `X4` | mechaniczny STOP |
+| `X5` | mechaniczny Program 1 |
+| `X6` | mechaniczny Program 2 |
+| `X7` | mechaniczny Program 3 |
+| `X10` | mechaniczny Program 4 |
+| `X11` | mechaniczny Program 5 |
+| `X12` | rezerwa |
+| `X13` | rezerwa |
+| `X14` | impulsy z jednego kanału RM5 |
 
 ### Wyjścia
 
@@ -59,20 +60,20 @@ HMI i przyciski mechaniczne są łączone logicznym OR. Żaden z nich nie jest w
 
 | Funkcja | Przycisk fizyczny | HMI | Komenda wspólna |
 |---|---|---|---|
-| STOP | X20 | M400 | M440 |
-| P1 | X21 | M401 | M441 |
-| P2 | X22 | M402 | M442 |
-| P3 | X23 | M403 | M443 |
-| P4 | X24 | M404 | M444 |
-| P5 | X25 | M405 | M445 |
+| STOP | X4 | M400 | M440 |
+| P1 | X5 | M401 | M441 |
+| P2 | X6 | M402 | M442 |
+| P3 | X7 | M403 | M443 |
+| P4 | X10 | M404 | M444 |
+| P5 | X11 | M405 | M445 |
 
 Przykład:
 
 ```text
-X20 OR M400 -> M440
-X21 OR M401 -> M441
+X4 OR M400 -> M440
+X5 OR M401 -> M441
 ...
-X25 OR M405 -> M445
+X11 OR M405 -> M445
 ```
 
 STOP ma priorytet. Programy są wybierane zboczem komendy i są wzajemnie wykluczające.
@@ -129,7 +130,7 @@ Po restarcie:
 
 ## RM5 — kanał 1
 
-Używany jest jeden kanał RM5 podłączony do `X27`.
+Używany jest jeden kanał RM5 podłączony do `X14`.
 
 Domyślna wartość kanału 1 / mnożnik:
 - `D300 = 10`.
