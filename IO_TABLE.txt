@@ -64,6 +64,8 @@ M404    HMI PROGRAM 4
 M405    HMI PROGRAM 5
 M406    HMI PROGRAM 6
 M410    PILOTAGGIO_ENABLE
+M411    HMI RESET_RM5_SESSION_COUNTERS (przycisk chwilowy)
+M413    TIME_PARAM_OK; 1 gdy D520 = 1...600
 
 BITY M - POŁĄCZENIE PRZYCISKÓW HMI + FIZYCZNYCH
 ------------------------------------------------
@@ -104,14 +106,35 @@ D351    starsze słowo wyniku 32-bit MUL
         wartość startowa = 0
 
 D500    PLC_VERSION_STRING word 0 = "V1"
-D501    PLC_VERSION_STRING word 1 = ".0"
+D501    PLC_VERSION_STRING word 1 = ".1"
 D502    PLC_VERSION_STRING word 2 = ".0"
 D503    PLC_VERSION_STRING terminator = 0
 D504-D507 zarezerwowane dla dłuższego stringu wersji
 
 D516    VERSION_MAJOR = 1
-D517    VERSION_MINOR = 0
+D517    VERSION_MINOR = 1
 D518    VERSION_PATCH = 0
+
+D520    TIME_PER_RM5_PULSE_S
+        parametr HMI RW; domyślnie 10 s/impuls
+        prawidłowy zakres 1...600
+
+D521    LAST_PACKET_PULSES
+        liczba impulsów ostatniej zakończonej paczki
+
+D522    LAST_PACKET_TIME_S - dolne słowo wyniku
+D523    LAST_PACKET_TIME_S - górne słowo wyniku
+        D522:D523 = D521 * D520
+
+D524    RM5_SESSION_PULSE_COUNTER
+        licznik impulsów od startu/resetu sesji
+
+D525    RM5_SESSION_EQUIV_TIME_S - dolne słowo
+D526    RM5_SESSION_EQUIV_TIME_S - górne słowo
+        D525:D526 = D524 * D520
+
+D527    TIME_ADD_LIMIT_THRESHOLD
+        robocze: 32000 - D520
 
 TIMERY
 ------
@@ -131,18 +154,27 @@ D320 = 0
 D330 = 0
 D350 = 0
 D351 = 0
+D520 = 10
+D521 = 0
+D522 = 0
+D523 = 0
+D524 = 0
+D525 = 0
+D526 = 0
+D527 = 31990
 D500 = H3156    ("V1")
-D501 = H302E    (".0")
+D501 = H312E    (".1")
 D502 = H302E    (".0")
 D503 = H0000    terminator
 D516 = 1
-D517 = 0
+D517 = 1
 D518 = 0
 
 RST M321
 RST M330
 RST M331
 RST M410
+RST M411
 RST M420
 RST M421
 RST M422
@@ -169,5 +201,5 @@ CN8 1-2    Presence automatic device
 CN8 3-4    Manual / Free
 
 UWAGA:
-Lokalne przyciski wykorzystują X004...X011.
+Lokalne przyciski wykorzystują X004...X012.
 RM5 CH1 jest przypisany do X027 zgodnie z aktualną konfiguracją projektu.
