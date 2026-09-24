@@ -45,6 +45,10 @@
 ; D330 queued CREDIT pulses
 ; D350 current value / time
 ; D351 high word of MUL result
+; D500..D507 PLC version string for HMI
+; D516 VERSION_MAJOR
+; D517 VERSION_MINOR
+; D518 VERSION_PATCH
 ;
 ; Timers:
 ; T200 K100 packet end timeout (~1 s for 10 ms base)
@@ -70,6 +74,28 @@ MOV K0 D350
 
 LD M8002
 MOV K0 D351
+
+; PLC VERSION = V1.0.0
+LD M8002
+MOV H3156 D500
+
+LD M8002
+MOV H302E D501
+
+LD M8002
+MOV H302E D502
+
+LD M8002
+MOV H0000 D503
+
+LD M8002
+MOV K1 D516
+
+LD M8002
+MOV K0 D517
+
+LD M8002
+MOV K0 D518
 
 LD M8002
 RST M320
