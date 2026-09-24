@@ -43,7 +43,7 @@ X1/PRACA jest tylko statusem i nie blokuje RM5.
 ## 3. Zbieranie impulsów RM5
 
 ```text
-X27 ---------------- (M320)
+X14 ---------------- (M320)
 
 M320 --------------- [INC D320]
 M320 --------------- [SET M321]
@@ -52,7 +52,7 @@ M320 --------------- [RST T200]
 M321 --------------- [T200 K100]
 ```
 
-Jeśli X27 jest dłuższym poziomem, a nie jednocyklowym impulsem, wejście M320 należy realizować zboczem zgodnym z rzeczywistą polaryzacją RM5.
+Jeśli X14 jest dłuższym poziomem, a nie jednocyklowym impulsem, wejście M320 należy realizować zboczem zgodnym z rzeczywistą polaryzacją RM5.
 
 ## 4. Koniec paczki
 
@@ -90,12 +90,12 @@ DEC D350
 ## 7. Przyciski fizyczne + HMI
 
 Przyciski fizyczne:
-- X20 STOP,
-- X21 P1,
-- X22 P2,
-- X23 P3,
-- X24 P4,
-- X25 P5.
+- X4 STOP,
+- X5 P1,
+- X6 P2,
+- X7 P3,
+- X10 P4,
+- X11 P5.
 
 HMI:
 - M400 STOP,
@@ -108,12 +108,12 @@ HMI:
 Scalanie:
 
 ```text
-X20 OR M400 -> M440
-X21 OR M401 -> M441
-X22 OR M402 -> M442
-X23 OR M403 -> M443
-X24 OR M404 -> M444
-X25 OR M405 -> M445
+X4 OR M400 -> M440
+X5 OR M401 -> M441
+X6 OR M402 -> M442
+X7 OR M403 -> M443
+X10 OR M404 -> M444
+X11 OR M405 -> M445
 ```
 
 ## 8. STOP — najwyższy priorytet
