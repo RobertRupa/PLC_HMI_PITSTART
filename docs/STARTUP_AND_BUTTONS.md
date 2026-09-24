@@ -14,14 +14,14 @@ Ta część projektu rozwiązuje dwa problemy:
 - X7 = P3
 - X10 = P4
 - X11 = P5
-- X12 = rezerwa
+- X12 = P6
 - X13 = rezerwa
 - X14 = rezerwa
 - X27 = RM5 CH1
 
 HMI:
 - M400 = STOP
-- M401…M405 = P1…P5
+- M401…M406 = P1…P6
 
 ## Łączenie HMI i mechaniki
 
@@ -32,11 +32,12 @@ X6 OR M402 -> M442
 X7 OR M403 -> M443
 X10 OR M404 -> M444
 X11 OR M405 -> M445
+X12 OR M406 -> M446
 ```
 
 STOP jest obsługiwany poziomem i ma najwyższy priorytet.
 
-Programy są wybierane zboczem M441…M445.
+Programy są wybierane zboczem M441…M446.
 
 ## Bity aktywnego programu
 
@@ -45,6 +46,7 @@ Programy są wybierane zboczem M441…M445.
 - M422 = P3 ACTIVE
 - M423 = P4 ACTIVE
 - M424 = P5 ACTIVE
+- M425 = P6 ACTIVE
 
 Wybór programu resetuje wszystkie pozostałe.
 
@@ -58,7 +60,7 @@ Program może wystartować tylko wtedy, gdy:
 ## STOP
 
 STOP:
-- kasuje M420…M424,
+- kasuje M420…M425,
 - wyłącza Y2…Y6 przez brak aktywnego programu,
 - wyłącza M412/WORK_ACTIVE,
 - wyłącza Y27,
@@ -68,7 +70,7 @@ STOP:
 ## Koniec kredytu
 
 Po D350<=0:
-- M420…M424 są resetowane.
+- M420…M425 są resetowane.
 
 To zapobiega automatycznemu wznowieniu starego programu po następnym doładowaniu.
 
@@ -90,6 +92,7 @@ M8002 -> RST M421
 M8002 -> RST M422
 M8002 -> RST M423
 M8002 -> RST M424
+M8002 -> RST M425
 ```
 
 Najważniejsze jest `MOV K0 D330`. To usuwa zapamiętaną kolejkę impulsów CREDIT przed uruchomieniem generatora.
@@ -104,14 +107,14 @@ Najważniejsze jest `MOV K0 D330`. To usuwa zapamiętaną kolejkę impulsów CRE
 | D350 | 0 |
 | D351 | 0 |
 | M410 | 0 |
-| M420…M424 | 0 |
+| M420…M425 | 0 |
 
 D300=10 jest domyślną wartością kanału 1 RM5 / mnożnikiem.
 
 ## WORK_ACTIVE
 
 ```text
-(M420 OR M421 OR M422 OR M423 OR M424)
+(M420 OR M421 OR M422 OR M423 OR M424 OR M425)
 AND D350>0
 AND /M440
 ---------------- (M412)
@@ -127,7 +130,7 @@ M421 AND D350>0 -> Y3
 M422 AND D350>0 -> Y4
 M423 AND D350>0 -> Y5
 M424 AND D350>0 -> Y6
-; Y7 = Program 6 (sterowanie osobne / HMI)
+M425 AND D350>0 -> Y7
 
 M410 AND M412 -> Y1
 M412          -> Y27
