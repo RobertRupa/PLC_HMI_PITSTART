@@ -52,6 +52,14 @@ D320,Data,Current RM5 packet count,0 at startup
 D330,Data,CREDIT pulse queue,0 at startup
 D350,Data,Current credit/time value,0 at startup
 D351,Data,MUL high word,0 at startup
+D500,Data,PLC version string word 0,"H3156 = V1"
+D501,Data,PLC version string word 1,"H302E = .0"
+D502,Data,PLC version string word 2,"H302E = .0"
+D503,Data,PLC version terminator,H0000
+D504-D507,Data,PLC version string reserve,Reserved
+D516,Data,VERSION_MAJOR,1
+D517,Data,VERSION_MINOR,0
+D518,Data,VERSION_PATCH,0
 T200,Timer,RM5 packet timeout,K100
 T201,Timer,CREDIT ON,K10
 T202,Timer,CREDIT OFF,K10
