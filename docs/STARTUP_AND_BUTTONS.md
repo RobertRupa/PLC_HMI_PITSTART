@@ -8,14 +8,15 @@ Ta część projektu rozwiązuje dwa problemy:
 
 ## Mapowanie wejść
 
-- X20 = STOP
-- X21 = P1
-- X22 = P2
-- X23 = P3
-- X24 = P4
-- X25 = P5
-- X26 = rezerwa
-- X27 = RM5 CH1
+- X4 = STOP
+- X5 = P1
+- X6 = P2
+- X7 = P3
+- X10 = P4
+- X11 = P5
+- X12 = rezerwa
+- X13 = rezerwa
+- X14 = RM5 CH1
 
 HMI:
 - M400 = STOP
@@ -24,12 +25,12 @@ HMI:
 ## Łączenie HMI i mechaniki
 
 ```text
-X20 OR M400 -> M440
-X21 OR M401 -> M441
-X22 OR M402 -> M442
-X23 OR M403 -> M443
-X24 OR M404 -> M444
-X25 OR M405 -> M445
+X4 OR M400 -> M440
+X5 OR M401 -> M441
+X6 OR M402 -> M442
+X7 OR M403 -> M443
+X10 OR M404 -> M444
+X11 OR M405 -> M445
 ```
 
 STOP jest obsługiwany poziomem i ma najwyższy priorytet.
