@@ -20,11 +20,12 @@ Mechaniczne:
 - X6 = P2,
 - X7 = P3,
 - X10 = P4,
-- X11 = P5.
+- X11 = P5,
+- X12 = P6.
 
 HMI:
 - M400 = STOP,
-- M401…M405 = P1…P5.
+- M401…M406 = P1…P6.
 
 PLC scala oba źródła:
 
@@ -35,6 +36,7 @@ X6 OR M402 -> M442 P2_CMD
 X7 OR M403 -> M443 P3_CMD
 X10 OR M404 -> M444 P4_CMD
 X11 OR M405 -> M445 P5_CMD
+X12 OR M406 -> M446 P6_CMD
 ```
 
 Dzięki temu:
@@ -49,7 +51,8 @@ Bity:
 - M421 = P2,
 - M422 = P3,
 - M423 = P4,
-- M424 = P5.
+- M424 = P5,
+- M425 = P6.
 
 Programy są wzajemnie wykluczające. Komenda nowego programu resetuje poprzedni i ustawia tylko nowy.
 
@@ -58,11 +61,12 @@ Wyjścia:
 - M421 AND D350>0 -> Y3,
 - M422 AND D350>0 -> Y4,
 - M423 AND D350>0 -> Y5,
-- M424 AND D350>0 -> Y6.
+- M424 AND D350>0 -> Y6,
+- M425 AND D350>0 -> Y7.
 
 STOP kasuje wybór programu, ale nie kasuje D350.
 
-Po zejściu D350 do 0 wszystkie M420…M424 są resetowane. To zapobiega automatycznemu wznowieniu poprzedniego programu po wrzuceniu kolejnej monety.
+Po zejściu D350 do 0 wszystkie M420…M425 są resetowane. To zapobiega automatycznemu wznowieniu poprzedniego programu po wrzuceniu kolejnej monety.
 
 ## Bezpieczny restart
 
@@ -79,7 +83,7 @@ M321 = 0
 M330 = 0
 M331 = 0
 M410 = 0
-M420...M424 = 0
+M420...M425 = 0
 ```
 
 Kluczowa zmiana to `D330=0`: PLC nie kontynuuje po restarcie wcześniej rozpoczętej serii impulsów CREDIT.
@@ -110,7 +114,7 @@ Domyślnie po restarcie Pilotaggio jest wyłączone.
 ## WORK_ACTIVE
 
 M412 jest aktywne, gdy:
-- wybrany jest jeden z P1…P5,
+- wybrany jest jeden z P1…P6,
 - D350 > 0,
 - STOP nie jest aktywny.
 
