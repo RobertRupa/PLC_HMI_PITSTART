@@ -23,13 +23,13 @@ PROGRAM 2  -> X6
 PROGRAM 3  -> X7
 PROGRAM 4  -> X10
 PROGRAM 5  -> X11
-X12        -> rezerwa
+PROGRAM 6  -> X12
 X13        -> rezerwa
 X14        -> rezerwa
 RM5 CH1    -> X27
 ```
 
-Przyciski mają być chwilowe (momentary). Zalecane są styki NO dla P1…P5. Dla STOP można użyć rozwiązania dopasowanego do istniejącego panelu, ale logika PLC traktuje aktywny X4 jako STOP o najwyższym priorytecie.
+Przyciski mają być chwilowe (momentary). Zalecane są styki NO dla P1…P6. Dla STOP można użyć rozwiązania dopasowanego do istniejącego panelu, ale logika PLC traktuje aktywny X4 jako STOP o najwyższym priorytecie.
 
 Sposób połączenia przycisków z COM należy wykonać zgodnie z polaryzacją wejść konkretnego wariantu SEEKU/WSB. Nie podawać napięcia na X bez potwierdzenia typu wejścia.
 
@@ -69,7 +69,7 @@ Oryginalny PitStart ma wyjścia jako suche styki NO. Dla PLC z wyjściami przeka
 | 7 + 9 | Pilotaggio pompa |
 | 10 + 12 | Compteur / Credit |
 
-P6 jest wyprowadzony na Y7. Aktualny panel mechaniczny obsługuje P1…P5; P6 może być sterowany osobno z HMI/logiki.
+P6 jest wyprowadzony na Y7 i ma mechaniczny przycisk na X12.
 
 ## 5. Oryginalny PitStart — CN8, Fig. 34
 
