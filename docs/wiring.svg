@@ -55,5 +55,4 @@ text{font-family:Arial,sans-serif;font-size:22px;fill:#111}.title{font-size:34px
 <path d="M950 755 H1050 V655 H1110" class="line"/>
 
 <text x="60" y="840" class="note">Y0: CREDIT; Y1: Pilotaggio; Y2…Y7: P1…P6; Y23: RM5 inhibit; Y27: oświetlenie.</text>
-<text x="60" y="875" class="note">Finalny projekt nie wykorzystuje AD0…AD5 ani demo-bloku RD3A/WR3A.</text>
 </svg>
