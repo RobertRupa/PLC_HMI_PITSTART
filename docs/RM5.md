@@ -3,8 +3,9 @@
 ## Zastosowanie w projekcie
 
 Aktualnie:
-- RM5 `CH1` -> PLC `X27`,
-- PLC `Y23` -> RM5 `INHIBIT`.
+- RM5 CH1 -> PLC X27 jako główne wejście impulsów,
+- PLC Y23 -> RM5 INHIBIT,
+- opcjonalnie kanały RM5 mogą być obserwowane przez AD0...AD5 po dopasowaniu elektrycznym.
 
 ## Standardowe złącze 10-pin
 
@@ -21,37 +22,45 @@ Aktualnie:
 | 9 | CH3 |
 | 10 | CH4 |
 
-## Wyjścia kanałów
+## Charakter wyjść
 
-Kanały RM5 są typowo wyjściami open collector. Aktywny impuls zwiera linię kanału do GND.
+RM5 Evolution ma wyjścia kanałów NPN open-collector. Stan aktywny jest stanem niskim.
+Wejście globalnego INHIBIT jest aktywne stanem HIGH.
+
+## Główne wejście cyfrowe
 
 CH1:
 - pin 7 -> X27,
-- pin 1 GND -> 0 V / COM wejść PLC.
+- pin 1 GND -> COM/0V wejść PLC.
+
+## Opcjonalne wejścia analogowe AD0...AD5
+
+Można wykorzystać AD jako wolne wejścia detekcji impulsów, ale NIE są one zamiennikiem
+wejść cyfrowych bez interfejsu:
+
+- AD0...AD2: w typowej konfiguracji WSB są 0-10V. Można wykorzystać pull-up/interfejs,
+  który daje stan wysoki w spoczynku i 0V po zwarciu open-collector RM5.
+- AD3...AD5: w typowej konfiguracji WSB są 0-20mA. Wymagają konwersji sygnału lub
+  przełączenia kanału na tryb napięciowy, jeśli dana wersja sprzętu to obsługuje.
+
+Odczyty aktualnego programu:
+- AD0 -> D10
+- AD1 -> D0
+- AD2 -> D1
+- AD3 -> D2
+- AD4 -> D3
+- AD5 -> D4
+
+Detekcja impulsu może być zrobiona przez porównanie wartości RD3A z progiem,
+a następnie użycie zbocza bitu pomocniczego M340...M345.
 
 ## INHIBIT
-
-Pin 6 jest globalnym wejściem inhibit:
-- HIGH blokuje akceptor.
-
-W projekcie:
-- COM grupy Y23 jest zasilony napięciem zgodnym z INHIBIT,
-- Y23 podaje to napięcie na pin 6.
-
-Logika:
 
 ```text
 /M300 ---------------- (Y23)
 ```
 
-## Multipulse
-
-RM5 może występować w wielu konfiguracjach. W trybie RM5 X 0M Multipulse Validator wartość monety może być przekazywana jako wielokrotne impulsy.
-
-Obecna drabinka:
-- zlicza impulsy,
-- kończy paczkę po ok. 1 s bezczynności,
-- przelicza wynik przez mnożnik.
+Brak M300 blokuje akceptor.
 
 ## Źródła
 
