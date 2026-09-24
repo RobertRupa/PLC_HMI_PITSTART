@@ -62,3 +62,14 @@ T200 -> RST M321
 
 RM5 manual:
 https://www.casino-software.de/download/manual_rm5.pdf
+
+
+## Wartość kanału 1 i start PLC
+
+W projekcie:
+- `D300 = 10` — domyślna wartość/mnożnik kanału 1,
+- `D320 = 0` — licznik bieżącej paczki,
+- `D330 = 0` — kolejka CREDIT,
+- `D350 = 0` — wartość/kredyt.
+
+Na pierwszym skanie `M8002` rejestry robocze są inicjalizowane. Zerowanie `D330` jest obowiązkowe, aby po ponownym uruchomieniu PLC nie wznowił wysyłania impulsów zapisanych przed zanikiem zasilania.
