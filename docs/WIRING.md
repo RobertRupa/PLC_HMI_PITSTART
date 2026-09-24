@@ -5,7 +5,7 @@
 ```text
 RM5 pin 2  +12...24 V  -> zasilanie RM5
 RM5 pin 1  GND         -> 0 V / COM wejść PLC
-RM5 pin 7  CH1         -> X27
+RM5 pin 7  CH1         -> X14
 
 PLC Y23                -> RM5 pin 6 INHIBIT
 ```
@@ -17,17 +17,18 @@ Y23 należy podłączyć tak, aby jego aktywacja podawała stan HIGH na wejście
 Przyjęte mapowanie:
 
 ```text
-STOP       -> X20
-PROGRAM 1  -> X21
-PROGRAM 2  -> X22
-PROGRAM 3  -> X23
-PROGRAM 4  -> X24
-PROGRAM 5  -> X25
-X26        -> rezerwa
-RM5 CH1    -> X27
+STOP       -> X4
+PROGRAM 1  -> X5
+PROGRAM 2  -> X6
+PROGRAM 3  -> X7
+PROGRAM 4  -> X10
+PROGRAM 5  -> X11
+X12        -> rezerwa
+X13        -> rezerwa
+RM5 CH1    -> X14
 ```
 
-Przyciski mają być chwilowe (momentary). Zalecane są styki NO dla P1…P5. Dla STOP można użyć rozwiązania dopasowanego do istniejącego panelu, ale logika PLC traktuje aktywny X20 jako STOP o najwyższym priorytecie.
+Przyciski mają być chwilowe (momentary). Zalecane są styki NO dla P1…P5. Dla STOP można użyć rozwiązania dopasowanego do istniejącego panelu, ale logika PLC traktuje aktywny X4 jako STOP o najwyższym priorytecie.
 
 Sposób połączenia przycisków z COM należy wykonać zgodnie z polaryzacją wejść konkretnego wariantu SEEKU/WSB. Nie podawać napięcia na X bez potwierdzenia typu wejścia.
 
