@@ -77,7 +77,7 @@ Nie jest on opisany w manualu jako standardowe wejście PitStart. Traktujemy go 
 | P3 | Y4 |
 | P4 | Y5 |
 | P5 | Y6 |
-| P6 | niewykorzystane w aktualnym projekcie; Y7 = rezerwa |
+| P6 | Y7 |
 | RM5 inhibit | Y23 |
 | Oświetlenie podczas pracy | Y27 |
 
@@ -100,11 +100,13 @@ M412 -> Y27
 ## 8. Sterowanie lokalne bez HMI
 
 Aktualny projekt dodaje mechaniczne przyciski:
-- X20 STOP,
-- X21 P1,
-- X22 P2,
-- X23 P3,
-- X24 P4,
-- X25 P5.
+- X4 STOP,
+- X5 P1,
+- X6 P2,
+- X7 P3,
+- X10 P4,
+- X11 P5.
+
+RM5 CH1 jest przypisany do X27.
 
 Są one logicznie łączone z przyciskami HMI, dzięki czemu panel HMI nie jest wymagany do podstawowej obsługi stanowiska.
