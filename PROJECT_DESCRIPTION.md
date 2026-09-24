@@ -7,7 +7,7 @@ SEEKU PLC/HMI realizuje logikę zgodną funkcjonalnie z Comestero PitStart:
 - blokuje RM5, gdy myjnia nie jest dostępna,
 - generuje CREDIT/COMPTEUR,
 - steruje Pilotaggio,
-- steruje programami P1…P5,
+- steruje programami P1…P6,
 - obsługuje jednocześnie HMI i mechaniczne przyciski,
 - steruje oświetleniem,
 - uruchamia się zawsze w bezpiecznym stanie.
@@ -79,7 +79,8 @@ D330 = 0
 D350 = 0
 D351 = 0
 D520 = 10
-D521...D527 = 0 / wartości robocze
+D521...D526 = 0
+D527 = 31990
 
 M321 = 0
 M330 = 0
