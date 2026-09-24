@@ -1,0 +1,447 @@
+; PLC_HMI_PITSTART
+; GX Developer mnemonic / instruction-list companion
+; Current project logic
+; NOTE: keep native GX Developer project as the authoritative PLC backup.
+; This file is intended for version control, review and text-based transfer.
+;
+; I/O:
+; X0  AUTOMATE_PRESENT / INVERTER_OK
+; X1  PRACA
+; X4  mechanical STOP
+; X5  mechanical P1
+; X6  mechanical P2
+; X7  mechanical P3
+; X10 mechanical P4
+; X11 mechanical P5
+; X12 mechanical P6
+; X27 RM5 CH1
+;
+; Y0  CREDIT / COMPTEUR
+; Y1  PILOTAGGIO POMPA
+; Y2..Y7 PROGRAM 1..6
+; Y23 RM5 INHIBIT
+; Y27 LIGHTING
+;
+; HMI:
+; M400 STOP
+; M401..M406 P1..P6
+; M410 PILOTAGGIO_ENABLE
+;
+; Internal:
+; M300 AUTOMATE_PRESENT
+; M301 PRACA
+; M320 RM5 one-scan pulse
+; M321 RM5 packet active
+; M330 CREDIT phase ON
+; M331 CREDIT phase OFF
+; M412 WORK_ACTIVE
+; M420..M425 P1..P6 ACTIVE
+; M440 STOP_CMD
+; M441..M446 P1..P6 CMD
+;
+; Data:
+; D300 RM5 CH1 multiplier/value, startup = 10
+; D320 current RM5 packet pulse count
+; D330 queued CREDIT pulses
+; D350 current value / time
+; D351 high word of MUL result
+;
+; Timers:
+; T200 K100 packet end timeout (~1 s for 10 ms base)
+; T201 K10 CREDIT ON (~0.1 s)
+; T202 K10 CREDIT OFF (~0.1 s)
+
+
+; ============================================================
+; 1. SAFE FIRST-SCAN INITIALIZATION
+; ============================================================
+
+LD M8002
+MOV K10 D300
+
+LD M8002
+MOV K0 D320
+
+LD M8002
+MOV K0 D330
+
+LD M8002
+MOV K0 D350
+
+LD M8002
+MOV K0 D351
+
+LD M8002
+RST M320
+
+LD M8002
+RST M321
+
+LD M8002
+RST M330
+
+LD M8002
+RST M331
+
+LD M8002
+RST M400
+
+LD M8002
+RST M401
+
+LD M8002
+RST M402
+
+LD M8002
+RST M403
+
+LD M8002
+RST M404
+
+LD M8002
+RST M405
+
+LD M8002
+RST M406
+
+LD M8002
+RST M410
+
+LD M8002
+RST M412
+
+LD M8002
+RST M420
+
+LD M8002
+RST M421
+
+LD M8002
+RST M422
+
+LD M8002
+RST M423
+
+LD M8002
+RST M424
+
+LD M8002
+RST M425
+
+
+; ============================================================
+; 2. STATUS INPUTS
+; ============================================================
+
+LD X0
+OUT M300
+
+LD X1
+OUT M301
+
+
+; ============================================================
+; 3. RM5 INHIBIT
+; Missing AUTOMATE_PRESENT blocks RM5.
+; ============================================================
+
+LDI M300
+OUT Y23
+
+
+; ============================================================
+; 4. RM5 CH1 EDGE DETECTION AND PACKET COUNTING
+; X27 is counted once per rising edge.
+; If actual hardware polarity is inverted, replace LDP with LDF.
+; ============================================================
+
+LDP X27
+OUT M320
+
+LD M320
+INC D320
+
+LD M320
+SET M321
+
+LD M320
+RST T200
+
+LD M321
+OUT T200 K100
+
+
+; ============================================================
+; 5. END OF RM5 PACKET
+; ============================================================
+
+LD T200
+MUL D320 D300 D350
+
+LD T200
+MOV D320 D330
+
+LD T200
+MOV K0 D320
+
+LD T200
+RST M321
+
+
+; ============================================================
+; 6. CREDIT / COMPTEUR GENERATOR ON Y0
+; ============================================================
+
+LD> D330 K0
+ANI M330
+ANI M331
+SET M330
+
+LD M330
+OUT Y0
+
+LD M330
+OUT T201 K10
+
+LD T201
+DEC D330
+
+LD T201
+RST M330
+
+LD T201
+SET M331
+
+LD M331
+OUT T202 K10
+
+LD T202
+RST M331
+
+
+; ============================================================
+; 7. D350 COUNTDOWN
+; -1 at each rising edge of the 1-second clock, only above zero.
+; ============================================================
+
+LDP M8013
+AND> D350 K0
+DEC D350
+
+
+; ============================================================
+; 8. MERGE MECHANICAL BUTTONS WITH HMI COMMANDS
+; ============================================================
+
+LD X4
+OR M400
+OUT M440
+
+LD X5
+OR M401
+OUT M441
+
+LD X6
+OR M402
+OUT M442
+
+LD X7
+OR M403
+OUT M443
+
+LD X10
+OR M404
+OUT M444
+
+LD X11
+OR M405
+OUT M445
+
+LD X12
+OR M406
+OUT M446
+
+
+; ============================================================
+; 9. STOP - HIGHEST PRIORITY
+; STOP does not erase D350 credit/value.
+; ============================================================
+
+LD M440
+RST M420
+
+LD M440
+RST M421
+
+LD M440
+RST M422
+
+LD M440
+RST M423
+
+LD M440
+RST M424
+
+LD M440
+RST M425
+
+
+; ============================================================
+; 10. PROGRAM SELECTION
+; Conditions: machine available, STOP inactive, D350 > 0.
+; Commands use rising edge so a held button does not retrigger.
+; ============================================================
+
+; P1
+LDP M441
+AND M300
+ANI M440
+AND> D350 K0
+RST M421
+RST M422
+RST M423
+RST M424
+RST M425
+SET M420
+
+; P2
+LDP M442
+AND M300
+ANI M440
+AND> D350 K0
+RST M420
+RST M422
+RST M423
+RST M424
+RST M425
+SET M421
+
+; P3
+LDP M443
+AND M300
+ANI M440
+AND> D350 K0
+RST M420
+RST M421
+RST M423
+RST M424
+RST M425
+SET M422
+
+; P4
+LDP M444
+AND M300
+ANI M440
+AND> D350 K0
+RST M420
+RST M421
+RST M422
+RST M424
+RST M425
+SET M423
+
+; P5
+LDP M445
+AND M300
+ANI M440
+AND> D350 K0
+RST M420
+RST M421
+RST M422
+RST M423
+RST M425
+SET M424
+
+; P6
+LDP M446
+AND M300
+ANI M440
+AND> D350 K0
+RST M420
+RST M421
+RST M422
+RST M423
+RST M424
+SET M425
+
+
+; ============================================================
+; 11. CLEAR PROGRAM SELECTION WHEN CREDIT/TIME ENDS
+; Prevents automatic restart after a later coin.
+; ============================================================
+
+LD<= D350 K0
+RST M420
+
+LD<= D350 K0
+RST M421
+
+LD<= D350 K0
+RST M422
+
+LD<= D350 K0
+RST M423
+
+LD<= D350 K0
+RST M424
+
+LD<= D350 K0
+RST M425
+
+
+; ============================================================
+; 12. PROGRAM OUTPUTS
+; ============================================================
+
+LD M420
+AND> D350 K0
+OUT Y2
+
+LD M421
+AND> D350 K0
+OUT Y3
+
+LD M422
+AND> D350 K0
+OUT Y4
+
+LD M423
+AND> D350 K0
+OUT Y5
+
+LD M424
+AND> D350 K0
+OUT Y6
+
+LD M425
+AND> D350 K0
+OUT Y7
+
+
+; ============================================================
+; 13. WORK_ACTIVE
+; ============================================================
+
+LD M420
+OR M421
+OR M422
+OR M423
+OR M424
+OR M425
+AND> D350 K0
+ANI M440
+OUT M412
+
+
+; ============================================================
+; 14. PILOTAGGIO AND LIGHTING
+; ============================================================
+
+LD M410
+AND M412
+OUT Y1
+
+LD M412
+OUT Y27
+
+END
