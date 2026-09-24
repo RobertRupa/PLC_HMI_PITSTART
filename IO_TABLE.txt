@@ -19,7 +19,8 @@ X010    PRZYCISK MECHANICZNY PROGRAM 4
 X011    PRZYCISK MECHANICZNY PROGRAM 5
 X012    REZERWA
 X013    REZERWA
-X014    RM5 CH1 - wejście impulsów
+X014    REZERWA
+X027    RM5 CH1 - wejście impulsów
 
 WYJŚCIA PLC
 -----------
@@ -36,7 +37,7 @@ Y003    PROGRAM 2
 Y004    PROGRAM 3
 Y005    PROGRAM 4
 Y006    PROGRAM 5
-Y007    REZERWA
+Y007    PROGRAM 6
 
 Y023    RM5 INHIBIT
         /M300 -> Y023
@@ -48,7 +49,7 @@ BITY M - STATUS / RM5
 ---------------------
 M300    kopia/status X000
 M301    kopia/status X001
-M320    impuls roboczy RM5 z X014
+M320    impuls roboczy RM5 z X027
 M321    aktywne zbieranie paczki RM5
 M330    faza ON generatora CREDIT Y000
 M331    faza OFF generatora CREDIT Y000
@@ -136,7 +137,7 @@ Pin 3    CH5
 Pin 4    CH6
 Pin 5    N.U. / zależne od konfiguracji
 Pin 6    INHIBIT
-Pin 7    CH1 -> X014
+Pin 7    CH1 -> X027
 Pin 8    CH2
 Pin 9    CH3
 Pin 10   CH4
@@ -147,5 +148,5 @@ CN8 1-2    Presence automatic device
 CN8 3-4    Manual / Free
 
 UWAGA:
-PLC posiada wejścia X000...X007 oraz X010...X014 (adresacja ósemkowa FX).
-Nie występują fizyczne X008/X009.
+Lokalne przyciski wykorzystują X004...X011.
+RM5 CH1 jest przypisany do X027 zgodnie z aktualną konfiguracją projektu.
