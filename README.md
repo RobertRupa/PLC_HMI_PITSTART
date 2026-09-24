@@ -225,6 +225,41 @@ M412 -> Y27
 
 Oświetlenie działa podczas pracy niezależnie od opcji Pilotaggio.
 
+
+## Wersja PLC dla HMI
+
+Wersja projektu PLC jest udostępniona HMI jako tekst ASCII od `D500`.
+
+Aktualna wersja:
+
+```text
+V1.0.0
+```
+
+Mapa:
+
+| Adres | Znaczenie |
+|---|---|
+| `D500…D507` | `PLC_VERSION_STRING` — pole tekstowe dla HMI |
+| `D516` | VERSION_MAJOR = 1 |
+| `D517` | VERSION_MINOR = 0 |
+| `D518` | VERSION_PATCH = 0 |
+
+Na pierwszym skanie PLC:
+
+```text
+M8002 -> MOV H3156 D500   ; "V1"
+M8002 -> MOV H302E D501   ; ".0"
+M8002 -> MOV H302E D502   ; ".0"
+M8002 -> MOV H0000 D503   ; terminator
+
+M8002 -> MOV K1 D516
+M8002 -> MOV K0 D517
+M8002 -> MOV K0 D518
+```
+
+W WSStudio użyj obiektu ASCII/String Display od adresu `D500`, długość np. 16 znaków. Jeżeli HMI pokaże pary znaków odwrócone, należy odwrócić bajty stałych HEX dla używanego sterownika/HMI.
+
 ## Dokumentacja
 
 - `IO_TABLE.txt` — aktualna mapa projektu.
@@ -235,6 +270,7 @@ Oświetlenie działa podczas pracy niezależnie od opcji Pilotaggio.
 - `docs/LADDER_LOGIC.md` — logika drabinki.
 - `docs/STARTUP_AND_BUTTONS.md` — inicjalizacja i przyciski mechaniczne/HMI.
 - `docs/wiring.svg` — uproszczony schemat.
+- `docs/HMI.md` — adresy HMI, w tym string wersji PLC.
 - `plc/MAIN.txt` — aktualna logika PLC w formie mnemonic/instruction list.
 - `plc/DEVICE_MAP.csv` — mapa urządzeń do wersjonowania i analizy.
 - `plc/README.md` — sposób pracy z eksportem tekstowym.
