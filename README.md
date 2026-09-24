@@ -23,7 +23,7 @@ PLC i HMI są programowane osobno. Sterowanie podstawowe działa również bez H
 
 ### Wejścia
 
-PLC ma fizyczne wejścia `X0…X7` oraz `X10…X14` (adresacja FX jest ósemkowa, dlatego nie występują X8/X9).
+Lokalne wejścia panelu wykorzystują zakres `X0…X14` zgodnie z mapą poniżej. Kanał RM5 CH1 pozostaje przypisany w projekcie do `X27`.
 
 | Adres | Funkcja |
 |---|---|
@@ -37,7 +37,8 @@ PLC ma fizyczne wejścia `X0…X7` oraz `X10…X14` (adresacja FX jest ósemkowa
 | `X11` | mechaniczny Program 5 |
 | `X12` | rezerwa |
 | `X13` | rezerwa |
-| `X14` | impulsy z jednego kanału RM5 |
+| `X14` | rezerwa |
+| `X27` | RM5 CH1 — wejście impulsów |
 
 ### Wyjścia
 
@@ -50,7 +51,7 @@ PLC ma fizyczne wejścia `X0…X7` oraz `X10…X14` (adresacja FX jest ósemkowa
 | `Y4` | Program 3 |
 | `Y5` | Program 4 |
 | `Y6` | Program 5 |
-| `Y7` | rezerwa |
+| `Y7` | Program 6 |
 | `Y23` | RM5 INHIBIT |
 | `Y27` | oświetlenie podczas pracy |
 
@@ -130,7 +131,7 @@ Po restarcie:
 
 ## RM5 — kanał 1
 
-Używany jest jeden kanał RM5 podłączony do `X14`.
+Używany jest jeden kanał RM5 podłączony do `X27`.
 
 Domyślna wartość kanału 1 / mnożnik:
 - `D300 = 10`.
