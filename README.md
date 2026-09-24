@@ -12,7 +12,10 @@ Aktualna drabinka:
 - mnoży liczbę impulsów przez parametr `D300`,
 - przechowuje wynik w `D350`,
 - kopiuje liczbę impulsów do kolejki `D330`,
-- wysyła kolejkę na `Y1` jako impulsy 0,1 s ON / 0,1 s OFF,
+- wysyła kolejkę CREDIT na `Y0` jako impulsy 0,1 s ON / 0,1 s OFF,
+- używa `Y1` jako opcjonalnego `Pilotaggio pompa`,
+- używa `Y2...Y7` jako Program 1...6,
+- używa `Y27` jako oświetlenia aktywnego podczas pracy,
 - może odliczać wartość `D350`.
 
 ## Oprogramowanie
@@ -43,7 +46,10 @@ HMI i PLC są programowane osobno.
 | `X2` | status 3 |
 | `X3` | status 4 |
 | `X27` | wejście impulsów z RM5 |
-| `Y1` | impulsy wyjściowe do PITStart |
+| `Y0` | CREDIT / COMPTEUR |
+| `Y1` | PILOTAGGIO POMPA |
+| `Y2...Y7` | Program 1...6 |
+| `Y27` | oświetlenie w czasie pracy |
 | `Y23` | sterowanie `INHIBIT` RM5 |
 | `M300` | kopia/status X0 |
 | `M301` | kopia/status X1 |
@@ -80,7 +86,7 @@ Aktualnie używany jest jeden kanał RM5.
    - `MOV K0 D320`
    - `RST M321`
 8. `D330` jest kolejką impulsów.
-9. Generator Y1 pracuje dopóki `D330 > 0`:
+9. Generator CREDIT na Y0 pracuje dopóki `D330 > 0`:
    - ON: `T201 K10` ≈ 0,1 s,
    - `D330 = D330 - 1`,
    - OFF: `T202 K10` ≈ 0,1 s.
@@ -143,3 +149,18 @@ Jeżeli `D350` ma być zmniejszane dokładnie raz na sekundę, należy użyć zb
 - `docs/WIRING.md` — schemat połączeń.
 - `docs/LADDER_LOGIC.md` — opis drabinki.
 - `docs/wiring.svg` — schemat SVG.
+
+
+## Opcjonalne kanały RM5 przez AD0...AD5
+
+Kanały analogowe mogą zostać użyte jako dodatkowe wejścia RM5 tylko po dopasowaniu elektrycznym. RM5 daje sygnały NPN open-collector, natomiast WSB ma wejścia analogowe. W typowej konfiguracji WSB AD0...AD2 są 0-10V, a AD3...AD5 0-20mA. AD0...AD2 można wykorzystać przez pull-up/interfejs 0-10V i detekcję progu w PLC. AD3...AD5 wymagają konwersji na sygnał prądowy albo odpowiedniej rekonfiguracji kanału, jeśli wersja sprzętu ją obsługuje.
+
+Aktualne odczyty RD3A:
+- AD0 -> D10
+- AD1 -> D0
+- AD2 -> D1
+- AD3 -> D2
+- AD4 -> D3
+- AD5 -> D4
+
+Szczegóły: `docs/RM5.md` i `docs/LADDER_LOGIC.md`.
