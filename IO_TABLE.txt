@@ -11,15 +11,18 @@ X001    PRACA
         Sygnał informacyjny z myjni.
         NIE jest blokerem RM5.
 
-X002    REZERWA / przyszły status
-X003    REZERWA / przyszły status
-
+X020    PRZYCISK MECHANICZNY STOP
+X021    PRZYCISK MECHANICZNY PROGRAM 1
+X022    PRZYCISK MECHANICZNY PROGRAM 2
+X023    PRZYCISK MECHANICZNY PROGRAM 3
+X024    PRZYCISK MECHANICZNY PROGRAM 4
+X025    PRZYCISK MECHANICZNY PROGRAM 5
+X026    REZERWA
 X027    RM5 CH1 - wejście impulsów
 
 WYJŚCIA PLC
 -----------
 Y000    CREDIT / COMPTEUR
-        Generator impulsów:
         T201 K10 ≈ 0,1 s ON
         T202 K10 ≈ 0,1 s OFF
         okres start-start ≈ 0,2 s
@@ -32,7 +35,7 @@ Y003    PROGRAM 2
 Y004    PROGRAM 3
 Y005    PROGRAM 4
 Y006    PROGRAM 5
-Y007    PROGRAM 6 / opcjonalne
+Y007    REZERWA
 
 Y023    RM5 INHIBIT
         /M300 -> Y023
@@ -44,35 +47,56 @@ BITY M - STATUS / RM5
 ---------------------
 M300    kopia/status X000
 M301    kopia/status X001
-
 M320    impuls roboczy RM5 z X027
 M321    aktywne zbieranie paczki RM5
-
 M330    faza ON generatora CREDIT Y000
 M331    faza OFF generatora CREDIT Y000
 
-BITY M - HMI / STEROWANIE
--------------------------
-M400    STOP
-M401    PROGRAM 1 command
-M402    PROGRAM 2 command
-M403    PROGRAM 3 command
-M404    PROGRAM 4 command
-M405    PROGRAM 5 command
-M406    PROGRAM 6 command / opcjonalne
-
+BITY M - HMI
+------------
+M400    HMI STOP
+M401    HMI PROGRAM 1
+M402    HMI PROGRAM 2
+M403    HMI PROGRAM 3
+M404    HMI PROGRAM 4
+M405    HMI PROGRAM 5
 M410    PILOTAGGIO_ENABLE
+
+BITY M - POŁĄCZENIE PRZYCISKÓW HMI + FIZYCZNYCH
+------------------------------------------------
+M440    STOP_CMD = X020 OR M400
+M441    P1_CMD   = X021 OR M401
+M442    P2_CMD   = X022 OR M402
+M443    P3_CMD   = X023 OR M403
+M444    P4_CMD   = X024 OR M404
+M445    P5_CMD   = X025 OR M405
+
+BITY M - AKTYWNY PROGRAM
+------------------------
+M420    PROGRAM 1 ACTIVE
+M421    PROGRAM 2 ACTIVE
+M422    PROGRAM 3 ACTIVE
+M423    PROGRAM 4 ACTIVE
+M424    PROGRAM 5 ACTIVE
 M412    WORK_ACTIVE
 
 REJESTRY D
 ----------
-D300    mnożnik / parametr z HMI
+D300    RM5 CH1 VALUE / mnożnik
+        wartość startowa = 10
 
 D320    liczba impulsów aktualnej paczki RM5
+        wartość startowa = 0
+
 D330    kolejka impulsów CREDIT do wysłania na Y000
+        wartość startowa = 0
+        MUSI być zerowana przy starcie PLC
 
 D350    wynik MUL D320 * D300 / wartość wyświetlana na HMI
+        wartość startowa = 0
+
 D351    starsze słowo wyniku 32-bit MUL
+        wartość startowa = 0
 
 TIMERY
 ------
@@ -80,9 +104,28 @@ T200 K100    timeout końca paczki RM5 ≈ 1,0 s
 T201 K10     Y000 CREDIT ON ≈ 0,1 s
 T202 K10     Y000 CREDIT OFF ≈ 0,1 s
 
-BIT SYSTEMOWY
--------------
+BITY SYSTEMOWE
+--------------
+M8002        pierwszy skan PLC - bezpieczna inicjalizacja
 M8013        zegar 1 s; używany zboczowo do DEC D350
+
+INICJALIZACJA M8002
+-------------------
+D300 = 10
+D320 = 0
+D330 = 0
+D350 = 0
+D351 = 0
+
+RST M321
+RST M330
+RST M331
+RST M410
+RST M420
+RST M421
+RST M422
+RST M423
+RST M424
 
 RM5 - STANDARDOWE ZŁĄCZE 10-PIN
 --------------------------------
@@ -100,12 +143,8 @@ Pin 10   CH4
 PITSTART - POTWIERDZONE SYGNAŁY WEJŚCIOWE
 -----------------------------------------
 CN8 1-2    Presence automatic device
-           HIGH/obecność sygnału = automat obecny.
-           Brak sygnału może przełączyć PitStart w OUT OF SERVICE.
-
 CN8 3-4    Manual / Free
-           Obecność napięcia = ciągła praca bez monet.
 
 UWAGA:
-PRACA (X001) jest sygnałem specyficznym dla naszej myjni; instrukcja PitStart
-nie definiuje osobnego standardowego wejścia RUN/PRACA.
+X020...X025 to przyjęte mapowanie projektu dla przycisków mechanicznych.
+Należy potwierdzić dostępność tych fizycznych zacisków w używanym wariancie PLC.
