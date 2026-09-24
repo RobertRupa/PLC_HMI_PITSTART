@@ -15,7 +15,7 @@ text{font-family:Arial,sans-serif;font-size:22px;fill:#111}.title{font-size:34px
 <text x="650" y="145" class="h">PLC SEEKU</text>
 <text x="560" y="215">X0  AUTOMATE_PRESENT</text>
 <text x="560" y="255">X1  PRACA</text>
-<text x="560" y="315">X27 RM5 CH1</text>
+<text x="560" y="315">X14 RM5 CH1</text>
 <text x="560" y="375">Y23 RM5 INHIBIT</text>
 <text x="560" y="435">Y0  CREDIT / COMPTEUR</text>
 <text x="560" y="475">Y1  PILOTAGGIO POMPA</text>
