@@ -44,3 +44,14 @@ Clearing `D330` prevents the PLC from resuming an old CREDIT pulse queue after a
 - P6: `X12`
 
 HMI commands use `M400…M406` and are ORed with the mechanical buttons.
+
+## PLC version for HMI
+
+The PLC exposes version `V1.0.0` starting at `D500`.
+
+- `D500…D507` — ASCII version string area
+- `D516` — major
+- `D517` — minor
+- `D518` — patch
+
+WSStudio should use an ASCII/String display starting at `D500`, e.g. 16 characters. If character pairs appear reversed, swap the byte order of the HEX constants in the initialization block.
