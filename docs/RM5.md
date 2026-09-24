@@ -4,7 +4,7 @@
 
 Projekt korzysta z jednego kanału RM5.
 
-- RM5 CH1 -> PLC `X27`
+- RM5 CH1 -> PLC `X14`
 - PLC `Y23` -> RM5 `INHIBIT`
 - RM5 GND -> wspólne 0 V / COM wejść
 
@@ -26,7 +26,7 @@ Projekt korzysta z jednego kanału RM5.
 ## CH1
 
 ```text
-RM5 pin 7 CH1  -> X27
+RM5 pin 7 CH1  -> X14
 RM5 pin 1 GND  -> COM/0V PLC
 ```
 
@@ -45,7 +45,7 @@ Założenie projektu:
 ## Algorytm paczki impulsów
 
 ```text
-X27 -> M320
+X14 -> M320
 M320 -> INC D320
 M320 -> SET M321
 M320 -> RST T200
