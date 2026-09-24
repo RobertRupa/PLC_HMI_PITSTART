@@ -12,8 +12,6 @@ SEEKU PLC/HMI zastępuje / rozszerza logikę Comestero PitStart:
 - steruje oświetleniem w czasie pracy,
 - udostępnia obsługę przez HMI.
 
-Finalny projekt nie korzysta z demo-bloku analogowego ani AD0…AD5.
-
 ## Schemat funkcjonalny
 
 ```text
