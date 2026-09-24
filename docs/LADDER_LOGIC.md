@@ -11,6 +11,14 @@ M8002 -> MOV K0  D330
 M8002 -> MOV K0  D350
 M8002 -> MOV K0  D351
 
+M8002 -> MOV H3156 D500   ; V1
+M8002 -> MOV H302E D501   ; .0
+M8002 -> MOV H302E D502   ; .0
+M8002 -> MOV H0000 D503   ; terminator
+M8002 -> MOV K1 D516
+M8002 -> MOV K0 D517
+M8002 -> MOV K0 D518
+
 M8002 -> RST M321
 M8002 -> RST M330
 M8002 -> RST M331
@@ -231,3 +239,20 @@ M412 -> Y27
 ```
 
 Oświetlenie działa podczas aktywnej pracy niezależnie od Pilotaggio.
+
+## 15. Wersja PLC dla HMI
+
+Aktualna wersja: `V1.0.0`.
+
+```text
+D500 = "V1"
+D501 = ".0"
+D502 = ".0"
+D503 = 0
+
+D516 = 1
+D517 = 0
+D518 = 0
+```
+
+HMI czyta tekst od `D500`. Rejestry `D516…D518` pozwalają dodatkowo porównywać wersję liczbowo.
