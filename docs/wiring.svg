@@ -1,37 +1,59 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="850" viewBox="0 0 1400 850">
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="920" viewBox="0 0 1500 920">
 <style>
 text{font-family:Arial,sans-serif;font-size:22px;fill:#111}.title{font-size:34px;font-weight:bold}.h{font-size:26px;font-weight:bold}.box{fill:#fff;stroke:#111;stroke-width:3}.line{stroke:#111;stroke-width:4;fill:none}.note{font-size:18px}
 </style>
-<text x="40" y="50" class="title">PLC_HMI_PITSTART — schemat połączeniowy</text>
-<rect x="80" y="140" width="330" height="440" class="box"/>
-<text x="185" y="185" class="h">RM5 Evolution</text>
-<text x="110" y="245">pin 2  +12…24 V</text>
-<text x="110" y="305">pin 1  GND</text>
-<text x="110" y="365">pin 7  CH1</text>
-<text x="110" y="425">pin 6  INHIBIT</text>
-<rect x="550" y="140" width="420" height="440" class="box"/>
-<text x="675" y="185" class="h">PLC SEEKU</text>
-<text x="590" y="305">INPUT COM / 0 V</text>
-<text x="590" y="365">X27 — RM5 pulse</text>
-<text x="590" y="425">Y23 — INHIBIT relay</text>
-<text x="590" y="485">Y1 — PITStart pulse</text>
-<text x="590" y="545">COM Y1 / COM Y23</text>
-<rect x="1090" y="340" width="250" height="180" class="box"/>
-<text x="1140" y="385" class="h">PITStart</text>
-<text x="1120" y="445">PULSE IN</text>
-<text x="1120" y="490">COMMON</text>
-<path d="M410 305 H550" class="line"/>
-<path d="M410 365 H550" class="line"/>
-<text x="430" y="288" class="note">GND / 0 V</text>
-<text x="430" y="350" class="note">CH1 open collector</text>
-<path d="M410 425 H520 V650 H1010 V425 H970" class="line"/>
-<text x="455" y="452" class="note">INHIBIT</text>
-<path d="M970 485 H1090" class="line"/>
-<path d="M970 545 H1040 V490 H1090" class="line"/>
-<path d="M250 245 V95 H1030 V650 H1010" class="line"/>
-<text x="470" y="85" class="note">+24 VDC → RM5 pin 2 oraz COM grupy Y23</text>
-<text x="80" y="650" class="h">Logika</text>
-<text x="80" y="700">/M300 → Y23: brak INVERTER_OK blokuje RM5.</text>
-<text x="80" y="745">X27 → paczka impulsów → D320; timeout T200 = 1 s.</text>
-<text x="80" y="790">Y1: 100 ms ON + 100 ms OFF, dopóki D330 &gt; 0.</text>
+<text x="40" y="50" class="title">PLC_HMI_PITSTART — aktualny schemat funkcjonalny</text>
+
+<rect x="60" y="130" width="300" height="300" class="box"/>
+<text x="125" y="175" class="h">RM5 Evolution</text>
+<text x="90" y="235">pin 2  +12…24 V</text>
+<text x="90" y="290">pin 1  GND</text>
+<text x="90" y="345">pin 7  CH1</text>
+<text x="90" y="400">pin 6  INHIBIT</text>
+
+<rect x="520" y="100" width="430" height="690" class="box"/>
+<text x="650" y="145" class="h">PLC SEEKU</text>
+<text x="560" y="215">X0  AUTOMATE_PRESENT</text>
+<text x="560" y="255">X1  PRACA</text>
+<text x="560" y="315">X27 RM5 CH1</text>
+<text x="560" y="375">Y23 RM5 INHIBIT</text>
+<text x="560" y="435">Y0  CREDIT / COMPTEUR</text>
+<text x="560" y="475">Y1  PILOTAGGIO POMPA</text>
+<text x="560" y="515">Y2  PROGRAM 1</text>
+<text x="560" y="555">Y3  PROGRAM 2</text>
+<text x="560" y="595">Y4  PROGRAM 3</text>
+<text x="560" y="635">Y5  PROGRAM 4</text>
+<text x="560" y="675">Y6  PROGRAM 5</text>
+<text x="560" y="715">Y7  PROGRAM 6</text>
+<text x="560" y="755">Y27 OŚWIETLENIE</text>
+
+<rect x="1110" y="150" width="330" height="570" class="box"/>
+<text x="1180" y="195" class="h">Sterownik myjni</text>
+<text x="1140" y="255">AUTOMATE_PRESENT</text>
+<text x="1140" y="295">PRACA</text>
+<text x="1140" y="435">CREDIT</text>
+<text x="1140" y="475">PILOTAGGIO</text>
+<text x="1140" y="535">P1 / P2 / P3</text>
+<text x="1140" y="575">P4 / P5 / P6</text>
+<text x="1140" y="655">OŚWIETLENIE</text>
+
+<path d="M360 290 H460 V315 H520" class="line"/>
+<path d="M360 345 H520" class="line"/>
+<path d="M520 375 H430 V400 H360" class="line"/>
+
+<path d="M1110 255 H950 V215" class="line"/>
+<path d="M1110 295 H950 V255" class="line"/>
+
+<path d="M950 435 H1110" class="line"/>
+<path d="M950 475 H1110" class="line"/>
+<path d="M950 515 H1040 V535 H1110" class="line"/>
+<path d="M950 555 H1030 V535 H1110" class="line"/>
+<path d="M950 595 H1020 V535 H1110" class="line"/>
+<path d="M950 635 H1040 V575 H1110" class="line"/>
+<path d="M950 675 H1030 V575 H1110" class="line"/>
+<path d="M950 715 H1020 V575 H1110" class="line"/>
+<path d="M950 755 H1050 V655 H1110" class="line"/>
+
+<text x="60" y="840" class="note">Y0: CREDIT; Y1: Pilotaggio; Y2…Y7: P1…P6; Y23: RM5 inhibit; Y27: oświetlenie.</text>
+<text x="60" y="875" class="note">Finalny projekt nie wykorzystuje AD0…AD5 ani demo-bloku RD3A/WR3A.</text>
 </svg>
