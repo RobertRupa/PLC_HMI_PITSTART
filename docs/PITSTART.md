@@ -105,7 +105,8 @@ Aktualny projekt dodaje mechaniczne przyciski:
 - X6 P2,
 - X7 P3,
 - X10 P4,
-- X11 P5.
+- X11 P5,
+- X12 P6.
 
 RM5 CH1 jest przypisany do X27.
 
