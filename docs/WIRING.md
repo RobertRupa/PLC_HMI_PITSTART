@@ -5,7 +5,7 @@
 ```text
 RM5 pin 2  +12...24 V  -> zasilanie RM5
 RM5 pin 1  GND         -> 0 V / COM wejść PLC
-RM5 pin 7  CH1         -> X14
+RM5 pin 7  CH1         -> X27
 
 PLC Y23                -> RM5 pin 6 INHIBIT
 ```
@@ -25,7 +25,8 @@ PROGRAM 4  -> X10
 PROGRAM 5  -> X11
 X12        -> rezerwa
 X13        -> rezerwa
-RM5 CH1    -> X14
+X14        -> rezerwa
+RM5 CH1    -> X27
 ```
 
 Przyciski mają być chwilowe (momentary). Zalecane są styki NO dla P1…P5. Dla STOP można użyć rozwiązania dopasowanego do istniejącego panelu, ale logika PLC traktuje aktywny X4 jako STOP o najwyższym priorytecie.
@@ -42,7 +43,7 @@ Y3  -> PROGRAM 2
 Y4  -> PROGRAM 3
 Y5  -> PROGRAM 4
 Y6  -> PROGRAM 5
-Y7  -> REZERWA
+Y7  -> PROGRAM 6
 Y27 -> OŚWIETLENIE
 ```
 
@@ -68,7 +69,7 @@ Oryginalny PitStart ma wyjścia jako suche styki NO. Dla PLC z wyjściami przeka
 | 7 + 9 | Pilotaggio pompa |
 | 10 + 12 | Compteur / Credit |
 
-Projekt wykorzystuje P1…P5. P6/Y7 pozostaje rezerwą.
+P6 jest wyprowadzony na Y7. Aktualny panel mechaniczny obsługuje P1…P5; P6 może być sterowany osobno z HMI/logiki.
 
 ## 5. Oryginalny PitStart — CN8, Fig. 34
 
