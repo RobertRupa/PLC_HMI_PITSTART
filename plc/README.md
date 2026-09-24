@@ -22,6 +22,8 @@ The first-scan block uses `M8002` to force:
 - `D330 = 0`,
 - `D350 = 0`,
 - `D351 = 0`,
+- `D520 = 10` seconds/pulse,
+- `D521…D526 = 0`,
 - all program-selection bits OFF,
 - Pilotaggio OFF.
 
@@ -47,7 +49,7 @@ HMI commands use `M400…M406` and are ORed with the mechanical buttons.
 
 ## PLC version for HMI
 
-The PLC exposes version `V1.0.0` starting at `D500`.
+The PLC exposes version `V1.1.0` starting at `D500`.
 
 - `D500…D507` — ASCII version string area
 - `D516` — major
@@ -55,3 +57,16 @@ The PLC exposes version `V1.0.0` starting at `D500`.
 - `D518` — patch
 
 WSStudio should use an ASCII/String display starting at `D500`, e.g. 16 characters. If character pairs appear reversed, swap the byte order of the HEX constants in the initialization block.
+
+## HMI pulse counter and time conversion
+
+- `D520` — seconds per RM5 pulse, HMI RW, default 10, valid 1…600
+- `D521` — last packet pulse count
+- `D522:D523` — last packet converted seconds
+- `D524` — session pulse counter
+- `D525:D526` — session equivalent seconds
+- `M411` — momentary reset for session counter
+- `M413` — time parameter valid
+
+Every accepted RM5 pulse adds `D520` seconds to `D350`. Remaining time is saturated at 32000 s.
+
