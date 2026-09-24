@@ -61,7 +61,7 @@ Program może wystartować tylko wtedy, gdy:
 
 STOP:
 - kasuje M420…M425,
-- wyłącza Y2…Y6 przez brak aktywnego programu,
+- wyłącza Y2…Y7 przez brak aktywnego programu,
 - wyłącza M412/WORK_ACTIVE,
 - wyłącza Y27,
 - wyłącza Pilotaggio Y1,
@@ -119,6 +119,7 @@ Najważniejsze jest `MOV K0 D330`. To usuwa zapamiętaną kolejkę impulsów CRE
 | D521…D526 | 0 |
 | D527 | 31990 |
 | M410 | 0 |
+| M411 | 0 |
 | M420…M425 | 0 |
 
 D300=10 jest domyślną wartością kanału 1 RM5 / mnożnikiem.
