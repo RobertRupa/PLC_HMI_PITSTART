@@ -2,104 +2,121 @@
 
 ## Cel
 
-SEEKU PLC/HMI zastępuje / rozszerza logikę Comestero PitStart:
-- odbiera impulsy z RM5,
+SEEKU PLC/HMI realizuje logikę zgodną funkcjonalnie z Comestero PitStart:
+- odbiera impulsy RM5,
 - blokuje RM5, gdy myjnia nie jest dostępna,
-- przelicza odebraną paczkę impulsów,
 - generuje CREDIT/COMPTEUR,
-- steruje Pilotaggio pompa,
-- wybiera programy mycia,
-- steruje oświetleniem w czasie pracy,
-- udostępnia obsługę przez HMI.
+- steruje Pilotaggio,
+- steruje programami P1…P5,
+- obsługuje jednocześnie HMI i mechaniczne przyciski,
+- steruje oświetleniem,
+- uruchamia się zawsze w bezpiecznym stanie.
 
-## Schemat funkcjonalny
+## Wejścia użytkownika
+
+Mechaniczne:
+- X20 = STOP,
+- X21 = P1,
+- X22 = P2,
+- X23 = P3,
+- X24 = P4,
+- X25 = P5.
+
+HMI:
+- M400 = STOP,
+- M401…M405 = P1…P5.
+
+PLC scala oba źródła:
 
 ```text
-RM5 CH1 --------------------> X27
-RM5 INHIBIT <--------------- Y23
-
-myjnia AUTOMATE_PRESENT ---> X0
-myjnia PRACA --------------> X1
-
-Y0  -----------------------> CREDIT / COMPTEUR
-Y1  -----------------------> PILOTAGGIO POMPA
-Y2  -----------------------> PROGRAM 1
-Y3  -----------------------> PROGRAM 2
-Y4  -----------------------> PROGRAM 3
-Y5  -----------------------> PROGRAM 4
-Y6  -----------------------> PROGRAM 5
-Y7  -----------------------> PROGRAM 6
-Y27 -----------------------> OŚWIETLENIE
+X20 OR M400 -> M440 STOP_CMD
+X21 OR M401 -> M441 P1_CMD
+X22 OR M402 -> M442 P2_CMD
+X23 OR M403 -> M443 P3_CMD
+X24 OR M404 -> M444 P4_CMD
+X25 OR M405 -> M445 P5_CMD
 ```
+
+Dzięki temu:
+- HMI może być odłączone, a przyciski fizyczne nadal działają,
+- brak panelu mechanicznego nie blokuje sterowania HMI,
+- STOP ma priorytet.
+
+## Aktywny program
+
+Bity:
+- M420 = P1,
+- M421 = P2,
+- M422 = P3,
+- M423 = P4,
+- M424 = P5.
+
+Programy są wzajemnie wykluczające. Komenda nowego programu resetuje poprzedni i ustawia tylko nowy.
+
+Wyjścia:
+- M420 AND D350>0 -> Y2,
+- M421 AND D350>0 -> Y3,
+- M422 AND D350>0 -> Y4,
+- M423 AND D350>0 -> Y5,
+- M424 AND D350>0 -> Y6.
+
+STOP kasuje wybór programu, ale nie kasuje D350.
+
+Po zejściu D350 do 0 wszystkie M420…M424 są resetowane. To zapobiega automatycznemu wznowieniu poprzedniego programu po wrzuceniu kolejnej monety.
+
+## Bezpieczny restart
+
+Na pierwszym skanie PLC (`M8002`) ustawiane są wartości:
+
+```text
+D300 = 10
+D320 = 0
+D330 = 0
+D350 = 0
+D351 = 0
+
+M321 = 0
+M330 = 0
+M331 = 0
+M410 = 0
+M420...M424 = 0
+```
+
+Kluczowa zmiana to `D330=0`: PLC nie kontynuuje po restarcie wcześniej rozpoczętej serii impulsów CREDIT.
+
+`D300=10` jest domyślną wartością kanału 1 RM5 / mnożnikiem.
 
 ## RM5
 
-Jeden kanał RM5 trafia na `X27`.
+- CH1 -> X27,
+- INHIBIT <- Y23,
+- brak X0/AUTOMATE_PRESENT blokuje RM5,
+- X1/PRACA nie blokuje RM5.
 
-Każdy impuls:
-- zwiększa `D320`,
-- ustawia `M321`,
-- restartuje `T200`.
+Paczka impulsów kończy się po około 1 s bezczynności.
 
-Po ok. 1 s ciszy:
+## CREDIT
 
-```text
-MUL D320 D300 D350
-MOV D320 D330
-MOV K0 D320
-RST M321
-```
+Y0 generuje CREDIT z kolejki D330.
 
-`D350` jest wynikiem mnożenia i wartością do wyświetlania/odliczania.
-`D330` jest kolejką generatora CREDIT.
+## Pilotaggio
 
-## CREDIT / COMPTEUR
+- M410 = PILOTAGGIO_ENABLE,
+- M412 = WORK_ACTIVE,
+- M410 AND M412 -> Y1.
 
-Generator wyjścia `Y0` używa `M330/M331` i `T201/T202`.
-
-Aktualnie:
-- ON ≈ 0,1 s,
-- OFF ≈ 0,1 s.
-
-Oryginalny PitStart opisuje Counter jako impulsy odpowiadające wielokrotnościom 0,10 € przy każdym przyjęciu wartości. Obecny kod wysyła na Y0 tyle impulsów, ile zostało skopiowane do `D330`.
-
-## Blokada RM5
-
-`X0` jest głównym sygnałem dostępności:
-
-```text
-X0 -> M300
-/M300 -> Y23
-```
-
-Brak `X0` blokuje RM5.
-
-`X1 = PRACA` jest statusem i nie bierze udziału w blokowaniu akceptora.
-
-## Pilotaggio pompa
-
-Dokumentacja PitStart określa zachowanie Pilotaggio:
-- startuje przy żądaniu pierwszego programu,
-- pozostaje aktywne, dopóki istnieje kredyt,
-- STOP je wyłącza.
-
-Projekt:
-- `M410 = PILOTAGGIO_ENABLE`,
-- `M412 = WORK_ACTIVE`,
-- `M410 AND M412 -> Y1`.
+Domyślnie po restarcie Pilotaggio jest wyłączone.
 
 ## WORK_ACTIVE
 
-`M412` jest wspólnym stanem pracy.
+M412 jest aktywne, gdy:
+- wybrany jest jeden z P1…P5,
+- D350 > 0,
+- STOP nie jest aktywny.
 
-Powinien być ustawiany:
-- po uruchomieniu Program 1…6,
-- opcjonalnie podczas trybu MANUAL/FREE,
-- ewentualnie na podstawie potwierdzenia PRACA z X1.
-
-Powinien być kasowany:
-- przez STOP,
-- po zakończeniu pracy/kredytu.
+M412 steruje:
+- Y27 = oświetlenie,
+- Y1 = Pilotaggio, jeśli M410=1.
 
 ## Oświetlenie
 
@@ -107,26 +124,11 @@ Powinien być kasowany:
 M412 -> Y27
 ```
 
-Oświetlenie jest niezależne od opcji Pilotaggio.
+## Wyjścia
 
-## Programy
-
-Mapowanie:
-- `Y2` = P1,
-- `Y3` = P2,
-- `Y4` = P3,
-- `Y5` = P4,
-- `Y6` = P5,
-- `Y7` = P6.
-
-HMI ma docelowo STOP + P1…P5; P6 pozostaje dostępny opcjonalnie.
-
-## Wejścia udokumentowane dla oryginalnego PitStart
-
-Potwierdzone przez manual:
-- CN8 1–2 — Presence automatic device,
-- CN8 3–4 — Manual/Free.
-
-Manual PitStart nie opisuje osobnego wejścia RUN/PRACA. `X1=PRACA` jest więc sygnałem specyficznym dla naszego sterownika myjni, a nie standardową funkcją PitStart.
-
-Szczegółowa rozpiska wyjść CN4/CN5 i wejść CN8 znajduje się w `docs/PITSTART.md`.
+- Y0 = CREDIT,
+- Y1 = Pilotaggio,
+- Y2…Y6 = P1…P5,
+- Y7 = rezerwa,
+- Y23 = RM5 inhibit,
+- Y27 = oświetlenie.
