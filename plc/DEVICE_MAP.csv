@@ -33,6 +33,8 @@ M404,Bit,HMI Program 4,Reset at startup
 M405,Bit,HMI Program 5,Reset at startup
 M406,Bit,HMI Program 6,Reset at startup
 M410,Bit,PILOTAGGIO_ENABLE,0 at startup
+M411,Bit,RESET_RM5_SESSION_COUNTERS,HMI momentary button
+M413,Bit,TIME_PARAM_OK,1 when D520 is 1..600
 M412,Bit,WORK_ACTIVE,OUT logic
 M420,Bit,Program 1 active,0 at startup
 M421,Bit,Program 2 active,0 at startup
@@ -51,14 +53,20 @@ D300,Data,RM5 CH1 multiplier/value,10 at startup
 D320,Data,Current RM5 packet count,0 at startup
 D330,Data,CREDIT pulse queue,0 at startup
 D350,Data,Current credit/time value,0 at startup
-D351,Data,MUL high word,0 at startup
+D351,Data,Reserved/high word,0 at startup
+D520,Data,Seconds per RM5 pulse,"HMI RW; startup 10; range 1..600"
+D521,Data,Last packet pulse count,RO
+D522:D523,Data,Last packet converted time seconds,RO 32-bit
+D524,Data,RM5 session pulse counter,RO
+D525:D526,Data,Session equivalent time seconds,RO 32-bit
+D527,Data,Time saturation threshold,32000-D520
 D500,Data,PLC version string word 0,"H3156 = V1"
-D501,Data,PLC version string word 1,"H302E = .0"
+D501,Data,PLC version string word 1,"H312E = .1"
 D502,Data,PLC version string word 2,"H302E = .0"
 D503,Data,PLC version terminator,H0000
 D504-D507,Data,PLC version string reserve,Reserved
 D516,Data,VERSION_MAJOR,1
-D517,Data,VERSION_MINOR,0
+D517,Data,VERSION_MINOR,1
 D518,Data,VERSION_PATCH,0
 T200,Timer,RM5 packet timeout,K100
 T201,Timer,CREDIT ON,K10
