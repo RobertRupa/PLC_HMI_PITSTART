@@ -1,110 +1,88 @@
-PLC_HMI_PITSTART - AKTUALNA / PLANOWANA TABELA ADRESÓW
-=========================================================
+PLC_HMI_PITSTART - AKTUALNA TABELA PROJEKTU
+=================================================
 
-WEJŚCIA CYFROWE
----------------
-X000    INVERTER_OK / AUTOMATE_PRESENT      -> M300
-X001    PRACA / MANUAL_FREE (do ustalenia) -> M301
-X002    STATUS_3                            -> M302
-X003    STATUS_4                            -> M303
-X027    RM5 CH1 / główne wejście impulsów  -> M320
+WEJŚCIA PLC
+-----------
+X000    AUTOMATE_PRESENT / INVERTER_OK
+        Główny sygnał zezwolenia.
+        Brak sygnału blokuje RM5 przez Y023.
 
-OPCJONALNE WEJŚCIA RM5 PRZEZ AD
---------------------------------
-AD0 -> D010   opcjonalny kanał RM5 (0-10V po interfejsie)
-AD1 -> D000   opcjonalny kanał RM5 (0-10V po interfejsie)
-AD2 -> D001   opcjonalny kanał RM5 (0-10V po interfejsie)
-AD3 -> D002   opcjonalny kanał RM5; domyślnie wejście prądowe - wymaga konwersji/re-konfiguracji
-AD4 -> D003   opcjonalny kanał RM5; domyślnie wejście prądowe - wymaga konwersji/re-konfiguracji
-AD5 -> D004   opcjonalny kanał RM5; domyślnie wejście prądowe - wymaga konwersji/re-konfiguracji
+X001    PRACA
+        Sygnał informacyjny z myjni.
+        NIE jest blokerem RM5.
 
-UWAGA:
-RM5 daje wyjścia NPN open-collector. Nie wolno traktować AD0...AD5 jak wejść cyfrowych
-i łączyć ich bezpośrednio bez dopasowania elektrycznego.
-Dla wejść 0-10V trzeba wytworzyć stan napięciowy 0/5-10V (np. pull-up/interfejs).
-Dla wejść 0-20mA potrzebny jest interfejs prądowy albo kanał musi być skonfigurowany
-jako napięciowy, jeśli dana wersja sprzętu na to pozwala.
+X002    REZERWA / przyszły status
+X003    REZERWA / przyszły status
 
-WYJŚCIA - EMULACJA PITSTART
----------------------------
+X027    RM5 CH1 - wejście impulsów
+
+WYJŚCIA PLC
+-----------
 Y000    CREDIT / COMPTEUR
-        impulsy kredytowe; 1 impuls odpowiada jednostce ustawionej przez projekt
-        obecny generator: T201 K10 ON, T202 K10 OFF
+        Generator impulsów:
+        T201 K10 ≈ 0,1 s ON
+        T202 K10 ≈ 0,1 s OFF
+        okres start-start ≈ 0,2 s
 
 Y001    PILOTAGGIO POMPA
-        aktywne podczas pracy, jeśli opcja PILOTAGGIO_ENABLE jest włączona
+        M410 AND M412 -> Y001
 
 Y002    PROGRAM 1
 Y003    PROGRAM 2
 Y004    PROGRAM 3
 Y005    PROGRAM 4
 Y006    PROGRAM 5
-Y007    PROGRAM 6
+Y007    PROGRAM 6 / opcjonalne
 
 Y023    RM5 INHIBIT
-        /M300 -> Y23
-        brak AUTOMATE_PRESENT/INVERTER_OK -> RM5 zablokowany
+        /M300 -> Y023
 
-Y027    OŚWIETLENIE W CZASIE PRACY
-        Y27 = WORK_ACTIVE
+Y027    OŚWIETLENIE
+        M412 -> Y027
 
-WAŻNE:
-Y004 było używane w oryginalnej logice analogowej do MOV D6/D7.
-Przed przeznaczeniem Y004 na PROGRAM 3 należy usunąć/przenieść stare zależności Y004 -> D6/D7.
+BITY M - STATUS / RM5
+---------------------
+M300    kopia/status X000
+M301    kopia/status X001
 
-BITY M
-------
-M300    status/kopia X000
-M301    status/kopia X001
-M302    status/kopia X002
-M303    status/kopia X003
-M304    status złożony
 M320    impuls roboczy RM5 z X027
-M321    flaga zbierania paczki impulsów RM5
-M330    generator CREDIT Y0 - faza ON
-M331    generator CREDIT Y0 - faza OFF
+M321    aktywne zbieranie paczki RM5
 
-M340    opcjonalny cyfrowy stan utworzony z AD0
-M341    opcjonalny cyfrowy stan utworzony z AD1
-M342    opcjonalny cyfrowy stan utworzony z AD2
-M343    opcjonalny cyfrowy stan utworzony z AD3
-M344    opcjonalny cyfrowy stan utworzony z AD4
-M345    opcjonalny cyfrowy stan utworzony z AD5
+M330    faza ON generatora CREDIT Y000
+M331    faza OFF generatora CREDIT Y000
 
-M410    PILOTAGGIO_ENABLE - opcja z HMI
-M412    WORK_ACTIVE - wewnętrzny stan pracy myjni
+BITY M - HMI / STEROWANIE
+-------------------------
+M400    STOP
+M401    PROGRAM 1 command
+M402    PROGRAM 2 command
+M403    PROGRAM 3 command
+M404    PROGRAM 4 command
+M405    PROGRAM 5 command
+M406    PROGRAM 6 command / opcjonalne
 
-REJESTRY D - ANALOG / PROGRAM ORYGINALNY
-----------------------------------------
-D010    RD3A kanał K0 / AD0
-D000    RD3A kanał K1 / AD1
-D001    RD3A kanał K2 / AD2
-D002    RD3A kanał K3 / AD3
-D003    RD3A kanał K4 / AD4
-D004    RD3A kanał K5 / AD5
-D006    WR3A K0
-D007    WR3A K1
+M410    PILOTAGGIO_ENABLE
+M412    WORK_ACTIVE
 
-REJESTRY D - RM5 / PITSTART
----------------------------
-D300    mnożnik / parametr roboczy z HMI
-D320    liczba impulsów bieżącej paczki RM5
-D330    liczba impulsów oczekujących do wysłania na Y000
-D350    wynik MUL D320 * D300 / wartość robocza HMI
+REJESTRY D
+----------
+D300    mnożnik / parametr z HMI
+
+D320    liczba impulsów aktualnej paczki RM5
+D330    kolejka impulsów CREDIT do wysłania na Y000
+
+D350    wynik MUL D320 * D300 / wartość wyświetlana na HMI
 D351    starsze słowo wyniku 32-bit MUL
-D360    opcjonalny próg detekcji dla analogowego wejścia RM5
 
 TIMERY
 ------
-T200 K100    timeout końca paczki RM5, około 1,0 s
-T201 K10     CREDIT Y000 ON, około 0,1 s
-T202 K10     CREDIT Y000 OFF, około 0,1 s
+T200 K100    timeout końca paczki RM5 ≈ 1,0 s
+T201 K10     Y000 CREDIT ON ≈ 0,1 s
+T202 K10     Y000 CREDIT OFF ≈ 0,1 s
 
-BITY SYSTEMOWE
---------------
-M8011    standard FX: zegar 10 ms
-M8012    standard FX: zegar 100 ms
-M8013    standard FX: zegar 1 s
+BIT SYSTEMOWY
+-------------
+M8013        zegar 1 s; używany zboczowo do DEC D350
 
 RM5 - STANDARDOWE ZŁĄCZE 10-PIN
 --------------------------------
@@ -114,13 +92,24 @@ Pin 3    CH5
 Pin 4    CH6
 Pin 5    N.U. / zależne od konfiguracji
 Pin 6    INHIBIT
-Pin 7    CH1
+Pin 7    CH1 -> X027
 Pin 8    CH2
 Pin 9    CH3
 Pin 10   CH4
 
-PRZYKŁADOWE MAPOWANIE OPCJONALNE RM5 -> AD
--------------------------------------------
-CH1 -> X027 (główne)
-CH1..CH6 mogą alternatywnie zostać skierowane na AD0..AD5 po odpowiednim
-dopasowaniu elektrycznym. Nie jest to połączenie bezpośrednie open-collector -> AD.
+PITSTART - POTWIERDZONE SYGNAŁY WEJŚCIOWE
+-----------------------------------------
+CN8 1-2    Presence automatic device
+           HIGH/obecność sygnału = automat obecny.
+           Brak sygnału może przełączyć PitStart w OUT OF SERVICE.
+
+CN8 3-4    Manual / Free
+           Obecność napięcia = ciągła praca bez monet.
+
+UWAGA:
+PRACA (X001) jest sygnałem specyficznym dla naszej myjni; instrukcja PitStart
+nie definiuje osobnego standardowego wejścia RUN/PRACA.
+
+FINALNY PROJEKT
+---------------
+Nie używa AD0...AD5, RD3A/WR3A ani początkowej demo-logiki analogowej.
