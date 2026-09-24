@@ -17,7 +17,7 @@ Połączenie programujące używane w projekcie:
 Do edycji panelu HMI:
 - **WSStudio** firmy Winsun/SEEKU.
 
-PLC i HMI są programowane osobno. Sterowanie podstawowe działa również bez HMI dzięki mechanicznym przyciskom STOP + Program 1…5.
+PLC i HMI są programowane osobno. Sterowanie podstawowe działa również bez HMI dzięki mechanicznym przyciskom STOP + Program 1…6.
 
 ## Aktualna architektura
 
@@ -35,7 +35,7 @@ Lokalne wejścia panelu wykorzystują zakres `X0…X14` zgodnie z mapą poniżej
 | `X7` | mechaniczny Program 3 |
 | `X10` | mechaniczny Program 4 |
 | `X11` | mechaniczny Program 5 |
-| `X12` | rezerwa |
+| `X12` | mechaniczny Program 6 |
 | `X13` | rezerwa |
 | `X14` | rezerwa |
 | `X27` | RM5 CH1 — wejście impulsów |
@@ -67,6 +67,7 @@ HMI i przyciski mechaniczne są łączone logicznym OR. Żaden z nich nie jest w
 | P3 | X7 | M403 | M443 |
 | P4 | X10 | M404 | M444 |
 | P5 | X11 | M405 | M445 |
+| P6 | X12 | M406 | M446 |
 
 Przykład:
 
@@ -75,6 +76,7 @@ X4 OR M400 -> M440
 X5 OR M401 -> M441
 ...
 X11 OR M405 -> M445
+X12 OR M406 -> M446
 ```
 
 STOP ma priorytet. Programy są wybierane zboczem komendy i są wzajemnie wykluczające.
@@ -84,7 +86,8 @@ Aktywne programy:
 - `M421` = P2,
 - `M422` = P3,
 - `M423` = P4,
-- `M424` = P5.
+- `M424` = P5,
+- `M425` = P6.
 
 Wyjścia:
 
@@ -94,6 +97,7 @@ M421 AND D350>0 -> Y3
 M422 AND D350>0 -> Y4
 M423 AND D350>0 -> Y5
 M424 AND D350>0 -> Y6
+M425 AND D350>0 -> Y7
 ```
 
 STOP zeruje wybór programu, ale nie kasuje kredytu `D350`. Po wyczerpaniu kredytu wybór programu jest kasowany, aby po kolejnym doładowaniu myjnia nie uruchomiła poprzedniego programu automatycznie.
@@ -120,6 +124,7 @@ M8002 -> RST M421
 M8002 -> RST M422
 M8002 -> RST M423
 M8002 -> RST M424
+M8002 -> RST M425
 ```
 
 Po restarcie:
@@ -210,7 +215,7 @@ Domyślnie po restarcie `M410=0` — bezpiecznie OFF.
 ## WORK_ACTIVE i oświetlenie
 
 `M412` jest aktywne, gdy:
-- wybrany jest P1…P5,
+- wybrany jest P1…P6,
 - `D350 > 0`,
 - STOP nie jest aktywny.
 
