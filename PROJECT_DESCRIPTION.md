@@ -20,7 +20,10 @@ PLC SEEKU <---- X27 ---- RM5 CH1
    |
    +---- Y23 ---------> RM5 INHIBIT
    |
-   +---- Y1 ----------> PITStart PULSE/CREDIT
+   +---- Y0 ----------> CREDIT / COMPTEUR
+   +---- Y1 ----------> PILOTAGGIO POMPA
+   +---- Y2..Y7 ------> PROGRAM 1..6
+   +---- Y27 ---------> OŚWIETLENIE
    |
    +---- D/M <--------> HMI WSStudio
 ```
@@ -57,7 +60,7 @@ RST M321
 - `T201 K10` — ok. 100 ms ON,
 - `T202 K10` — ok. 100 ms OFF.
 
-Dopóki `D330 > 0`, generator wysyła kolejne impulsy na `Y1`.
+Dopóki `D330 > 0`, generator wysyła kolejne impulsy CREDIT na `Y0`.
 
 ## Blokada RM5
 
@@ -100,3 +103,28 @@ Wyjścia:
 - D7 -> AO1
 
 `Y4` jest już używane przez logikę D6/D7.
+
+
+## Oświetlenie Y27
+
+`Y27` jest przewidziane jako wyjście oświetlenia aktywne podczas pracy. Zalecany bit pośredni:
+
+```text
+M412 = WORK_ACTIVE
+M412 -> Y27
+```
+
+`WORK_ACTIVE` jest ustawiane przy aktywnym programie lub trybie manual/free i kasowane przez STOP albo koniec pracy.
+
+## Pilotaggio
+
+```text
+M410 = PILOTAGGIO_ENABLE
+M410 AND M412 -> Y1
+```
+
+Pozwala to włączyć/wyłączyć Pilotaggio z HMI bez wyłączania oświetlenia.
+
+## Opcjonalne wejścia RM5 przez AD0...AD5
+
+Możliwe są wejścia pomocnicze z kanałów RM5 przez AD, ale wyłącznie po dopasowaniu elektrycznym sygnału open-collector RM5 do wejścia analogowego. AD0...AD2 są typowo wejściami napięciowymi 0-10V; AD3...AD5 są typowo wejściami prądowymi 0-20mA.
