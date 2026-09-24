@@ -109,7 +109,3 @@ CN8 3-4    Manual / Free
 UWAGA:
 PRACA (X001) jest sygnałem specyficznym dla naszej myjni; instrukcja PitStart
 nie definiuje osobnego standardowego wejścia RUN/PRACA.
-
-FINALNY PROJEKT
----------------
-Nie używa AD0...AD5, RD3A/WR3A ani początkowej demo-logiki analogowej.
