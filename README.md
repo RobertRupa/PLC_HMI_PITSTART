@@ -235,3 +235,6 @@ Oświetlenie działa podczas pracy niezależnie od opcji Pilotaggio.
 - `docs/LADDER_LOGIC.md` — logika drabinki.
 - `docs/STARTUP_AND_BUTTONS.md` — inicjalizacja i przyciski mechaniczne/HMI.
 - `docs/wiring.svg` — uproszczony schemat.
+- `plc/MAIN.txt` — aktualna logika PLC w formie mnemonic/instruction list.
+- `plc/DEVICE_MAP.csv` — mapa urządzeń do wersjonowania i analizy.
+- `plc/README.md` — sposób pracy z eksportem tekstowym.
