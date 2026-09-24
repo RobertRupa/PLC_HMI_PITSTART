@@ -1,51 +1,18 @@
 # Schemat połączeniowy
 
-## RM5 -> PLC X27
+## 1. RM5 -> PLC
 
 ```text
-RM5 pin 2 +12...24 V  -> zasilanie +
-RM5 pin 1 GND         -> 0 V / COM wejść PLC
-RM5 pin 7 CH1         -> X27
+RM5 pin 2  +12...24 V  -> zasilanie RM5
+RM5 pin 1  GND         -> 0 V / COM wejść PLC
+RM5 pin 7  CH1         -> X27
+
+PLC Y23                -> RM5 pin 6 INHIBIT
 ```
 
-RM5 podczas impulsu zwiera wyjście kanału do GND.
+`Y23` należy podłączyć tak, aby jego aktywacja podawała stan HIGH na wejście INHIBIT RM5.
 
-## RM5 -> PLC AD0...AD5 (opcjonalnie)
-
-Nie łączyć kanału open-collector RM5 bezpośrednio z wejściem analogowym bez
-dopasowania.
-
-Dla kanału 0-10V koncepcja jest następująca:
-
-```text
-zewnętrzne napięcie <=10V
-          |
-       pull-up / interfejs
-          |
-          +---------------- ADx
-          |
-RM5 CHx --+   (open collector do GND)
-RM5 GND ------------------ AGND/0V
-```
-
-W spoczynku ADx ma wartość wysoką, a podczas impulsu RM5 jest ściągane do 0V.
-Próg jest wykrywany programowo.
-
-Dla AD3...AD5, jeśli kanały są skonfigurowane jako 0-20mA, potrzebny jest
-interfejs prądowy lub zmiana konfiguracji kanału.
-
-## RM5 INHIBIT
-
-```text
-+24 V -> COM grupy Y23
-Y23   -> RM5 pin 6 INHIBIT
-0 V   -> RM5 pin 1 GND
-```
-
-- Y23=1 -> INHIBIT HIGH -> RM5 zablokowany.
-- Y23=0 -> RM5 aktywny.
-
-## Wyjścia do sterownika myjni / emulacja PitStart
+## 2. Wyjścia PLC -> sterownik myjni
 
 ```text
 Y0  -> CREDIT / COMPTEUR
@@ -56,39 +23,70 @@ Y4  -> PROGRAM 3
 Y5  -> PROGRAM 4
 Y6  -> PROGRAM 5
 Y7  -> PROGRAM 6
-Y27 -> OŚWIETLENIE W CZASIE PRACY
+Y27 -> OŚWIETLENIE
 ```
 
-Oryginalny PitStart realizuje wyjścia jako suche styki NO. Jeżeli wyjścia SEEKU są
-przekaźnikowe, należy używać ich jako styków bezpotencjałowych zgodnie z wymaganiami
-wejść sterownika myjni.
+Oryginalny PitStart ma wyjścia jako **suche styki NO**. Dla wersji PLC z wyjściami przekaźnikowymi należy wykorzystywać Y/COM jako styki bezpotencjałowe zgodnie z wejściami sterownika myjni.
 
-UWAGA: Y4 jest używane w starej logice analogowej D6/D7 i trzeba ten konflikt usunąć.
+## 3. Oryginalny PitStart — CN4/CN5, Fig. 33
 
-## Pilotaggio i oświetlenie
+Numeracja złącza jest liczona od strony oznaczonej `1` na rysunku.
 
-Proponowane:
-- M410 = PILOTAGGIO_ENABLE z HMI
-- M412 = WORK_ACTIVE
+### CN4
+
+| Piny | Funkcja |
+|---|---|
+| 1 + 3 | Program 1 |
+| 4 + 6 | Program 2 |
+| 7 + 9 | Program 3 |
+| 10 + 12 | Program 4 |
+
+Piny 2, 5, 8 i 11 nie są użyte w pokazanym schemacie.
+Jedna strona P1…P4 jest połączona wspólną magistralą `COMMUN`.
+
+### CN5
+
+| Piny | Funkcja |
+|---|---|
+| 1 + 3 | Program 5 |
+| 4 + 6 | Program 6 |
+| 7 + 9 | Pilotaggio pompa |
+| 10 + 12 | Compteur / Credit |
+
+Piny 2, 5, 8 i 11 nie są użyte w pokazanym schemacie.
+
+## 4. Oryginalny PitStart — CN8, Fig. 34
+
+| Piny | Funkcja |
+|---|---|
+| CN8-1 = +24 V, CN8-2 = GND | Presence automatic device |
+| CN8-3 = +24 V, CN8-4 = GND | Manual / Free |
+
+Presence automatic device:
+- obecność sygnału oznacza dostępny automat,
+- brak sygnału może przełączyć PitStart w OUT OF SERVICE,
+- wymóg tego wejścia można wyłączyć w MultiConfig.
+
+Manual / Free:
+- obecność napięcia wymusza ciągłą pracę bez monety.
+
+## 5. Mapowanie do naszego PLC
+
+Aktualnie:
+- funkcję Presence automatic device realizuje `X0 = INVERTER_OK/AUTOMATE_PRESENT`,
+- `X1 = PRACA` jest dodatkowym sygnałem naszej myjni,
+- Manual/Free nie ma jeszcze przypisanego wejścia w finalnym mapowaniu.
+
+## 6. Pilotaggio i oświetlenie
 
 ```text
 M410 AND M412 -> Y1
 M412          -> Y27
 ```
 
-WORK_ACTIVE:
-- SET po uruchomieniu P1...P6,
-- SET podczas aktywnego trybu ręcznego/free,
-- RST przez STOP,
-- RST po zakończeniu kredytu/pracy.
+- `M410` — opcja Pilotaggio,
+- `M412` — praca aktywna.
 
-Dzięki temu oświetlenie działa podczas pracy nawet wtedy, gdy funkcja Pilotaggio jest wyłączona.
+## 7. Uwaga elektryczna
 
-## Wejścia z myjni
-
-Z dokumentacji PitStart:
-- AUTOMATE PRESENT / obecność urządzenia automatycznego,
-- MANUAL/FREE / uruchomienie ręczne bez monety.
-
-Projekt może dodatkowo wykorzystywać X0...X3 jako statusy specyficzne dla istniejącego
-sterownika myjni, ale ich znaczenie trzeba potwierdzić na obiekcie.
+Nie podawać napięcia na wejścia sterownika myjni bez potwierdzenia ich typu. Jeżeli oczekują zwarcia styku, używać wyjść przekaźnikowych jako suchych styków.
