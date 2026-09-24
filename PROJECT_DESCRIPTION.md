@@ -78,6 +78,8 @@ D320 = 0
 D330 = 0
 D350 = 0
 D351 = 0
+D520 = 10
+D521...D527 = 0 / wartości robocze
 
 M321 = 0
 M330 = 0
@@ -98,6 +100,26 @@ Kluczowa zmiana to `D330=0`: PLC nie kontynuuje po restarcie wcześniej rozpocz�
 - X1/PRACA nie blokuje RM5.
 
 Paczka impulsów kończy się po około 1 s bezczynności.
+
+## Impulsy RM5 -> czas
+
+`D300=10` pozostaje wartością kanału 1 RM5. Konwersja na czas jest odseparowana:
+
+- `D520` = sekundy za 1 impuls RM5, parametr HMI,
+- domyślnie `D520=10`,
+- zakres bezpieczny: 1…600 s/impuls,
+- `D350` = pozostały czas w sekundach,
+- `D524` = licznik impulsów sesji,
+- `D525:D526` = równoważny czas sesji w sekundach.
+
+Każdy impuls zwiększa licznik oraz dodaje `D520` do `D350`. Czas jest saturacyjnie ograniczony do 32000 s, aby nie przepełnić dodatniego zakresu używanego przez 16-bitową logikę czasu.
+
+Po końcu paczki:
+- `D521` przechowuje liczbę impulsów ostatniej paczki,
+- `D522:D523` przechowuje przeliczony czas tej paczki,
+- `D330` przechowuje liczbę impulsów do wysłania na Y0.
+
+`M411` z HMI resetuje licznik sesji. `M413` sygnalizuje poprawność parametru `D520`.
 
 ## CREDIT
 
