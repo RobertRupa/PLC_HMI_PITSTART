@@ -147,17 +147,55 @@ Algorytm:
 3. `M321` oznacza aktywne zbieranie paczki,
 4. każdy kolejny impuls restartuje `T200`,
 5. po około 1 s bez impulsu `T200` kończy paczkę,
-6. `D320 × D300` → `D350`,
-7. `D320` → `D330`,
-8. `D320` jest zerowane,
-9. `D330` steruje generatorem CREDIT na `Y0`.
+6. każdy impuls dodaje `D520` sekund do `D350`,
+7. po końcu paczki `D320` → `D521` i `D330`,
+8. `D320 × D520` → `D522:D523` jako czas ostatniej paczki,
+9. `D320` jest zerowane,
+10. `D330` steruje generatorem CREDIT na `Y0`.
 
 ```text
-T200 -> MUL D320 D300 D350
+T200 -> MOV D320 D521
+T200 -> MUL D320 D520 D522
 T200 -> MOV D320 D330
 T200 -> MOV K0 D320
 T200 -> RST M321
 ```
+
+## Konwersja impulsów RM5 na czas + licznik HMI
+
+Dodany został osobny parametr czasu, niezależny od `D300=10`:
+
+| Adres | Funkcja | Dostęp HMI |
+|---|---|---|
+| `D520` | sekundy dodawane za 1 impuls RM5 | RW |
+| `D521` | liczba impulsów w ostatniej paczce | RO |
+| `D522:D523` | czas ostatniej paczki w sekundach, wynik 32-bit | RO |
+| `D524` | licznik impulsów RM5 od startu/resetu sesji | RO |
+| `D525:D526` | równoważny czas licznika sesji = D524 × D520 | RO, 32-bit |
+| `M411` | reset licznika sesji D524/D525:D526 | przycisk chwilowy |
+| `M413` | parametr D520 poprawny | RO |
+
+Domyślnie `D520=10 s/impuls`. Zachowuje to dotychczasowe efektywne przeliczenie, ale od teraz współczynnik czasu jest osobnym parametrem HMI.
+
+Dopuszczalny zakres `D520`:
+
+```text
+1 ... 600 s/impuls
+```
+
+Poza tym zakresem `M413=0` i RM5 jest blokowany przez INHIBIT.
+
+Każdy prawidłowo odebrany impuls:
+- zwiększa `D320` i licznik sesji `D524`,
+- dodaje `D520` sekund do pozostałego czasu `D350`,
+- `D350` jest ograniczony do maks. 32000 s, aby uniknąć przepełnienia 16-bit.
+
+Po zakończeniu paczki PLC zapisuje:
+- `D521 = D320`,
+- `D522:D523 = D320 × D520`,
+- `D330 = D320` dla generatora CREDIT.
+
+Dzięki temu kolejne monety **dodają czas do pozostałego czasu**, zamiast nadpisywać `D350`.
 
 ## Generator CREDIT — Y0
 
@@ -233,7 +271,7 @@ Wersja projektu PLC jest udostępniona HMI jako tekst ASCII od `D500`.
 Aktualna wersja:
 
 ```text
-V1.0.0
+V1.1.0
 ```
 
 Mapa:
@@ -242,19 +280,19 @@ Mapa:
 |---|---|
 | `D500…D507` | `PLC_VERSION_STRING` — pole tekstowe dla HMI |
 | `D516` | VERSION_MAJOR = 1 |
-| `D517` | VERSION_MINOR = 0 |
+| `D517` | VERSION_MINOR = 1 |
 | `D518` | VERSION_PATCH = 0 |
 
 Na pierwszym skanie PLC:
 
 ```text
 M8002 -> MOV H3156 D500   ; "V1"
-M8002 -> MOV H302E D501   ; ".0"
+M8002 -> MOV H312E D501   ; ".1"
 M8002 -> MOV H302E D502   ; ".0"
 M8002 -> MOV H0000 D503   ; terminator
 
 M8002 -> MOV K1 D516
-M8002 -> MOV K0 D517
+M8002 -> MOV K1 D517
 M8002 -> MOV K0 D518
 ```
 
