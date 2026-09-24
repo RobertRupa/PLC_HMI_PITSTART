@@ -88,7 +88,7 @@ Kluczowa zmiana to `D330=0`: PLC nie kontynuuje po restarcie wcześniej rozpocz�
 
 ## RM5
 
-- CH1 -> X14,
+- CH1 -> X27,
 - INHIBIT <- Y23,
 - brak X0/AUTOMATE_PRESENT blokuje RM5,
 - X1/PRACA nie blokuje RM5.
@@ -129,6 +129,6 @@ M412 -> Y27
 - Y0 = CREDIT,
 - Y1 = Pilotaggio,
 - Y2…Y6 = P1…P5,
-- Y7 = rezerwa,
+- Y7 = Program 6,
 - Y23 = RM5 inhibit,
 - Y27 = oświetlenie.
