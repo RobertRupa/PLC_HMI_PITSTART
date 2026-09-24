@@ -46,8 +46,6 @@ PLC i HMI są programowane osobno.
 | `Y23` | RM5 INHIBIT |
 | `Y27` | oświetlenie podczas pracy |
 
-W finalnej wersji projektu **nie jest używana demo-logika analogowa RD3A/WR3A ani AD0…AD5**. Stary początkowy blok demonstracyjny można usunąć z finalnego programu.
-
 ## RM5 — aktualna logika
 
 Aktualnie używany jest jeden kanał RM5 podłączony do `X27`.
