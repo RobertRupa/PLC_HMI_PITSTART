@@ -1,11 +1,14 @@
 # Comestero RM5 Evolution
 
-## Zastosowanie w projekcie
+## Zastosowanie
 
-Aktualnie:
-- RM5 CH1 -> PLC X27 jako główne wejście impulsów,
-- PLC Y23 -> RM5 INHIBIT,
-- opcjonalnie kanały RM5 mogą być obserwowane przez AD0...AD5 po dopasowaniu elektrycznym.
+Projekt korzysta z jednego kanału RM5.
+
+- RM5 CH1 -> PLC `X27`
+- PLC `Y23` -> RM5 `INHIBIT`
+- RM5 GND -> wspólne 0 V / COM wejść
+
+Nie używamy AD0…AD5 ani dodatkowych kanałów RM5.
 
 ## Standardowe złącze 10-pin
 
@@ -15,54 +18,49 @@ Aktualnie:
 | 2 | +12…24 VDC |
 | 3 | CH5 |
 | 4 | CH6 |
-| 5 | N.U. / zależne od trybu |
+| 5 | N.U. / zależne od konfiguracji |
 | 6 | INHIBIT |
 | 7 | CH1 |
 | 8 | CH2 |
 | 9 | CH3 |
 | 10 | CH4 |
 
-## Charakter wyjść
+## CH1
 
-RM5 Evolution ma wyjścia kanałów NPN open-collector. Stan aktywny jest stanem niskim.
-Wejście globalnego INHIBIT jest aktywne stanem HIGH.
+```text
+RM5 pin 7 CH1  -> X27
+RM5 pin 1 GND  -> COM/0V PLC
+```
 
-## Główne wejście cyfrowe
-
-CH1:
-- pin 7 -> X27,
-- pin 1 GND -> COM/0V wejść PLC.
-
-## Opcjonalne wejścia analogowe AD0...AD5
-
-Można wykorzystać AD jako wolne wejścia detekcji impulsów, ale NIE są one zamiennikiem
-wejść cyfrowych bez interfejsu:
-
-- AD0...AD2: w typowej konfiguracji WSB są 0-10V. Można wykorzystać pull-up/interfejs,
-  który daje stan wysoki w spoczynku i 0V po zwarciu open-collector RM5.
-- AD3...AD5: w typowej konfiguracji WSB są 0-20mA. Wymagają konwersji sygnału lub
-  przełączenia kanału na tryb napięciowy, jeśli dana wersja sprzętu to obsługuje.
-
-Odczyty aktualnego programu:
-- AD0 -> D10
-- AD1 -> D0
-- AD2 -> D1
-- AD3 -> D2
-- AD4 -> D3
-- AD5 -> D4
-
-Detekcja impulsu może być zrobiona przez porównanie wartości RD3A z progiem,
-a następnie użycie zbocza bitu pomocniczego M340...M345.
+Wyjście kanału RM5 jest typu open collector; podczas impulsu linia jest aktywowana do GND.
 
 ## INHIBIT
 
 ```text
-/M300 ---------------- (Y23)
+/M300 -> Y23
 ```
 
-Brak M300 blokuje akceptor.
+Założenie projektu:
+- M300=1 -> RM5 dozwolony,
+- M300=0 -> Y23 podaje stan blokady na pin 6 INHIBIT.
 
-## Źródła
+## Algorytm paczki impulsów
 
-- https://www.casino-software.de/download/manual_rm5.pdf
-- https://eu.suzohapp.com/pdf/manual/OM_RM5_Evolution__EN.pdf
+```text
+X27 -> M320
+M320 -> INC D320
+M320 -> SET M321
+M320 -> RST T200
+
+M321 -> T200 K100
+
+T200 -> MUL D320 D300 D350
+T200 -> MOV D320 D330
+T200 -> MOV K0 D320
+T200 -> RST M321
+```
+
+## Źródło
+
+RM5 manual:
+https://www.casino-software.de/download/manual_rm5.pdf
