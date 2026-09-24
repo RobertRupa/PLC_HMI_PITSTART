@@ -1,7 +1,5 @@
 # Logika drabinki — wersja docelowa
 
-Początkowy demo-blok analogowy `RD3A/WR3A`, AD0…AD5 i związane z nim D0…D10 nie są częścią finalnego projektu.
-
 ## 1. Statusy
 
 ```text
