@@ -66,7 +66,8 @@ X1/PRACA jest tylko statusem i nie blokuje RM5. Niepoprawny parametr czasu bloku
 LDP X27 ------------ (M320)
 
 M320 --------------- [INC D320]
-M320 --------------- [INC D524]
+M320 AND D524 < 30000
+--------------------- [INC D524]
 
 M413 --------------- [SUB K32000 D520 D527]
 
@@ -120,7 +121,7 @@ M411 -> MOV K0 D525
 M411 -> MOV K0 D526
 ```
 
-`M411` powinien być przyciskiem chwilowym w HMI.
+`M411` powinien być przyciskiem chwilowym w HMI. Licznik sesji jest ograniczony do 30000 impulsów, aby uniknąć przepełnienia 16-bit.
 
 ## 6. Odliczanie D350
 
