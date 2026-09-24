@@ -74,7 +74,7 @@ Jeżeli `D520` wyjdzie poza zakres 1…600, `M413=0` i PLC blokuje RM5 przez `Y2
 
 ### Licznik sesji
 
-`D524` zwiększa się o 1 przy każdym zaakceptowanym zboczu `X27`.
+`D524` zwiększa się o 1 przy każdym zaakceptowanym zboczu `X27`, maksymalnie do 30000 impulsów.
 
 `D525:D526` jest przeliczane jako:
 
