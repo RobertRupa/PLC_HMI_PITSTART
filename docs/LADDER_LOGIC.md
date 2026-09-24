@@ -43,7 +43,7 @@ X1/PRACA jest tylko statusem i nie blokuje RM5.
 ## 3. Zbieranie impulsów RM5
 
 ```text
-X14 ---------------- (M320)
+X27 ---------------- (M320)
 
 M320 --------------- [INC D320]
 M320 --------------- [SET M321]
@@ -52,7 +52,7 @@ M320 --------------- [RST T200]
 M321 --------------- [T200 K100]
 ```
 
-Jeśli X14 jest dłuższym poziomem, a nie jednocyklowym impulsem, wejście M320 należy realizować zboczem zgodnym z rzeczywistą polaryzacją RM5.
+Jeśli X27 jest dłuższym poziomem, a nie jednocyklowym impulsem, wejście M320 należy realizować zboczem zgodnym z rzeczywistą polaryzacją RM5.
 
 ## 4. Koniec paczki
 
@@ -196,7 +196,7 @@ M423 AND D350>0 -> Y5
 M424 AND D350>0 -> Y6
 ```
 
-Y7 pozostaje rezerwą.
+Y7 = Program 6. Aktualna lokalna obsługa mechaniczna obejmuje P1…P5; P6 może zostać sterowany osobnym bitem HMI/logiki.
 
 ## 12. WORK_ACTIVE
 
