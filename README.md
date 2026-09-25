@@ -36,7 +36,7 @@ Lokalne wejścia panelu wykorzystują zakres `X0…X14` zgodnie z mapą poniżej
 | `X10` | mechaniczny Program 4 |
 | `X11` | mechaniczny Program 5 |
 | `X12` | mechaniczny Program 6 |
-| `X13` | rezerwa |
+| `X13` | `MANUAL_FREE` — wejście Manual / Free z CN8-3/4 |
 | `X14` | rezerwa |
 | `X27` | RM5 CH1 — wejście impulsów |
 
@@ -133,6 +133,16 @@ Po restarcie:
 - żaden program nie jest wybrany,
 - Pilotaggio jest wyłączone,
 - RM5 pozostaje blokowany, dopóki nie ma poprawnego `X0/AUTOMATE_PRESENT`.
+
+## Manual / Free
+
+Sygnał `Manual / Free` z oryginalnego PitStart CN8-3/4 jest podłączony do `X13`.
+
+```text
+X13 -> M302
+```
+
+`M302` jest statusem tylko do odczytu, dostępnym również dla HMI.
 
 ## RM5 — kanał 1
 
@@ -271,7 +281,7 @@ Wersja projektu PLC jest udostępniona HMI jako tekst ASCII od `D500`.
 Aktualna wersja:
 
 ```text
-V1.1.0
+V1.1.1
 ```
 
 Mapa:
@@ -281,19 +291,19 @@ Mapa:
 | `D500…D507` | `PLC_VERSION_STRING` — pole tekstowe dla HMI |
 | `D516` | VERSION_MAJOR = 1 |
 | `D517` | VERSION_MINOR = 1 |
-| `D518` | VERSION_PATCH = 0 |
+| `D518` | VERSION_PATCH = 1 |
 
 Na pierwszym skanie PLC:
 
 ```text
 M8002 -> MOV H3156 D500   ; "V1"
 M8002 -> MOV H312E D501   ; ".1"
-M8002 -> MOV H302E D502   ; ".0"
+M8002 -> MOV H312E D502   ; ".1"
 M8002 -> MOV H0000 D503   ; terminator
 
 M8002 -> MOV K1 D516
 M8002 -> MOV K1 D517
-M8002 -> MOV K0 D518
+M8002 -> MOV K1 D518
 ```
 
 W WSStudio użyj obiektu ASCII/String Display od adresu `D500`, długość np. 16 znaków. Jeżeli HMI pokaże pary znaków odwrócone, należy odwrócić bajty stałych HEX dla używanego sterownika/HMI.
