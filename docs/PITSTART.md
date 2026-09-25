@@ -114,3 +114,26 @@ Aktualny projekt dodaje mechaniczne przyciski:
 RM5 CH1 jest przypisany do X27.
 
 Są one logicznie łączone z przyciskami HMI, dzięki czemu panel HMI nie jest wymagany do podstawowej obsługi stanowiska.
+
+
+## 9. Różnice V1.2.0 względem oryginalnego PitStart
+
+### Manual / Free
+
+Oryginalny PitStart podczas aktywnego Manual / Free może pracować ciągle bez monety. W aktualnej wersji PLC **V1.2.0**:
+
+```text
+X13 -> M302
+```
+
+jest tylko statusem dla PLC/HMI. Nie omija warunku `D350>0` i nie uruchamia programu bez kredytu.
+
+### Counter / Credit
+
+Manual PitStart opisuje Counter jako impulsy odpowiadające wielokrotnościom 0,10 EUR. Aktualna implementacja PLC wysyła na `Y0` **jeden impuls za każdy zaakceptowany impuls CH1 na X27**:
+
+```text
+D330 = liczba impulsów ostatniej paczki RM5
+```
+
+Dlatego zgodność wartości pieniężnej Y0 zależy od konfiguracji RM5 CH1. `D300=10` nie zmienia liczby impulsów Y0; aktualna konwersja czasu korzysta z `D520`.
