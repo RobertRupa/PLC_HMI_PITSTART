@@ -1,118 +1,90 @@
-# HMI — adresy i wersja PLC
-
-## Oprogramowanie
-
-Panel HMI jest edytowany w **WSStudio**.
+# HMI — WSStudio — V1.2.0
 
 ## Wersja PLC
 
-Aktualna wersja projektu:
-
-```text
-V1.2.0
-```
-
-PLC udostępnia ją jako tekst ASCII:
+HMI czyta string od D500:
 
 | Adres | Zawartość |
 |---|---|
 | D500 | `V1` |
 | D501 | `.2` |
 | D502 | `.0` |
-| D503 | terminator `0x0000` |
-| D504…D507 | rezerwa dla dłuższej wersji |
+| D503 | terminator |
 | D516 | major = 1 |
 | D517 | minor = 2 |
 | D518 | patch = 0 |
 
-Kod inicjalizacji:
+Kod PLC:
 
 ```text
-M8002 -> MOV H3156 D500
-M8002 -> MOV H322E D501
-M8002 -> MOV H302E D502
-M8002 -> MOV H0000 D503
-
-M8002 -> MOV K1 D516
-M8002 -> MOV K2 D517
-M8002 -> MOV K0 D518
+MOV H3156 D500
+MOV H322E D501
+MOV H302E D502
+MOV H0000 D503
 ```
 
-## WSStudio
+W WSStudio użyj ASCII/String Display od D500, np. 16 znaków, RO.
 
-Dla wyświetlenia wersji:
-- obiekt: ASCII/String Display,
-- adres startowy: `D500`,
-- długość: 16 znaków,
-- tylko odczyt.
+Jeżeli pary znaków są odwrócone, należy odwrócić kolejność bajtów stałych HEX.
 
-Jeżeli wyświetlony zostanie tekst z odwróconymi parami znaków, np. `1V0.0.`, oznacza to przeciwną kolejność bajtów w używanym sterowniku/HMI. Wtedy należy odwrócić bajty stałych HEX, np. użyć `H5631` zamiast `H3156`.
+## Sterowanie
 
-## Licznik impulsów i przeliczenie na czas
+| Adres | Funkcja | Dostęp |
+|---|---|---|
+| M400 | STOP | momentary |
+| M401…M406 | P1…P6 | momentary |
+| M410 | Pilotaggio enable | RW |
+| M411 | Reset licznika sesji | momentary |
+| M413 | Parametr D520 OK | RO |
+| M302 | Manual / Free status | RO |
 
-Do ekranu serwisowego HMI dodaj:
+M410 startuje w PLC jako 1. HMI może je przełączyć na 0.
 
-| Adres | Nazwa na HMI | Typ | Dostęp |
+## Czas / impuls
+
+| Adres | Nazwa | Typ | Dostęp |
 |---|---|---|---|
-| `D520` | Czas / impuls [s] | 16-bit unsigned | RW |
-| `D521` | Ostatnia paczka [imp] | 16-bit unsigned | RO |
-| `D522:D523` | Ostatnia paczka [s] | 32-bit unsigned | RO |
-| `D524` | Licznik impulsów sesji | 16-bit unsigned | RO |
-| `D525:D526` | Czas równoważny sesji [s] | 32-bit unsigned | RO |
-| `D350` | Pozostały czas [s] | 16-bit | RO |
-| `M411` | Reset licznika sesji | bit / momentary | WO |
-| `M413` | Parametr czasu OK | bit | RO |
+| D520 | Czas / impuls [s] | 16-bit | RW |
+| D350 | Pozostały czas [s] | 16-bit | RO |
+| D521 | Ostatnia paczka [imp] | 16-bit | RO |
+| D522:D523 | Ostatnia paczka [s] | 32-bit | RO |
+| D524 | Licznik impulsów sesji | 16-bit | RO |
+| D525:D526 | Czas równoważny sesji [s] | 32-bit | RO |
 
-### Parametr D520
+D520:
+- min 1,
+- max 600,
+- domyślnie 10 jeśli PLC wykryje wartość niepoprawną.
 
-- domyślnie: **10 s/impuls**,
-- minimum: **1**,
-- maksimum: **600**,
-- krok: 1 s.
+Jeżeli D520 jest poza zakresem, M413=0 i RM5 jest blokowany.
 
-Jeżeli `D520` wyjdzie poza zakres 1…600, `M413=0` i PLC blokuje RM5 przez `Y23 INHIBIT`.
+### Retencja
 
-### Licznik sesji
+PLC zachowuje poprawne D520 podczas pierwszego skanu, ale retencja po zaniku zasilania zależy od parametrów pamięci FX3UC. Jeżeli D520 nie jest latched, HMI może zapisywać parametr przy połączeniu albo należy ustawić odpowiedni obszar retencyjny PLC.
 
-`D524` zwiększa się o 1 przy każdym zaakceptowanym zboczu `X27`, maksymalnie do 30000 impulsów.
+## Licznik sesji
 
-`D525:D526` jest przeliczane jako:
+D524 zwiększa się przy każdym zaakceptowanym impulsie RM5, maksymalnie do 30000.
 
 ```text
-liczba_impulsów × sekundy_na_impuls
+D525:D526 = D524 * D520
 ```
 
-czyli:
+M411 zeruje D524/D525/D526 i jest automatycznie resetowane przez PLC.
 
-```text
-D525:D526 = D524 × D520
-```
+## Diagnostyka
 
-Przycisk HMI `M411` zeruje `D524`, `D525` i `D526`. Ustaw go jako przycisk chwilowy, nie przełącznik bistabilny.
+- M300 — automat dostępny
+- M301 — PRACA
+- M302 — MANUAL/FREE
+- M320 — zaakceptowany impuls RM5
+- M321 — aktywna paczka RM5
+- M412 — WORK_ACTIVE
+- M413 — parametr czasu OK
+- D320 — bieżąca paczka
+- D330 — kolejka CREDIT
+- D527 — próg saturacji
 
-## Status Manual / Free
+## Manual / Free
 
-- `X13` — wejście fizyczne Manual / Free,
-- `M302` — status Manual / Free dla HMI, tylko odczyt.
-
-```text
-X13 -> M302
-```
-
-## Pozostałe adresy HMI
-
-- `M302` — Manual / Free status
-- `M400` — STOP
-- `M401…M406` — Program 1…6
-- `M410` — Pilotaggio enable
-- `M411` — reset licznika impulsów sesji
-- `M413` — status poprawności parametru czasu
-- `D300` — wartość/mnożnik RM5 CH1
-- `D350` — pozostały czas w sekundach
-- `D520` — sekundy za impuls RM5
-- `D521` — ostatnia paczka impulsów
-- `D522:D523` — czas ostatniej paczki
-- `D524` — licznik impulsów sesji
-- `D525:D526` — równoważny czas sesji
-- `D320` — diagnostyka bieżącej paczki RM5
-- `D330` — diagnostyka kolejki CREDIT
+W V1.2.0 X13/M302 jest tylko statusem. Nie uruchamia programu bez D350.
