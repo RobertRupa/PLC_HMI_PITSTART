@@ -1,65 +1,56 @@
 # PLC_HMI_PITSTART
 
-Projekt integracji sterownika PLC/HMI SEEKU (PLC zgodny z rodziną Mitsubishi FX), akceptora monet **Comestero RM5 Evolution** oraz sterownika myjni w sposób zgodny funkcjonalnie z **Comestero PitStart**.
+Projekt integracji sterownika PLC/HMI SEEKU (PLC zgodny z rodziną Mitsubishi FX3UC), akceptora monet **Comestero RM5 Evolution** oraz sterownika myjni w sposób zgodny funkcjonalnie z **Comestero PitStart**.
+
+Aktualna wersja logiki PLC: **V1.2.0**.
 
 ## Oprogramowanie
 
 ### PLC
-Do edycji programu PLC używany jest:
 - **MELSOFT GX Developer**
+- połączenie używane w projekcie: RS232 / USB→RS232
+- PLC side: `FXCPU`
+- 38.4 kbps
 
-Połączenie programujące używane w projekcie:
-- RS232 / USB→RS232,
-- PLC side: `FXCPU`,
-- 38.4 kbps.
+GX Converter nie jest wymagany. Plik `plc/MAIN_GXDEV_ENTRY.txt` jest przygotowany do ręcznego wprowadzenia w widoku **Instruction List** w GX Developer.
 
 ### HMI
-Do edycji panelu HMI:
-- **WSStudio** firmy Winsun/SEEKU.
+- **WSStudio** firmy Winsun/SEEKU
 
 PLC i HMI są programowane osobno. Sterowanie podstawowe działa również bez HMI dzięki mechanicznym przyciskom STOP + Program 1…6.
 
-## Aktualna architektura
+## I/O
 
 ### Wejścia
 
-Lokalne wejścia panelu wykorzystują zakres `X0…X14` zgodnie z mapą poniżej. Kanał RM5 CH1 pozostaje przypisany w projekcie do `X27`.
-
 | Adres | Funkcja |
 |---|---|
-| `X0` | `AUTOMATE_PRESENT / INVERTER_OK` — główny sygnał zezwolenia |
-| `X1` | `PRACA` — sygnał informacyjny; nie blokuje RM5 |
-| `X4` | mechaniczny STOP |
-| `X5` | mechaniczny Program 1 |
-| `X6` | mechaniczny Program 2 |
-| `X7` | mechaniczny Program 3 |
-| `X10` | mechaniczny Program 4 |
-| `X11` | mechaniczny Program 5 |
-| `X12` | mechaniczny Program 6 |
-| `X13` | `MANUAL_FREE` — wejście Manual / Free z CN8-3/4 |
+| `X0` | AUTOMATE_PRESENT / INVERTER_OK |
+| `X1` | PRACA — status |
+| `X4` | STOP |
+| `X5` | Program 1 |
+| `X6` | Program 2 |
+| `X7` | Program 3 |
+| `X10` | Program 4 |
+| `X11` | Program 5 |
+| `X12` | Program 6 |
+| `X13` | MANUAL / FREE — w V1.2.0 status tylko do odczytu |
 | `X14` | rezerwa |
-| `X27` | RM5 CH1 — wejście impulsów |
+| `X27` | RM5 CH1 |
 
 ### Wyjścia
 
 | Adres | Funkcja |
 |---|---|
-| `Y0` | CREDIT / COMPTEUR — impulsy do sterownika myjni |
+| `Y0` | CREDIT / COMPTEUR |
 | `Y1` | PILOTAGGIO POMPA |
-| `Y2` | Program 1 |
-| `Y3` | Program 2 |
-| `Y4` | Program 3 |
-| `Y5` | Program 4 |
-| `Y6` | Program 5 |
-| `Y7` | Program 6 |
+| `Y2…Y7` | Program 1…6 |
 | `Y23` | RM5 INHIBIT |
 | `Y27` | oświetlenie podczas pracy |
 
-## Sterowanie mechaniczne + HMI
+## Przyciski mechaniczne + HMI
 
-HMI i przyciski mechaniczne są łączone logicznym OR. Żaden z nich nie jest wymagany do działania drugiego.
-
-| Funkcja | Przycisk fizyczny | HMI | Komenda wspólna |
+| Funkcja | Mechaniczny | HMI | Komenda wspólna |
 |---|---|---|---|
 | STOP | X4 | M400 | M440 |
 | P1 | X5 | M401 | M441 |
@@ -69,258 +60,136 @@ HMI i przyciski mechaniczne są łączone logicznym OR. Żaden z nich nie jest w
 | P5 | X11 | M405 | M445 |
 | P6 | X12 | M406 | M446 |
 
-Przykład:
+Programy są wybierane zboczem komendy. W V1.2.0 używane są jednocyklowe bity `M451…M456`, a aktywny program jest zapamiętywany w `M420…M425`.
+
+STOP:
+- kasuje aktywny program,
+- wyłącza P1…P6, Pilotaggio i oświetlenie,
+- **nie kasuje `D350`**.
+
+Utrata `X0/AUTOMATE_PRESENT` również kasuje aktywny program.
+
+## RM5 i czas
+
+RM5 CH1:
 
 ```text
-X4 OR M400 -> M440
-X5 OR M401 -> M441
-...
-X11 OR M405 -> M445
-X12 OR M406 -> M446
+RM5 pin 7 CH1 -> X27
+PLC Y23       -> RM5 pin 6 INHIBIT
 ```
 
-STOP ma priorytet. Programy są wybierane zboczem komendy i są wzajemnie wykluczające.
+Impuls `X27` jest akceptowany tylko gdy:
+- `M300=1` / automat jest dostępny,
+- `M413=1` / parametr czasu jest poprawny.
 
-Aktywne programy:
-- `M420` = P1,
-- `M421` = P2,
-- `M422` = P3,
-- `M423` = P4,
-- `M424` = P5,
-- `M425` = P6.
+### Parametr czasu
 
-Wyjścia:
+`D520` = liczba sekund dodawanych za jeden impuls RM5.
 
-```text
-M420 AND D350>0 -> Y2
-M421 AND D350>0 -> Y3
-M422 AND D350>0 -> Y4
-M423 AND D350>0 -> Y5
-M424 AND D350>0 -> Y6
-M425 AND D350>0 -> Y7
-```
+- HMI: RW
+- zakres: 1…600 s/impuls
+- wartość domyślna: 10 s/impuls
 
-STOP zeruje wybór programu, ale nie kasuje kredytu `D350`. Po wyczerpaniu kredytu wybór programu jest kasowany, aby po kolejnym doładowaniu myjnia nie uruchomiła poprzedniego programu automatycznie.
+Jeżeli po starcie `D520` ma poprawną wartość, PLC jej nie nadpisuje. Jeżeli jest poza zakresem, ustawia 10. Zachowanie wartości po zaniku zasilania zależy od konfiguracji retencji/latch pamięci FX3UC lub ponownego zapisu przez HMI.
 
-## Bezpieczny start PLC
+Każdy zaakceptowany impuls:
+- zwiększa `D320`,
+- zwiększa `D524` do maks. 30000,
+- dodaje `D520` sekund do `D350`,
+- ogranicza `D350` do 32000 s.
 
-Problem zaobserwowany wcześniej: PLC zapamiętywał `D330` i po restarcie kontynuował wysyłanie impulsów CREDIT.
+Po zakończeniu paczki:
+- `D521` = impulsy ostatniej paczki,
+- `D522:D523` = czas ostatniej paczki,
+- `D330` = kolejka impulsów CREDIT dla Y0.
 
-Dlatego na **pierwszym skanie PLC (`M8002`)** wymuszamy bezpieczne wartości:
+`D300=10` pozostaje polem wartości kanału 1 RM5; aktualna konwersja na czas korzysta z `D520`.
 
-```text
-M8002 -> MOV K10 D300   ; wartość/mnożnik kanału 1 RM5 = 10
-M8002 -> MOV K0  D320   ; bieżąca paczka RM5
-M8002 -> MOV K0  D330   ; kolejka CREDIT - krytyczne, zapobiega wznowieniu impulsów
-M8002 -> MOV K0  D350   ; kredyt/wartość
-M8002 -> MOV K0  D351   ; starsze słowo MUL
+## CREDIT / COMPTEUR
 
-M8002 -> RST M321
-M8002 -> RST M330
-M8002 -> RST M331
-M8002 -> RST M410       ; Pilotaggio domyślnie OFF
-M8002 -> RST M420
-M8002 -> RST M421
-M8002 -> RST M422
-M8002 -> RST M423
-M8002 -> RST M424
-M8002 -> RST M425
-```
+`Y0` generuje impulsy z kolejki `D330`:
 
-Po restarcie:
-- nie ma oczekujących impulsów,
-- kredyt jest równy 0,
-- żaden program nie jest wybrany,
-- Pilotaggio jest wyłączone,
-- RM5 pozostaje blokowany, dopóki nie ma poprawnego `X0/AUTOMATE_PRESENT`.
+- około 0,1 s ON,
+- około 0,1 s OFF,
+- około 0,2 s start-start.
 
-## Manual / Free
+Po restarcie `D330` jest zerowane, dzięki czemu PLC nie kontynuuje starej kolejki CREDIT.
 
-Sygnał `Manual / Free` z oryginalnego PitStart CN8-3/4 jest podłączony do `X13`.
+## Czas pracy
 
-```text
-X13 -> M302
-```
+`D350` jest pozostałym czasem w sekundach.
 
-`M302` jest statusem tylko do odczytu, dostępnym również dla HMI.
-
-## RM5 — kanał 1
-
-Używany jest jeden kanał RM5 podłączony do `X27`.
-
-Domyślna wartość kanału 1 / mnożnik:
-- `D300 = 10`.
-
-Algorytm:
-1. impuls RM5 → `M320`,
-2. każdy impuls zwiększa `D320`,
-3. `M321` oznacza aktywne zbieranie paczki,
-4. każdy kolejny impuls restartuje `T200`,
-5. po około 1 s bez impulsu `T200` kończy paczkę,
-6. każdy impuls dodaje `D520` sekund do `D350`,
-7. po końcu paczki `D320` → `D521` i `D330`,
-8. `D320 × D520` → `D522:D523` jako czas ostatniej paczki,
-9. `D320` jest zerowane,
-10. `D330` steruje generatorem CREDIT na `Y0`.
-
-```text
-T200 -> MOV D320 D521
-T200 -> MUL D320 D520 D522
-T200 -> MOV D320 D330
-T200 -> MOV K0 D320
-T200 -> RST M321
-```
-
-## Konwersja impulsów RM5 na czas + licznik HMI
-
-Dodany został osobny parametr czasu, niezależny od `D300=10`:
-
-| Adres | Funkcja | Dostęp HMI |
-|---|---|---|
-| `D520` | sekundy dodawane za 1 impuls RM5 | RW |
-| `D521` | liczba impulsów w ostatniej paczce | RO |
-| `D522:D523` | czas ostatniej paczki w sekundach, wynik 32-bit | RO |
-| `D524` | licznik impulsów RM5 od startu/resetu sesji | RO |
-| `D525:D526` | równoważny czas licznika sesji = D524 × D520 | RO, 32-bit |
-| `M411` | reset licznika sesji D524/D525:D526 | przycisk chwilowy |
-| `M413` | parametr D520 poprawny | RO |
-
-Domyślnie `D520=10 s/impuls`. Zachowuje to dotychczasowe efektywne przeliczenie, ale od teraz współczynnik czasu jest osobnym parametrem HMI.
-
-Dopuszczalny zakres `D520`:
-
-```text
-1 ... 600 s/impuls
-```
-
-Poza tym zakresem `M413=0` i RM5 jest blokowany przez INHIBIT.
-
-Każdy prawidłowo odebrany impuls:
-- zwiększa `D320` i licznik sesji `D524`,
-- dodaje `D520` sekund do pozostałego czasu `D350`,
-- `D350` jest ograniczony do maks. 32000 s, aby uniknąć przepełnienia 16-bit.
-
-Po zakończeniu paczki PLC zapisuje:
-- `D521 = D320`,
-- `D522:D523 = D320 × D520`,
-- `D330 = D320` dla generatora CREDIT.
-
-Dzięki temu kolejne monety **dodają czas do pozostałego czasu**, zamiast nadpisywać `D350`.
-
-## Generator CREDIT — Y0
-
-```text
-D330 > 0 AND /M330 AND /M331 -> SET M330
-
-M330 -> Y0
-M330 -> T201 K10
-
-T201 -> DEC D330
-T201 -> RST M330
-T201 -> SET M331
-
-M331 -> T202 K10
-T202 -> RST M331
-```
-
-Aktualnie:
-- `T201 K10` ≈ 0,1 s ON,
-- `T202 K10` ≈ 0,1 s OFF,
-- okres start-start ≈ 0,2 s.
-
-## RM5 INHIBIT — Y23
-
-```text
-/M300 OR /M413 -> Y23
-```
-
-- `X0/M300 = 1` — RM5 aktywny,
-- `X0/M300 = 0` — RM5 zablokowany.
-
-`X1/PRACA` nie uczestniczy w blokowaniu RM5.
-
-## Odliczanie D350
+Odliczanie następuje tylko podczas rzeczywistej pracy:
 
 ```text
 LDP M8013
+AND M412
 AND> D350 K0
 DEC D350
 ```
 
-Dzięki warunkowi `D350 > 0` licznik nie schodzi poniżej zera.
+Dlatego STOP pauzuje pozostały czas.
 
-## Pilotaggio pompa — Y1
+## WORK_ACTIVE / Pilotaggio
 
-- `M410 = PILOTAGGIO_ENABLE`,
-- `M412 = WORK_ACTIVE`.
-
-```text
-M410 AND M412 -> Y1
-```
-
-Domyślnie po restarcie `M410=0` — bezpiecznie OFF.
-
-## WORK_ACTIVE i oświetlenie
-
-`M412` jest aktywne, gdy:
-- wybrany jest P1…P6,
-- `D350 > 0`,
+`M412 = WORK_ACTIVE` gdy:
+- aktywny jest jeden z P1…P6,
+- `M300=1`,
+- `D350>0`,
 - STOP nie jest aktywny.
 
 ```text
-M412 -> Y27
+M410 AND M412 -> Y1
+M412          -> Y27
 ```
 
-Oświetlenie działa podczas pracy niezależnie od opcji Pilotaggio.
+W V1.2.0 `M410/PILOTAGGIO_ENABLE` jest ustawiane na ON przy starcie, aby mechaniczny panel działał bez HMI. HMI może je później wyłączyć.
 
+## HMI — liczniki i wersja
 
-## Wersja PLC dla HMI
-
-Wersja projektu PLC jest udostępniona HMI jako tekst ASCII od `D500`.
-
-Aktualna wersja:
-
-```text
-V1.2.0
-```
-
-Mapa:
-
-| Adres | Znaczenie |
+| Adres | Funkcja |
 |---|---|
-| `D500…D507` | `PLC_VERSION_STRING` — pole tekstowe dla HMI |
-| `D516` | VERSION_MAJOR = 1 |
-| `D517` | VERSION_MINOR = 2 |
-| `D518` | VERSION_PATCH = 0 |
+| `D350` | pozostały czas [s] |
+| `D520` | czas / impuls [s], RW |
+| `D521` | impulsy ostatniej paczki |
+| `D522:D523` | czas ostatniej paczki [s] |
+| `D524` | licznik impulsów sesji |
+| `D525:D526` | równoważny czas sesji [s] |
+| `M411` | reset licznika sesji |
+| `M413` | parametr czasu poprawny |
+| `M302` | MANUAL / FREE status |
 
-Na pierwszym skanie PLC:
+Wersja `V1.2.0` jest dostępna od `D500`:
 
 ```text
-M8002 -> MOV H3156 D500   ; "V1"
-M8002 -> MOV H322E D501   ; ".1"
-M8002 -> MOV H302E D502   ; ".1"
-M8002 -> MOV H0000 D503   ; terminator
+D500 = "V1"
+D501 = ".2"
+D502 = ".0"
+D503 = 0
 
-M8002 -> MOV K1 D516
-M8002 -> MOV K2 D517
-M8002 -> MOV K0 D518
+D516 = 1
+D517 = 2
+D518 = 0
 ```
 
-W WSStudio użyj obiektu ASCII/String Display od adresu `D500`, długość np. 16 znaków. Jeżeli HMI pokaże pary znaków odwrócone, należy odwrócić bajty stałych HEX dla używanego sterownika/HMI.
+## Bez GX Converter
+
+Do wprowadzenia programu użyj:
+- `plc/MAIN_GXDEV_ENTRY.txt` — czysta lista instrukcji,
+- `plc/GX_DEVELOPER_NO_CONVERTER.md` — procedura krok po kroku.
+
+W GX Developer: `MAIN -> Alt+F1 / Instruction List -> wpisz program -> F4 Convert -> kontrola Ladder -> Check program`.
 
 ## Dokumentacja
 
-- `IO_TABLE.txt` — aktualna mapa projektu.
+- `IO_TABLE.txt` — aktualna mapa urządzeń.
 - `PROJECT_DESCRIPTION.md` — opis funkcjonalny.
-- `docs/PITSTART.md` — funkcjonalność i złącza PitStart.
+- `docs/LADDER_LOGIC.md` — logika V1.2.0.
+- `docs/HMI.md` — adresy HMI.
 - `docs/RM5.md` — RM5.
-- `docs/WIRING.md` — połączenia elektryczne.
-- `docs/LADDER_LOGIC.md` — logika drabinki.
-- `docs/STARTUP_AND_BUTTONS.md` — inicjalizacja i przyciski mechaniczne/HMI.
-- `docs/wiring.svg` — uproszczony schemat.
-- `docs/HMI.md` — adresy HMI, w tym string wersji PLC.
-- `plc/MAIN.txt` — udokumentowana logika PLC V1.2.0.
-- `plc/MAIN_GXDEV_ENTRY.txt` — czysta lista instrukcji do ręcznego wprowadzenia w GX Developer bez GX Converter.
-- `plc/GX_DEVELOPER_NO_CONVERTER.md` — procedura zastąpienia testowego MAIN.
-- `plc/DEVICE_MAP.csv` — mapa urządzeń do wersjonowania i analizy.
-- `plc/README.md` — sposób pracy z eksportem tekstowym.
+- `docs/PITSTART.md` — odniesienie do oryginalnego PitStart.
+- `docs/WIRING.md` — połączenia.
+- `docs/STARTUP_AND_BUTTONS.md` — start i przyciski.
+- `plc/MAIN.txt` — udokumentowana lista instrukcji.
+- `plc/MAIN_GXDEV_ENTRY.txt` — lista do wpisania w GX Developer.
+- `plc/DEVICE_MAP.csv` — mapa urządzeń.
