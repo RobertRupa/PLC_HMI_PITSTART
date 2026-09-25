@@ -21,7 +21,8 @@ Mechaniczne:
 - X7 = P3,
 - X10 = P4,
 - X11 = P5,
-- X12 = P6.
+- X12 = P6,
+- X13 = MANUAL / FREE.
 
 HMI:
 - M400 = STOP,
@@ -92,6 +93,13 @@ M420...M425 = 0
 Kluczowa zmiana to `D330=0`: PLC nie kontynuuje po restarcie wcześniej rozpoczętej serii impulsów CREDIT.
 
 `D300=10` jest domyślną wartością kanału 1 RM5 / mnożnikiem.
+
+## Manual / Free
+
+- `X13 = MANUAL / FREE`,
+- `M302 = status MANUAL_FREE`,
+- PLC kopiuje `X13 -> M302`,
+- `M302` jest dostępny do odczytu przez HMI.
 
 ## RM5
 
