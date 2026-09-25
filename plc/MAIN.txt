@@ -14,6 +14,7 @@
 ; X10 mechanical P4
 ; X11 mechanical P5
 ; X12 mechanical P6
+; X13 MANUAL / FREE
 ; X27 RM5 CH1
 ;
 ; Y0  CREDIT / COMPTEUR
@@ -32,6 +33,7 @@
 ; Internal:
 ; M300 AUTOMATE_PRESENT
 ; M301 PRACA
+; M302 MANUAL_FREE status
 ; M320 RM5 one-scan pulse
 ; M321 RM5 packet active
 ; M330 CREDIT phase ON
@@ -107,7 +109,7 @@ MOV K0 D526
 LD M8002
 MOV K31990 D527
 
-; PLC VERSION = V1.1.0
+; PLC VERSION = V1.1.1
 LD M8002
 MOV H3156 D500
 
@@ -115,7 +117,7 @@ LD M8002
 MOV H312E D501
 
 LD M8002
-MOV H302E D502
+MOV H312E D502
 
 LD M8002
 MOV H0000 D503
@@ -127,7 +129,7 @@ LD M8002
 MOV K1 D517
 
 LD M8002
-MOV K0 D518
+MOV K1 D518
 
 LD M8002
 RST M320
@@ -199,6 +201,9 @@ OUT M300
 
 LD X1
 OUT M301
+
+LD X13
+OUT M302
 
 
 ; ============================================================
