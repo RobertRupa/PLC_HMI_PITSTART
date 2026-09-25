@@ -9,7 +9,7 @@ Panel HMI jest edytowany w **WSStudio**.
 Aktualna wersja projektu:
 
 ```text
-V1.1.0
+V1.1.1
 ```
 
 PLC udostępnia ją jako tekst ASCII:
@@ -18,24 +18,24 @@ PLC udostępnia ją jako tekst ASCII:
 |---|---|
 | D500 | `V1` |
 | D501 | `.1` |
-| D502 | `.0` |
+| D502 | `.1` |
 | D503 | terminator `0x0000` |
 | D504…D507 | rezerwa dla dłuższej wersji |
 | D516 | major = 1 |
 | D517 | minor = 1 |
-| D518 | patch = 0 |
+| D518 | patch = 1 |
 
 Kod inicjalizacji:
 
 ```text
 M8002 -> MOV H3156 D500
 M8002 -> MOV H312E D501
-M8002 -> MOV H302E D502
+M8002 -> MOV H312E D502
 M8002 -> MOV H0000 D503
 
 M8002 -> MOV K1 D516
 M8002 -> MOV K1 D517
-M8002 -> MOV K0 D518
+M8002 -> MOV K1 D518
 ```
 
 ## WSStudio
@@ -90,8 +90,18 @@ D525:D526 = D524 × D520
 
 Przycisk HMI `M411` zeruje `D524`, `D525` i `D526`. Ustaw go jako przycisk chwilowy, nie przełącznik bistabilny.
 
+## Status Manual / Free
+
+- `X13` — wejście fizyczne Manual / Free,
+- `M302` — status Manual / Free dla HMI, tylko odczyt.
+
+```text
+X13 -> M302
+```
+
 ## Pozostałe adresy HMI
 
+- `M302` — Manual / Free status
 - `M400` — STOP
 - `M401…M406` — Program 1…6
 - `M410` — Pilotaggio enable
