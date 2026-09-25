@@ -8,6 +8,7 @@ X7,Input,Mechanical Program 3,Momentary
 X10,Input,Mechanical Program 4,Momentary
 X11,Input,Mechanical Program 5,Momentary
 X12,Input,Mechanical Program 6,Momentary
+X13,Input,MANUAL / FREE,Status input
 X27,Input,RM5 CH1,Pulse input
 Y0,Output,CREDIT / COMPTEUR,Pulsed output
 Y1,Output,PILOTAGGIO POMPA,Requires M410 and M412
@@ -21,6 +22,7 @@ Y23,Output,RM5 INHIBIT,ON when M300=0
 Y27,Output,Lighting,ON when M412=1
 M300,Bit,AUTOMATE_PRESENT copy,OUT from X0
 M301,Bit,PRACA copy,OUT from X1
+M302,Bit,MANUAL_FREE status,OUT from X13; HMI RO
 M320,Bit,RM5 one-scan pulse,Edge from X27
 M321,Bit,RM5 packet active,Reset at packet end/startup
 M330,Bit,CREDIT ON phase,Reset at startup
@@ -62,12 +64,12 @@ D525:D526,Data,Session equivalent time seconds,RO 32-bit
 D527,Data,Time saturation threshold,32000-D520
 D500,Data,PLC version string word 0,"H3156 = V1"
 D501,Data,PLC version string word 1,"H312E = .1"
-D502,Data,PLC version string word 2,"H302E = .0"
+D502,Data,PLC version string word 2,"H312E = .1"
 D503,Data,PLC version terminator,H0000
 D504-D507,Data,PLC version string reserve,Reserved
 D516,Data,VERSION_MAJOR,1
 D517,Data,VERSION_MINOR,1
-D518,Data,VERSION_PATCH,0
+D518,Data,VERSION_PATCH,1
 T200,Timer,RM5 packet timeout,K100
 T201,Timer,CREDIT ON,K10
 T202,Timer,CREDIT OFF,K10
