@@ -18,7 +18,7 @@ X007    PRZYCISK MECHANICZNY PROGRAM 3
 X010    PRZYCISK MECHANICZNY PROGRAM 4
 X011    PRZYCISK MECHANICZNY PROGRAM 5
 X012    PRZYCISK MECHANICZNY PROGRAM 6
-X013    REZERWA
+X013    MANUAL / FREE
 X014    REZERWA
 X027    RM5 CH1 - wejście impulsów
 
@@ -49,6 +49,7 @@ BITY M - STATUS / RM5
 ---------------------
 M300    kopia/status X000
 M301    kopia/status X001
+M302    MANUAL_FREE status z X013
 M320    impuls roboczy RM5 z X027
 M321    aktywne zbieranie paczki RM5
 M330    faza ON generatora CREDIT Y000
@@ -107,13 +108,13 @@ D351    starsze słowo wyniku 32-bit MUL
 
 D500    PLC_VERSION_STRING word 0 = "V1"
 D501    PLC_VERSION_STRING word 1 = ".1"
-D502    PLC_VERSION_STRING word 2 = ".0"
+D502    PLC_VERSION_STRING word 2 = ".1"
 D503    PLC_VERSION_STRING terminator = 0
 D504-D507 zarezerwowane dla dłuższego stringu wersji
 
 D516    VERSION_MAJOR = 1
 D517    VERSION_MINOR = 1
-D518    VERSION_PATCH = 0
+D518    VERSION_PATCH = 1
 
 D520    TIME_PER_RM5_PULSE_S
         parametr HMI RW; domyślnie 10 s/impuls
@@ -164,11 +165,11 @@ D526 = 0
 D527 = 31990
 D500 = H3156    ("V1")
 D501 = H312E    (".1")
-D502 = H302E    (".0")
+D502 = H312E    (".1")
 D503 = H0000    terminator
 D516 = 1
 D517 = 1
-D518 = 0
+D518 = 1
 
 RST M321
 RST M330
@@ -198,7 +199,7 @@ Pin 10   CH4
 PITSTART - POTWIERDZONE SYGNAŁY WEJŚCIOWE
 -----------------------------------------
 CN8 1-2    Presence automatic device
-CN8 3-4    Manual / Free
+CN8 3-4    Manual / Free -> X013 -> M302
 
 UWAGA:
 Lokalne przyciski wykorzystują X004...X012.
