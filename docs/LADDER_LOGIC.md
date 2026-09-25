@@ -21,11 +21,11 @@ M8002 -> MOV K31990 D527
 
 M8002 -> MOV H3156 D500   ; V1
 M8002 -> MOV H312E D501   ; .1
-M8002 -> MOV H302E D502   ; .0
+M8002 -> MOV H312E D502   ; .1
 M8002 -> MOV H0000 D503   ; terminator
 M8002 -> MOV K1 D516
 M8002 -> MOV K1 D517
-M8002 -> MOV K0 D518
+M8002 -> MOV K1 D518
 
 M8002 -> RST M321
 M8002 -> RST M330
@@ -52,13 +52,14 @@ Powód:
 ```text
 X0 ---------------- (M300)
 X1 ---------------- (M301)
+X13 --------------- (M302)
 
 D520 > 0 AND D520 <= 600 ---- (M413)
 
 /M300 OR /M413 -------------- (Y23)
 ```
 
-X1/PRACA jest tylko statusem i nie blokuje RM5. Niepoprawny parametr czasu blokuje RM5.
+X1/PRACA i X13/MANUAL_FREE są statusami. M302 udostępnia stan Manual / Free do logiki i HMI. Niepoprawny parametr czasu blokuje RM5.
 
 ## 3. Zbieranie impulsów RM5
 
@@ -277,17 +278,17 @@ Oświetlenie działa podczas aktywnej pracy niezależnie od Pilotaggio.
 
 ## 15. Wersja PLC dla HMI
 
-Aktualna wersja: `V1.1.0`.
+Aktualna wersja: `V1.1.1`.
 
 ```text
 D500 = "V1"
 D501 = ".1"
-D502 = ".0"
+D502 = ".1"
 D503 = 0
 
 D516 = 1
 D517 = 1
-D518 = 0
+D518 = 1
 ```
 
 HMI czyta tekst od `D500`. Rejestry `D516…D518` pozwalają dodatkowo porównywać wersję liczbowo.
