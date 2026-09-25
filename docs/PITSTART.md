@@ -58,7 +58,9 @@ W naszym projekcie najbliższym odpowiednikiem jest:
 
 Dopóki wejście jest aktywne, PitStart pracuje w trybie ciągłym bez monety.
 
-To wejście nie ma jeszcze przypisanego finalnego adresu X w naszym projekcie.
+W naszym projekcie:
+- `X13 = MANUAL / FREE`,
+- `M302 = status MANUAL_FREE` do odczytu przez logikę/HMI.
 
 ## 4. Sygnał PRACA
 
@@ -70,6 +72,7 @@ Nie jest on opisany w manualu jako standardowe wejście PitStart. Traktujemy go 
 
 | Funkcja PitStart | PLC |
 |---|---|
+| Manual / Free | X13 / M302 |
 | Counter / Credit | Y0 |
 | Pilotaggio pompa | Y1 |
 | P1 | Y2 |
