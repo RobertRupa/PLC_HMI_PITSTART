@@ -193,3 +193,4 @@ W GX Developer: `MAIN -> Alt+F1 / Instruction List -> wpisz program -> F4 Conver
 - `plc/MAIN.txt` — udokumentowana lista instrukcji.
 - `plc/MAIN_GXDEV_ENTRY.txt` — lista do wpisania w GX Developer.
 - `plc/DEVICE_MAP.csv` — mapa urządzeń.
+- `CHANGELOG.md` — historia zmian wersji PLC.
