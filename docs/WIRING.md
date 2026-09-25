@@ -24,7 +24,7 @@ PROGRAM 3  -> X7
 PROGRAM 4  -> X10
 PROGRAM 5  -> X11
 PROGRAM 6  -> X12
-X13        -> rezerwa
+MANUAL/FREE -> X13
 X14        -> rezerwa
 RM5 CH1    -> X27
 ```
@@ -78,7 +78,10 @@ P6 jest wyprowadzony na Y7 i ma mechaniczny przycisk na X12.
 | CN8-1 = +24 V, CN8-2 = GND | Presence automatic device |
 | CN8-3 = +24 V, CN8-4 = GND | Manual / Free |
 
-W naszym projekcie X0 pełni rolę AUTOMATE_PRESENT / INVERTER_OK.
+W naszym projekcie:
+- X0 pełni rolę AUTOMATE_PRESENT / INVERTER_OK,
+- X13 = MANUAL / FREE,
+- M302 = status wejścia X13 dla programu PLC/HMI.
 
 ## 6. Pilotaggio i oświetlenie
 
