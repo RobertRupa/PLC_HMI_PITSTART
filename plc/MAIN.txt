@@ -262,28 +262,22 @@ OUT M456
 ; 10. STOP / LOSS OF ENABLE
 ; ============================================================
 LD M440
-OR M300
-INV
+ORI M300
 RST M420
 LD M440
-OR M300
-INV
+ORI M300
 RST M421
 LD M440
-OR M300
-INV
+ORI M300
 RST M422
 LD M440
-OR M300
-INV
+ORI M300
 RST M423
 LD M440
-OR M300
-INV
+ORI M300
 RST M424
 LD M440
-OR M300
-INV
+ORI M300
 RST M425
 
 ; ============================================================
