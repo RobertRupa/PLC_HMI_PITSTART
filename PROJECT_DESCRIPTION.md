@@ -1,169 +1,158 @@
 # Opis projektu PLC_HMI_PITSTART
 
+## Wersja
+
+Aktualna logika PLC: **V1.2.0**, docelowo dla **FX3UC** i GX Developer.
+
 ## Cel
 
-SEEKU PLC/HMI realizuje logikę zgodną funkcjonalnie z Comestero PitStart:
-- odbiera impulsy RM5,
-- blokuje RM5, gdy myjnia nie jest dostępna,
-- generuje CREDIT/COMPTEUR,
-- steruje Pilotaggio,
-- steruje programami P1…P6,
-- obsługuje jednocześnie HMI i mechaniczne przyciski,
-- steruje oświetleniem,
-- uruchamia się zawsze w bezpiecznym stanie.
+Sterownik SEEKU PLC/HMI realizuje:
+- odbiór impulsów RM5,
+- blokowanie RM5 przy braku zezwolenia lub błędnym parametrze czasu,
+- generowanie CREDIT / COMPTEUR,
+- konwersję impulsów RM5 na czas,
+- sterowanie P1…P6,
+- obsługę HMI i przycisków mechanicznych równolegle,
+- Pilotaggio i oświetlenie,
+- bezpieczny restart bez wznowienia starej kolejki CREDIT.
 
-## Wejścia użytkownika
+## Wejścia
 
-Mechaniczne:
-- X4 = STOP,
-- X5 = P1,
-- X6 = P2,
-- X7 = P3,
-- X10 = P4,
-- X11 = P5,
-- X12 = P6,
-- X13 = MANUAL / FREE.
-
-HMI:
-- M400 = STOP,
-- M401…M406 = P1…P6.
-
-PLC scala oba źródła:
-
-```text
-X4 OR M400 -> M440 STOP_CMD
-X5 OR M401 -> M441 P1_CMD
-X6 OR M402 -> M442 P2_CMD
-X7 OR M403 -> M443 P3_CMD
-X10 OR M404 -> M444 P4_CMD
-X11 OR M405 -> M445 P5_CMD
-X12 OR M406 -> M446 P6_CMD
-```
-
-Dzięki temu:
-- HMI może być odłączone, a przyciski fizyczne nadal działają,
-- brak panelu mechanicznego nie blokuje sterowania HMI,
-- STOP ma priorytet.
-
-## Aktywny program
-
-Bity:
-- M420 = P1,
-- M421 = P2,
-- M422 = P3,
-- M423 = P4,
-- M424 = P5,
-- M425 = P6.
-
-Programy są wzajemnie wykluczające. Komenda nowego programu resetuje poprzedni i ustawia tylko nowy.
-
-Wyjścia:
-- M420 AND D350>0 -> Y2,
-- M421 AND D350>0 -> Y3,
-- M422 AND D350>0 -> Y4,
-- M423 AND D350>0 -> Y5,
-- M424 AND D350>0 -> Y6,
-- M425 AND D350>0 -> Y7.
-
-STOP kasuje wybór programu, ale nie kasuje D350.
-
-Po zejściu D350 do 0 wszystkie M420…M425 są resetowane. To zapobiega automatycznemu wznowieniu poprzedniego programu po wrzuceniu kolejnej monety.
-
-## Bezpieczny restart
-
-Na pierwszym skanie PLC (`M8002`) ustawiane są wartości:
-
-```text
-D300 = 10
-D320 = 0
-D330 = 0
-D350 = 0
-D351 = 0
-D520 = 10
-D521...D526 = 0
-D527 = 31990
-
-M321 = 0
-M330 = 0
-M331 = 0
-M410 = 0
-M420...M425 = 0
-```
-
-Kluczowa zmiana to `D330=0`: PLC nie kontynuuje po restarcie wcześniej rozpoczętej serii impulsów CREDIT.
-
-`D300=10` jest domyślną wartością kanału 1 RM5 / mnożnikiem.
-
-## Manual / Free
-
-- `X13 = MANUAL / FREE`,
-- `M302 = status MANUAL_FREE`,
-- PLC kopiuje `X13 -> M302`,
-- `M302` jest dostępny do odczytu przez HMI.
-
-## RM5
-
-- CH1 -> X27,
-- INHIBIT <- Y23,
-- brak X0/AUTOMATE_PRESENT blokuje RM5,
-- X1/PRACA nie blokuje RM5.
-
-Paczka impulsów kończy się po około 1 s bezczynności.
-
-## Impulsy RM5 -> czas
-
-`D300=10` pozostaje wartością kanału 1 RM5. Konwersja na czas jest odseparowana:
-
-- `D520` = sekundy za 1 impuls RM5, parametr HMI,
-- domyślnie `D520=10`,
-- zakres bezpieczny: 1…600 s/impuls,
-- `D350` = pozostały czas w sekundach,
-- `D524` = licznik impulsów sesji,
-- `D525:D526` = równoważny czas sesji w sekundach.
-
-Każdy impuls zwiększa licznik oraz dodaje `D520` do `D350`. Czas jest saturacyjnie ograniczony do 32000 s, aby nie przepełnić dodatniego zakresu używanego przez 16-bitową logikę czasu.
-
-Po końcu paczki:
-- `D521` przechowuje liczbę impulsów ostatniej paczki,
-- `D522:D523` przechowuje przeliczony czas tej paczki,
-- `D330` przechowuje liczbę impulsów do wysłania na Y0.
-
-`M411` z HMI resetuje licznik sesji. `M413` sygnalizuje poprawność parametru `D520`.
-
-## CREDIT
-
-Y0 generuje CREDIT z kolejki D330.
-
-## Pilotaggio
-
-- M410 = PILOTAGGIO_ENABLE,
-- M412 = WORK_ACTIVE,
-- M410 AND M412 -> Y1.
-
-Domyślnie po restarcie Pilotaggio jest wyłączone.
-
-## WORK_ACTIVE
-
-M412 jest aktywne, gdy:
-- wybrany jest jeden z P1…P6,
-- D350 > 0,
-- STOP nie jest aktywny.
-
-M412 steruje:
-- Y27 = oświetlenie,
-- Y1 = Pilotaggio, jeśli M410=1.
-
-## Oświetlenie
-
-```text
-M412 -> Y27
-```
+- X0 = AUTOMATE_PRESENT / INVERTER_OK
+- X1 = PRACA — status
+- X4 = STOP
+- X5 = P1
+- X6 = P2
+- X7 = P3
+- X10 = P4
+- X11 = P5
+- X12 = P6
+- X13 = MANUAL / FREE — w V1.2.0 tylko status
+- X27 = RM5 CH1
 
 ## Wyjścia
 
-- Y0 = CREDIT,
-- Y1 = Pilotaggio,
-- Y2…Y6 = P1…P5,
-- Y7 = Program 6,
-- Y23 = RM5 inhibit,
-- Y27 = oświetlenie.
+- Y0 = CREDIT / COMPTEUR
+- Y1 = PILOTAGGIO POMPA
+- Y2…Y7 = P1…P6
+- Y23 = RM5 INHIBIT
+- Y27 = oświetlenie
+
+## HMI + przyciski
+
+HMI:
+- M400 = STOP
+- M401…M406 = P1…P6
+- M410 = PILOTAGGIO_ENABLE
+- M411 = RESET_RM5_SESSION_COUNTERS
+
+Komendy wspólne:
+- M440 = X4 OR M400
+- M441 = X5 OR M401
+- M442 = X6 OR M402
+- M443 = X7 OR M403
+- M444 = X10 OR M404
+- M445 = X11 OR M405
+- M446 = X12 OR M406
+
+Jednocyklowe impulsy wyboru:
+- M451…M456 = P1…P6 SELECT PULSE
+
+Aktywne programy:
+- M420…M425 = P1…P6 ACTIVE
+
+## Warunki programu
+
+Program może zostać wybrany tylko gdy:
+- M300=1,
+- STOP nieaktywny,
+- D350>0.
+
+Wybór nowego programu kasuje pozostałe M420…M425.
+
+STOP oraz utrata M300 kasują aktywny program. Po D350<=0 wybór programu także jest kasowany.
+
+Wyjścia P1…P6 są dodatkowo warunkowane M300 i D350>0.
+
+## RM5
+
+- X27 = CH1
+- Y23 = INHIBIT
+- M320 = jednocyklowy impuls roboczy
+- M321 = aktywna paczka
+- T200 = timeout końca paczki
+
+Impuls RM5 jest przyjmowany tylko przy M300=1 i M413=1.
+
+M413=1 gdy:
+
+```text
+D520 > 0 AND D520 <= 600
+```
+
+Y23 jest aktywne gdy:
+
+```text
+/M300 OR /M413
+```
+
+## Konwersja impulsów na czas
+
+- D520 = sekundy / impuls, HMI RW, 1…600
+- D350 = pozostały czas
+- D524 = licznik impulsów sesji
+- D525:D526 = równoważny czas sesji
+- D521 = ostatnia paczka impulsów
+- D522:D523 = czas ostatniej paczki
+
+Każdy zaakceptowany impuls dodaje D520 do D350. D350 jest saturacyjnie ograniczone do 32000 s.
+
+D520 jest ustawiane na 10 tylko wtedy, gdy podczas pierwszego skanu ma wartość spoza 1…600. Zachowanie poprawnej wartości po zaniku zasilania wymaga odpowiedniej retencji/latch pamięci lub ponownego zapisu z HMI.
+
+## CREDIT
+
+D330 jest kolejką impulsów Y0.
+
+T201 K10 = około 0,1 s ON.
+T202 K10 = około 0,1 s OFF.
+
+D330 jest bezwarunkowo zerowane w pierwszym skanie, aby nie wznowić starej kolejki po restarcie.
+
+## Czas i STOP
+
+D350 jest odliczane tylko podczas M412=WORK_ACTIVE:
+
+```text
+LDP M8013
+AND M412
+AND> D350 K0
+DEC D350
+```
+
+STOP zatrzymuje program, ale zachowuje pozostały czas.
+
+## Pilotaggio i oświetlenie
+
+```text
+M410 AND M412 -> Y1
+M412          -> Y27
+```
+
+M410 jest ustawiane na ON w pierwszym skanie, aby funkcja działała bez podłączonego HMI.
+
+## Manual / Free
+
+```text
+X13 -> M302
+```
+
+W V1.2.0 M302 jest statusem tylko do odczytu. Pełne działanie FREE bez kredytu nie jest jeszcze aktywne.
+
+## Wersja dla HMI
+
+```text
+D500..D503 = "V1.2.0"
+D516 = 1
+D517 = 2
+D518 = 0
+```
