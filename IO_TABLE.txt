@@ -100,21 +100,21 @@ D330    kolejka impulsów CREDIT do wysłania na Y000
         wartość startowa = 0
         MUSI być zerowana przy starcie PLC
 
-D350    wynik MUL D320 * D300 / wartość wyświetlana na HMI
+D350    pozostały czas w sekundach; dodawany z D520 i odliczany podczas WORK_ACTIVE
         wartość startowa = 0
 
 D351    starsze słowo wyniku 32-bit MUL
         wartość startowa = 0
 
 D500    PLC_VERSION_STRING word 0 = "V1"
-D501    PLC_VERSION_STRING word 1 = ".1"
-D502    PLC_VERSION_STRING word 2 = ".1"
+D501    PLC_VERSION_STRING word 1 = ".2"
+D502    PLC_VERSION_STRING word 2 = ".0"
 D503    PLC_VERSION_STRING terminator = 0
 D504-D507 zarezerwowane dla dłuższego stringu wersji
 
 D516    VERSION_MAJOR = 1
-D517    VERSION_MINOR = 1
-D518    VERSION_PATCH = 1
+D517    VERSION_MINOR = 2
+D518    VERSION_PATCH = 0
 
 D520    TIME_PER_RM5_PULSE_S
         parametr HMI RW; domyślnie 10 s/impuls
@@ -164,12 +164,12 @@ D525 = 0
 D526 = 0
 D527 = 31990
 D500 = H3156    ("V1")
-D501 = H312E    (".1")
-D502 = H312E    (".1")
+D501 = H322E    (".2")
+D502 = H302E    (".0")
 D503 = H0000    terminator
 D516 = 1
-D517 = 1
-D518 = 1
+D517 = 2
+D518 = 0
 
 RST M321
 RST M330
