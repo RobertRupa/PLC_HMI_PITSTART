@@ -1,82 +1,48 @@
-# PLC text export
+# PLC — FX3UC / GX Developer — V1.2.0
 
-This directory contains a text representation of the current PLC logic.
+## Pliki
 
-## Files
+- `MAIN_GXDEV_ENTRY.txt` — czysta lista instrukcji do wprowadzenia w GX Developer.
+- `MAIN.txt` — ta sama logika z komentarzami.
+- `DEVICE_MAP.csv` — mapa X/Y/M/D/T.
+- `GX_DEVELOPER_NO_CONVERTER.md` — procedura bez GX Converter.
 
-- `MAIN.txt` — mnemonic / instruction-list representation of the current ladder logic.
-- `DEVICE_MAP.csv` — compact device/address map for review and spreadsheet use.
+## GX Converter
 
-## Recommended workflow
+Nie jest wymagany.
 
-1. Keep the complete native **GX Developer project** as the authoritative backup.
-2. Keep `MAIN.txt` in Git for readable diffs and code review.
-3. When transferring to GX Developer, use the mnemonic list as the reference for import/paste/rebuild. Exact text-import steps depend on the installed GX Developer/GX Converter version.
-4. After import or manual entry, compile/convert the project in GX Developer and compare online monitoring against the documented I/O map before enabling the machine.
+W GX Developer:
+1. otwórz kopię projektu,
+2. Program -> MAIN,
+3. Alt+F1 / View -> Instruction List,
+4. usuń testowy MAIN,
+5. wprowadź `MAIN_GXDEV_ENTRY.txt`,
+6. F4 / Convert,
+7. wróć do Ladder,
+8. wykonaj Check program,
+9. dopiero wtedy zapisz do PLC.
 
-## Important startup behavior
+## Najważniejsze cechy V1.2.0
 
-The first-scan block uses `M8002` to force:
-- `D300 = 10`,
-- `D320 = 0`,
-- `D330 = 0`,
-- `D350 = 0`,
-- `D351 = 0`,
-- `D520 = 10` seconds/pulse,
-- `D521…D526 = 0`,
-- all program-selection bits OFF,
-- Pilotaggio OFF.
+- FX3UC,
+- X4 STOP,
+- X5…X12 P1…P6,
+- X13 MANUAL/FREE status,
+- X27 RM5 CH1,
+- Y2…Y7 P1…P6,
+- M451…M456 jednocyklowe impulsy wyboru,
+- utrata X0 kasuje aktywny program,
+- D350 odlicza się tylko przy M412=1,
+- STOP pauzuje czas,
+- M410 startuje jako ON,
+- D520 jest parametrem HMI 1…600 i nie jest nadpisywane, jeśli przy starcie ma poprawną wartość,
+- M411 resetuje licznik sesji i sam się zeruje,
+- wersja dla HMI: V1.2.0.
 
-Clearing `D330` prevents the PLC from resuming an old CREDIT pulse queue after a restart.
+## Uwaga o D520
 
-## RM5
-
-- CH1 input: `X27`
-- INHIBIT: `Y23`
-- channel-1 multiplier/value: `D300 = 10`
-
-## Local buttons
-
-- STOP: `X4`
-- P1: `X5`
-- P2: `X6`
-- P3: `X7`
-- P4: `X10`
-- P5: `X11`
-- P6: `X12`
-
-HMI commands use `M400…M406` and are ORed with the mechanical buttons.
-
-## PLC version for HMI
-
-The PLC exposes version `V1.1.1` starting at `D500`.
-
-- `D500…D507` — ASCII version string area
-- `D516` — major
-- `D517` — minor
-- `D518` — patch
-
-WSStudio should use an ASCII/String display starting at `D500`, e.g. 16 characters. If character pairs appear reversed, swap the byte order of the HEX constants in the initialization block.
-
-## HMI pulse counter and time conversion
-
-- `D520` — seconds per RM5 pulse, HMI RW, default 10, valid 1…600
-- `D521` — last packet pulse count
-- `D522:D523` — last packet converted seconds
-- `D524` — session pulse counter, capped at 30000
-- `D525:D526` — session equivalent seconds
-- `M411` — momentary reset for session counter
-- `M413` — time parameter valid
-
-Every accepted RM5 pulse adds `D520` seconds to `D350`. Remaining time is saturated at 32000 s.
-
+Zachowanie poprawnej wartości D520 po zaniku zasilania wymaga skonfigurowanej retencji/latch w FX3UC albo ponownego zapisu parametru przez HMI.
 
 ## Manual / Free
 
-- physical input: `X13`
-- PLC/HMI status: `M302` (read-only)
-
-```text
-LD X13
-OUT M302
-```
+W V1.2.0 X13/M302 jest statusem tylko do odczytu. Funkcja FREE bez kredytu nie jest aktywna.
