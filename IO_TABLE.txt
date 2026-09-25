@@ -1,75 +1,62 @@
-PLC_HMI_PITSTART - AKTUALNA TABELA PROJEKTU
+PLC_HMI_PITSTART - V1.2.0
 =================================================
 
 WEJŚCIA PLC
 -----------
 X000    AUTOMATE_PRESENT / INVERTER_OK
-        Główny sygnał zezwolenia.
-        Brak sygnału blokuje RM5 przez Y023.
-
-X001    PRACA
-        Sygnał informacyjny z myjni.
-        NIE jest blokerem RM5.
-
-X004    PRZYCISK MECHANICZNY STOP
-X005    PRZYCISK MECHANICZNY PROGRAM 1
-X006    PRZYCISK MECHANICZNY PROGRAM 2
-X007    PRZYCISK MECHANICZNY PROGRAM 3
-X010    PRZYCISK MECHANICZNY PROGRAM 4
-X011    PRZYCISK MECHANICZNY PROGRAM 5
-X012    PRZYCISK MECHANICZNY PROGRAM 6
-X013    MANUAL / FREE
+X001    PRACA - status
+X004    STOP
+X005    PROGRAM 1
+X006    PROGRAM 2
+X007    PROGRAM 3
+X010    PROGRAM 4
+X011    PROGRAM 5
+X012    PROGRAM 6
+X013    MANUAL / FREE - status w V1.2.0
 X014    REZERWA
-X027    RM5 CH1 - wejście impulsów
+X027    RM5 CH1
 
 WYJŚCIA PLC
 -----------
 Y000    CREDIT / COMPTEUR
-        T201 K10 ≈ 0,1 s ON
-        T202 K10 ≈ 0,1 s OFF
-        okres start-start ≈ 0,2 s
-
 Y001    PILOTAGGIO POMPA
-        M410 AND M412 -> Y001
-
 Y002    PROGRAM 1
 Y003    PROGRAM 2
 Y004    PROGRAM 3
 Y005    PROGRAM 4
 Y006    PROGRAM 5
 Y007    PROGRAM 6
-
 Y023    RM5 INHIBIT
-        /M300 -> Y023
-
 Y027    OŚWIETLENIE
-        M412 -> Y027
 
-BITY M - STATUS / RM5
----------------------
-M300    kopia/status X000
-M301    kopia/status X001
-M302    MANUAL_FREE status z X013
-M320    impuls roboczy RM5 z X027
-M321    aktywne zbieranie paczki RM5
-M330    faza ON generatora CREDIT Y000
-M331    faza OFF generatora CREDIT Y000
-
-BITY M - HMI
+STATUS / RM5
 ------------
-M400    HMI STOP
-M401    HMI PROGRAM 1
-M402    HMI PROGRAM 2
-M403    HMI PROGRAM 3
-M404    HMI PROGRAM 4
-M405    HMI PROGRAM 5
-M406    HMI PROGRAM 6
-M410    PILOTAGGIO_ENABLE
-M411    HMI RESET_RM5_SESSION_COUNTERS (przycisk chwilowy)
-M413    TIME_PARAM_OK; 1 gdy D520 = 1...600
+M300    AUTOMATE_PRESENT copy
+M301    PRACA copy
+M302    MANUAL_FREE status
+M320    RM5 accepted one-scan pulse
+M321    RM5 packet active
+M330    CREDIT ON phase
+M331    CREDIT OFF phase
 
-BITY M - POŁĄCZENIE PRZYCISKÓW HMI + FIZYCZNYCH
-------------------------------------------------
+HMI
+---
+M400    STOP
+M401    PROGRAM 1
+M402    PROGRAM 2
+M403    PROGRAM 3
+M404    PROGRAM 4
+M405    PROGRAM 5
+M406    PROGRAM 6
+M410    PILOTAGGIO_ENABLE
+        SET przy pierwszym skanie
+M411    RESET_RM5_SESSION_COUNTERS
+        przycisk chwilowy; PLC sam RST M411
+M413    TIME_PARAM_OK
+        1 gdy D520 = 1...600
+
+KOMENDY WSPÓLNE
+---------------
 M440    STOP_CMD = X004 OR M400
 M441    P1_CMD   = X005 OR M401
 M442    P2_CMD   = X006 OR M402
@@ -78,8 +65,17 @@ M444    P4_CMD   = X010 OR M404
 M445    P5_CMD   = X011 OR M405
 M446    P6_CMD   = X012 OR M406
 
-BITY M - AKTYWNY PROGRAM
-------------------------
+IMPULSY WYBORU
+--------------
+M451    P1_SELECT_PULSE
+M452    P2_SELECT_PULSE
+M453    P3_SELECT_PULSE
+M454    P4_SELECT_PULSE
+M455    P5_SELECT_PULSE
+M456    P6_SELECT_PULSE
+
+AKTYWNY PROGRAM
+---------------
 M420    PROGRAM 1 ACTIVE
 M421    PROGRAM 2 ACTIVE
 M422    PROGRAM 3 ACTIVE
@@ -90,98 +86,77 @@ M412    WORK_ACTIVE
 
 REJESTRY D
 ----------
-D300    RM5 CH1 VALUE / mnożnik
-        wartość startowa = 10
+D300    RM5 CH1 VALUE
+        10 przy starcie; pole informacyjne / konfiguracyjne
+        konwersja czasu używa D520
 
-D320    liczba impulsów aktualnej paczki RM5
-        wartość startowa = 0
+D320    impulsy bieżącej paczki RM5
+        0 przy starcie
 
-D330    kolejka impulsów CREDIT do wysłania na Y000
-        wartość startowa = 0
-        MUSI być zerowana przy starcie PLC
+D330    kolejka CREDIT do Y000
+        0 przy starcie - nie wolno wznawiać po restarcie
 
-D350    pozostały czas w sekundach; dodawany z D520 i odliczany podczas WORK_ACTIVE
-        wartość startowa = 0
+D350    pozostały czas [s]
+        0 przy starcie
+        odliczany tylko gdy M412=1
+        max 32000
 
-D351    starsze słowo wyniku 32-bit MUL
-        wartość startowa = 0
+D351    rezerwa
 
-D500    PLC_VERSION_STRING word 0 = "V1"
-D501    PLC_VERSION_STRING word 1 = ".2"
-D502    PLC_VERSION_STRING word 2 = ".0"
-D503    PLC_VERSION_STRING terminator = 0
-D504-D507 zarezerwowane dla dłuższego stringu wersji
+D500    "V1"
+D501    ".2"
+D502    ".0"
+D503    0
+D504-D507 rezerwa stringu wersji
 
 D516    VERSION_MAJOR = 1
 D517    VERSION_MINOR = 2
 D518    VERSION_PATCH = 0
 
 D520    TIME_PER_RM5_PULSE_S
-        parametr HMI RW; domyślnie 10 s/impuls
-        prawidłowy zakres 1...600
+        HMI RW
+        zakres 1...600
+        domyślne 10 tylko jeśli wartość startowa jest niepoprawna
 
 D521    LAST_PACKET_PULSES
-        liczba impulsów ostatniej zakończonej paczki
-
-D522    LAST_PACKET_TIME_S - dolne słowo wyniku
-D523    LAST_PACKET_TIME_S - górne słowo wyniku
-        D522:D523 = D521 * D520
-
-D524    RM5_SESSION_PULSE_COUNTER
-        licznik impulsów od startu/resetu sesji
-
-D525    RM5_SESSION_EQUIV_TIME_S - dolne słowo
-D526    RM5_SESSION_EQUIV_TIME_S - górne słowo
-        D525:D526 = D524 * D520
-
-D527    TIME_ADD_LIMIT_THRESHOLD
-        robocze: 32000 - D520
+D522    LAST_PACKET_TIME_S low word
+D523    LAST_PACKET_TIME_S high word
+D524    RM5_SESSION_PULSE_COUNTER, max 30000
+D525    RM5_SESSION_EQUIV_TIME_S low word
+D526    RM5_SESSION_EQUIV_TIME_S high word
+D527    TIME_ADD_LIMIT_THRESHOLD = 32000 - D520
 
 TIMERY
 ------
-T200 K100    timeout końca paczki RM5 ≈ 1,0 s
-T201 K10     Y000 CREDIT ON ≈ 0,1 s
-T202 K10     Y000 CREDIT OFF ≈ 0,1 s
+T200 K100    RM5 packet timeout ~1,0 s
+T201 K10     CREDIT ON ~0,1 s
+T202 K10     CREDIT OFF ~0,1 s
 
 BITY SYSTEMOWE
 --------------
-M8002        pierwszy skan PLC - bezpieczna inicjalizacja
-M8013        zegar 1 s; używany zboczowo do DEC D350
+M8000        zawsze ON
+M8002        pierwszy skan
+M8013        zegar 1 s, używany przez LDP
 
-INICJALIZACJA M8002
--------------------
+BEZPIECZNY START
+----------------
 D300 = 10
 D320 = 0
 D330 = 0
 D350 = 0
 D351 = 0
-D520 = 10
-D521 = 0
-D522 = 0
-D523 = 0
-D524 = 0
-D525 = 0
-D526 = 0
-D527 = 31990
-D500 = H3156    ("V1")
-D501 = H322E    (".2")
-D502 = H302E    (".0")
-D503 = H0000    terminator
-D516 = 1
-D517 = 2
-D518 = 0
+D521...D527 = 0 początkowo; D527 jest następnie obliczane z D520
+D520 pozostaje bez zmian, jeśli 1...600; w przeciwnym razie = 10
 
-RST M321
-RST M330
-RST M331
-RST M410
-RST M411
-RST M420
-RST M421
-RST M422
-RST M423
-RST M424
-RST M425
+M320 = 0
+M321 = 0
+M330 = 0
+M331 = 0
+M400...M406 = 0
+M411 = 0
+M412 = 0
+M420...M425 = 0
+M410 = 1
 
 RM5 - STANDARDOWE ZŁĄCZE 10-PIN
 --------------------------------
@@ -190,17 +165,17 @@ Pin 2    +12...24 VDC
 Pin 3    CH5
 Pin 4    CH6
 Pin 5    N.U. / zależne od konfiguracji
-Pin 6    INHIBIT
+Pin 6    INHIBIT <- Y023
 Pin 7    CH1 -> X027
 Pin 8    CH2
 Pin 9    CH3
 Pin 10   CH4
 
-PITSTART - POTWIERDZONE SYGNAŁY WEJŚCIOWE
------------------------------------------
-CN8 1-2    Presence automatic device
+PITSTART
+--------
+CN8 1-2    Presence automatic device -> X000
 CN8 3-4    Manual / Free -> X013 -> M302
 
-UWAGA:
-Lokalne przyciski wykorzystują X004...X012.
-RM5 CH1 jest przypisany do X027 zgodnie z aktualną konfiguracją projektu.
+UWAGA
+-----
+W V1.2.0 Manual / Free jest tylko statusem. Nie omija D350 i nie uruchamia programu bez kredytu.
