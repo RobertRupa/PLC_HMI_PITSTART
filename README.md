@@ -231,7 +231,7 @@ Aktualnie:
 ## RM5 INHIBIT — Y23
 
 ```text
-/M300 -> Y23
+/M300 OR /M413 -> Y23
 ```
 
 - `X0/M300 = 1` — RM5 aktywny,
@@ -281,7 +281,7 @@ Wersja projektu PLC jest udostępniona HMI jako tekst ASCII od `D500`.
 Aktualna wersja:
 
 ```text
-V1.1.1
+V1.2.0
 ```
 
 Mapa:
@@ -290,20 +290,20 @@ Mapa:
 |---|---|
 | `D500…D507` | `PLC_VERSION_STRING` — pole tekstowe dla HMI |
 | `D516` | VERSION_MAJOR = 1 |
-| `D517` | VERSION_MINOR = 1 |
-| `D518` | VERSION_PATCH = 1 |
+| `D517` | VERSION_MINOR = 2 |
+| `D518` | VERSION_PATCH = 0 |
 
 Na pierwszym skanie PLC:
 
 ```text
 M8002 -> MOV H3156 D500   ; "V1"
-M8002 -> MOV H312E D501   ; ".1"
-M8002 -> MOV H312E D502   ; ".1"
+M8002 -> MOV H322E D501   ; ".1"
+M8002 -> MOV H302E D502   ; ".1"
 M8002 -> MOV H0000 D503   ; terminator
 
 M8002 -> MOV K1 D516
-M8002 -> MOV K1 D517
-M8002 -> MOV K1 D518
+M8002 -> MOV K2 D517
+M8002 -> MOV K0 D518
 ```
 
 W WSStudio użyj obiektu ASCII/String Display od adresu `D500`, długość np. 16 znaków. Jeżeli HMI pokaże pary znaków odwrócone, należy odwrócić bajty stałych HEX dla używanego sterownika/HMI.
@@ -319,6 +319,8 @@ W WSStudio użyj obiektu ASCII/String Display od adresu `D500`, długość np. 1
 - `docs/STARTUP_AND_BUTTONS.md` — inicjalizacja i przyciski mechaniczne/HMI.
 - `docs/wiring.svg` — uproszczony schemat.
 - `docs/HMI.md` — adresy HMI, w tym string wersji PLC.
-- `plc/MAIN.txt` — aktualna logika PLC w formie mnemonic/instruction list.
+- `plc/MAIN.txt` — udokumentowana logika PLC V1.2.0.
+- `plc/MAIN_GXDEV_ENTRY.txt` — czysta lista instrukcji do ręcznego wprowadzenia w GX Developer bez GX Converter.
+- `plc/GX_DEVELOPER_NO_CONVERTER.md` — procedura zastąpienia testowego MAIN.
 - `plc/DEVICE_MAP.csv` — mapa urządzeń do wersjonowania i analizy.
 - `plc/README.md` — sposób pracy z eksportem tekstowym.
