@@ -1,12 +1,11 @@
-# Comestero RM5 Evolution
+# Comestero RM5 Evolution — V1.2.0
 
-## Zastosowanie
+## Połączenie
 
-Projekt korzysta z jednego kanału RM5.
-
-- RM5 CH1 -> PLC `X27`
-- PLC `Y23` -> RM5 `INHIBIT`
-- RM5 GND -> wspólne 0 V / COM wejść
+- RM5 pin 7 CH1 -> PLC X27
+- RM5 pin 6 INHIBIT <- PLC Y23
+- RM5 pin 1 GND -> wspólne 0 V / COM wejść
+- RM5 pin 2 -> +12…24 VDC
 
 ## Standardowe złącze 10-pin
 
@@ -23,53 +22,63 @@ Projekt korzysta z jednego kanału RM5.
 | 9 | CH3 |
 | 10 | CH4 |
 
-## CH1
+Wyjście CH1 jest open collector / aktywne do GND.
+
+## Akceptacja impulsu
 
 ```text
-RM5 pin 7 CH1  -> X27
-RM5 pin 1 GND  -> COM/0V PLC
+LDP X27
+AND M300
+AND M413
+OUT M320
 ```
 
-Wyjście kanału RM5 jest typu open collector; podczas impulsu linia jest aktywowana do GND.
+M300 = automat dostępny.
+M413 = D520 w zakresie 1…600.
 
 ## INHIBIT
 
 ```text
-/M300 -> Y23
+/M300 OR /M413 -> Y23
 ```
 
-Założenie projektu:
-- M300=1 -> RM5 dozwolony,
-- M300=0 -> Y23 podaje stan blokady na pin 6 INHIBIT.
+RM5 jest blokowany, gdy automat nie jest dostępny lub parametr czasu jest niepoprawny.
 
-## Algorytm paczki impulsów
+## Liczenie
+
+Każdy M320:
+- zwiększa D320,
+- zwiększa D524 do 30000,
+- dodaje D520 sekund do D350,
+- ogranicza D350 do 32000 s,
+- ustawia M321 i restartuje T200.
+
+## Koniec paczki
+
+Po około 1 s bez kolejnego impulsu:
 
 ```text
-X27 -> M320
-M320 -> INC D320
-M320 -> SET M321
-M320 -> RST T200
-
-M321 -> T200 K100
-
-T200 -> MUL D320 D300 D350
-T200 -> MOV D320 D330
-T200 -> MOV K0 D320
-T200 -> RST M321
+D521 = D320
+D522:D523 = D320 * D520
+D330 = D320
+D320 = 0
+M321 = 0
 ```
 
-## Źródło
+D330 steruje generatorem CREDIT Y0.
 
-RM5 manual:
-https://www.casino-software.de/download/manual_rm5.pdf
+## Parametry
 
+- D300 = 10 — wartość kanału 1 RM5 / pole konfiguracyjne
+- D520 = sekundy za impuls, 1…600
+- D350 = pozostały czas
+- D524 = licznik impulsów sesji
+- D525:D526 = równoważny czas sesji
 
-## Wartość kanału 1 i start PLC
+Aktualna logika czasu używa D520; D300 nie jest mnożnikiem czasu.
 
-W projekcie:
-- `D300 = 10` — domyślna wartość/mnożnik kanału 1,
-- `D320 = 0` — licznik bieżącej paczki,
-- `D330 = 0` — kolejka CREDIT,
-- `D350 = 0` — wartość/kredyt.
+## Restart
 
-Na pierwszym skanie `M8002` rejestry robocze są inicjalizowane. Zerowanie `D330` jest obowiązkowe, aby po ponownym uruchomieniu PLC nie wznowił wysyłania impulsów zapisanych przed zanikiem zasilania.
+D330 jest zerowane na pierwszym skanie, aby nie wysyłać ponownie starych impulsów CREDIT.
+
+D520 jest ustawiane na 10 tylko wtedy, gdy wartość startowa jest poza 1…600.
