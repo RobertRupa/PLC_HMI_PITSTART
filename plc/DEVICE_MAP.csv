@@ -1,5 +1,5 @@
 Device,Type,Function,Startup/Notes
-X0,Input,AUTOMATE_PRESENT / INVERTER_OK,Blocks RM5 when OFF
+X0,Input,AUTOMATE_PRESENT / INVERTER_OK,Main enable
 X1,Input,PRACA,Status only
 X4,Input,Mechanical STOP,Momentary
 X5,Input,Mechanical Program 1,Momentary
@@ -8,42 +8,42 @@ X7,Input,Mechanical Program 3,Momentary
 X10,Input,Mechanical Program 4,Momentary
 X11,Input,Mechanical Program 5,Momentary
 X12,Input,Mechanical Program 6,Momentary
-X13,Input,MANUAL / FREE,Status input
+X13,Input,MANUAL / FREE,Status only in V1.2.0
 X27,Input,RM5 CH1,Pulse input
-Y0,Output,CREDIT / COMPTEUR,Pulsed output
-Y1,Output,PILOTAGGIO POMPA,Requires M410 and M412
+Y0,Output,CREDIT / COMPTEUR,Pulsed
+Y1,Output,PILOTAGGIO POMPA,M410 AND M412
 Y2,Output,Program 1,
 Y3,Output,Program 2,
 Y4,Output,Program 3,
 Y5,Output,Program 4,
 Y6,Output,Program 5,
 Y7,Output,Program 6,
-Y23,Output,RM5 INHIBIT,ON when M300=0
-Y27,Output,Lighting,ON when M412=1
-M300,Bit,AUTOMATE_PRESENT copy,OUT from X0
-M301,Bit,PRACA copy,OUT from X1
-M302,Bit,MANUAL_FREE status,OUT from X13; HMI RO
-M320,Bit,RM5 one-scan pulse,Edge from X27
-M321,Bit,RM5 packet active,Reset at packet end/startup
-M330,Bit,CREDIT ON phase,Reset at startup
-M331,Bit,CREDIT OFF phase,Reset at startup
-M400,Bit,HMI STOP,Reset at startup
-M401,Bit,HMI Program 1,Reset at startup
-M402,Bit,HMI Program 2,Reset at startup
-M403,Bit,HMI Program 3,Reset at startup
-M404,Bit,HMI Program 4,Reset at startup
-M405,Bit,HMI Program 5,Reset at startup
-M406,Bit,HMI Program 6,Reset at startup
-M410,Bit,PILOTAGGIO_ENABLE,0 at startup
-M411,Bit,RESET_RM5_SESSION_COUNTERS,HMI momentary button
-M413,Bit,TIME_PARAM_OK,1 when D520 is 1..600
-M412,Bit,WORK_ACTIVE,OUT logic
-M420,Bit,Program 1 active,0 at startup
-M421,Bit,Program 2 active,0 at startup
-M422,Bit,Program 3 active,0 at startup
-M423,Bit,Program 4 active,0 at startup
-M424,Bit,Program 5 active,0 at startup
-M425,Bit,Program 6 active,0 at startup
+Y23,Output,RM5 INHIBIT,ON if M300=0 or M413=0
+Y27,Output,Lighting,M412
+M300,Bit,AUTOMATE_PRESENT copy,X0
+M301,Bit,PRACA copy,X1
+M302,Bit,MANUAL_FREE status,X13
+M320,Bit,RM5 one-scan pulse,LDP X27
+M321,Bit,RM5 packet active,
+M330,Bit,CREDIT ON phase,
+M331,Bit,CREDIT OFF phase,
+M400,Bit,HMI STOP,
+M401,Bit,HMI Program 1,
+M402,Bit,HMI Program 2,
+M403,Bit,HMI Program 3,
+M404,Bit,HMI Program 4,
+M405,Bit,HMI Program 5,
+M406,Bit,HMI Program 6,
+M410,Bit,PILOTAGGIO_ENABLE,SET on first scan
+M411,Bit,RESET_RM5_SESSION_COUNTERS,HMI momentary; self-reset
+M412,Bit,WORK_ACTIVE,
+M413,Bit,TIME_PARAM_OK,D520 in 1..600
+M420,Bit,Program 1 active,
+M421,Bit,Program 2 active,
+M422,Bit,Program 3 active,
+M423,Bit,Program 4 active,
+M424,Bit,Program 5 active,
+M425,Bit,Program 6 active,
 M440,Bit,STOP_CMD,X4 OR M400
 M441,Bit,P1_CMD,X5 OR M401
 M442,Bit,P2_CMD,X6 OR M402
@@ -51,27 +51,30 @@ M443,Bit,P3_CMD,X7 OR M403
 M444,Bit,P4_CMD,X10 OR M404
 M445,Bit,P5_CMD,X11 OR M405
 M446,Bit,P6_CMD,X12 OR M406
-D300,Data,RM5 CH1 multiplier/value,10 at startup
-D320,Data,Current RM5 packet count,0 at startup
-D330,Data,CREDIT pulse queue,0 at startup
-D350,Data,Current credit/time value,0 at startup
-D351,Data,Reserved/high word,0 at startup
-D520,Data,Seconds per RM5 pulse,"HMI RW; startup 10; range 1..600"
-D521,Data,Last packet pulse count,RO
-D522:D523,Data,Last packet converted time seconds,RO 32-bit
-D524,Data,RM5 session pulse counter,RO
-D525:D526,Data,Session equivalent time seconds,RO 32-bit
-D527,Data,Time saturation threshold,32000-D520
-D500,Data,PLC version string word 0,"H3156 = V1"
-D501,Data,PLC version string word 1,"H312E = .1"
-D502,Data,PLC version string word 2,"H312E = .1"
-D503,Data,PLC version terminator,H0000
-D504-D507,Data,PLC version string reserve,Reserved
+M451,Bit,P1_SELECT_PULSE,one scan
+M452,Bit,P2_SELECT_PULSE,one scan
+M453,Bit,P3_SELECT_PULSE,one scan
+M454,Bit,P4_SELECT_PULSE,one scan
+M455,Bit,P5_SELECT_PULSE,one scan
+M456,Bit,P6_SELECT_PULSE,one scan
+D300,Data,RM5 CH1 value,10 at startup
+D320,Data,Current RM5 packet pulses,0 at startup
+D330,Data,CREDIT queue,0 at startup
+D350,Data,Remaining time seconds,0 at startup
+D351,Data,Reserved,0
+D500-D507,Data,PLC version ASCII,V1.2.0 at D500
 D516,Data,VERSION_MAJOR,1
-D517,Data,VERSION_MINOR,1
-D518,Data,VERSION_PATCH,1
+D517,Data,VERSION_MINOR,2
+D518,Data,VERSION_PATCH,0
+D520,Data,Seconds per RM5 pulse,HMI RW 1..600; default 10 only if invalid
+D521,Data,Last packet pulses,RO
+D522:D523,Data,Last packet converted seconds,RO 32-bit
+D524,Data,Session pulse counter,RO max 30000
+D525:D526,Data,Session equivalent seconds,RO 32-bit
+D527,Data,Time saturation threshold,32000-D520
 T200,Timer,RM5 packet timeout,K100
 T201,Timer,CREDIT ON,K10
 T202,Timer,CREDIT OFF,K10
-M8002,System bit,First scan,Used for safe initialization
-M8013,System bit,1-second clock,Used edge-wise for D350 decrement
+M8000,System bit,Always ON,
+M8002,System bit,First scan,
+M8013,System bit,1-second clock,
