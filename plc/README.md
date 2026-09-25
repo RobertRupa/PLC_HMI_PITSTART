@@ -49,7 +49,7 @@ HMI commands use `M400…M406` and are ORed with the mechanical buttons.
 
 ## PLC version for HMI
 
-The PLC exposes version `V1.1.0` starting at `D500`.
+The PLC exposes version `V1.1.1` starting at `D500`.
 
 - `D500…D507` — ASCII version string area
 - `D516` — major
@@ -70,3 +70,13 @@ WSStudio should use an ASCII/String display starting at `D500`, e.g. 16 characte
 
 Every accepted RM5 pulse adds `D520` seconds to `D350`. Remaining time is saturated at 32000 s.
 
+
+## Manual / Free
+
+- physical input: `X13`
+- PLC/HMI status: `M302` (read-only)
+
+```text
+LD X13
+OUT M302
+```
