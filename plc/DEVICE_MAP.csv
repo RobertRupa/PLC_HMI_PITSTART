@@ -18,12 +18,12 @@ Y4,Output,Program 3,
 Y5,Output,Program 4,
 Y6,Output,Program 5,
 Y7,Output,Program 6,
-Y23,Output,RM5 INHIBIT,ON if M300=0 or time params invalid
+Y23,Output,RM5 INHIBIT,ON if M300=0 or D520 invalid
 Y27,Output,Work lighting,M414 AND M412
 M300,Bit,AUTOMATE_PRESENT copy,X0
 M301,Bit,PRACA copy,X1
 M302,Bit,MANUAL_FREE status,X13
-M320,Bit,Accepted RM5 one-scan pulse,LDP X27 gated by M300 M413 M415
+M320,Bit,Accepted RM5 one-scan pulse,LDP X27 gated by M300 M413
 M321,Bit,RM5 packet active,
 M330,Bit,CREDIT ON phase,
 M331,Bit,CREDIT OFF phase,
@@ -39,8 +39,9 @@ M411,Bit,RESET_SESSION_COUNTERS,HMI momentary self-reset
 M412,Bit,WORK_ACTIVE,
 M413,Bit,BASE_TIME_OK,D520 in 1..600
 M414,Bit,WORK_LIGHTS_ENABLE,HMI RW; SET on first scan
-M415,Bit,CLOCK_RATIO_OK,D528 and D529 in 1..1000
+M415,Bit,CLOCK_SCALE_OK,D528 in 1..500; displayed x0.01
 M416,Bit,WORK_1S_TICK,Internal one-scan pulse
+M417,Bit,NEW_SESSION_PULSE,First accepted RM5 pulse while D350<=0
 M420,Bit,Program 1 active,
 M421,Bit,Program 2 active,
 M422,Bit,Program 3 active,
@@ -64,7 +65,7 @@ D300,Data,RM5 CH1 value,10 at startup
 D320,Data,Current RM5 packet pulse count,0 at startup
 D330,Data,CREDIT output queue,0 at startup
 D350,Data,Remaining displayed time seconds,0 at startup max 32000
-D500-D507,Data,PLC version ASCII,V1.3.0
+D500-D507,Data,PLC version ASCII,V1.3.1
 D516,Data,VERSION_MAJOR,1
 D517,Data,VERSION_MINOR,3
 D518,Data,VERSION_PATCH,0
@@ -74,8 +75,8 @@ D522:D523,Data,Last packet nominal time seconds,RO 32-bit
 D524,Data,Accepted RM5 pulses session,RO max 30000
 D525:D526,Data,Accepted RM5 nominal time session,RO 32-bit
 D527,Data,Time saturation threshold,32000-D520
-D528,Data,Clock multiplier,HMI RW 1..1000 default 100
-D529,Data,Clock divider,HMI RW 1..1000 default 100
+D528,Data,Clock scale x100,HMI RW 1..500; 100=1.00; 101=1.01; 99=0.99
+D529,Data,Reserved,No longer used in V1.3.1
 D530,Data,Clock fractional accumulator,Internal
 D531,Data,Seconds decrement quotient current tick,Internal/diagnostic
 D532,Data,Clock remainder,Internal/diagnostic
