@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.3.1
+# HMI — WSStudio — V1.3.2
 
 ## Ekran główny
 
@@ -89,7 +89,46 @@ M414 AND M412 -> Y27
 
 ## Wersja PLC
 
-D500..D503 = V1.3.1
+D500..D503 = V1.3.2
 D516=1
 D517=3
 D518=1
+
+
+## Coin multiplier i naliczanie czasu
+
+- `D300` = liczba impulsów `Y0/PITSTART_CREDITS` generowanych z jednego impulsu RM5.
+- `D520` = sekundy dodawane za każdy impuls CREDIT faktycznie wysłany przez `Y0`.
+
+Domyślnie:
+
+```text
+D300 = 10
+D520 = 10 s
+```
+
+czyli:
+
+```text
+1 impuls RM5 -> 10 impulsów CREDIT -> 100 s
+```
+
+Czas jest dodawany dopiero po zakończeniu fazy ON danego impulsu CREDIT (`T201`), nie w momencie odebrania monety.
+
+### Który rejestr wyświetlać
+
+- `D350` = pozostały czas, maleje podczas pracy.
+- `D540` = minuty pozostałego czasu.
+- `D541` = sekundy pozostałego czasu.
+- `D534:D535` = skumulowany czas już wysłany do automatyki; **rośnie**, nie maleje.
+
+Na ekranie głównym nie używaj `D534` jako licznika czasu pozostałego.
+
+### MM:SS
+
+Użyj dwóch osobnych Value Display:
+- minuty: `D540`, 16-bit unsigned,
+- sekundy: `D541`, 16-bit unsigned,
+- pomiędzy nimi statyczny znak `:`,
+- Offset Address = OFF dla obu,
+- dla sekund ustaw 2 cyfry / leading zero.
