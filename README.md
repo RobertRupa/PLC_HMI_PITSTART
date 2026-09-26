@@ -1,6 +1,6 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.3.0**.
+Aktualna wersja PLC: **V1.3.1**.
 
 ## Najważniejsze adresy
 
@@ -26,7 +26,7 @@ Aktualna wersja PLC: **V1.3.0**.
 - M411 RESET_SESSION_COUNTERS
 - M414 WORK_LIGHTS_ENABLE
 - M413 BASE_TIME_OK
-- M415 CLOCK_RATIO_OK
+- M415 CLOCK_SCALE_OK
 
 Touch control jest wyłącznie funkcją HMI.
 
@@ -34,12 +34,12 @@ Touch control jest wyłącznie funkcją HMI.
 
 - D350 = pozostały czas [s]
 - D520 = nominalne sekundy / impuls CREDIT
-- D528 = mnożnik zegara
-- D529 = dzielnik zegara
+- D528 = korekcja zegara ×100 (100=1.00, 101=1.01, 99=0.99)
+- D529 = rezerwa / niewykorzystywany
 - D540 = minuty
 - D541 = sekundy
 
-Domyślnie D528/D529 = 100/100.
+Domyślnie D528=100, czyli 1.00×. HMI powinno wyświetlać D528 z 2 miejscami po przecinku.
 
 ## Diagnostyka impulsów
 
@@ -52,5 +52,9 @@ Domyślnie D528/D529 = 100/100.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — instruction list
 - `plc/MAIN.txt` — wersja komentowana
-- `plc/main_v1.3.0.csv` — CSV w takim samym 9-kolumnowym układzie jak aktualny eksport użytkownika
+- `plc/main_v1.3.1.csv` — CSV w takim samym 9-kolumnowym układzie jak aktualny eksport użytkownika
 - `plc/DEVICE_MAP.csv` — mapa urządzeń
+
+## Sesja V1.3.1
+
+Nowa sesja jest wykrywana przy **pierwszym zaakceptowanym impulsie RM5, gdy D350<=0**. PLC zeruje wtedy liczniki diagnostyczne bieżącej sesji przed policzeniem pierwszego impulsu: D320, D521:D526, D530:D535. STOP nie rozpoczyna nowej sesji i nie zeruje D350.
