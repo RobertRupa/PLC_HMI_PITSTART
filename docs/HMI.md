@@ -1,90 +1,79 @@
-# HMI — WSStudio — V1.2.0
+# HMI — WSStudio — V1.3.0
 
-## Wersja PLC
+## Ekran główny
 
-HMI czyta string od D500:
+Sterowanie:
+- M400 — STOP, momentary
+- M401…M406 — Program 1…6, momentary
 
-| Adres | Zawartość |
-|---|---|
-| D500 | `V1` |
-| D501 | `.2` |
-| D502 | `.0` |
-| D503 | terminator |
-| D516 | major = 1 |
-| D517 | minor = 2 |
-| D518 | patch = 0 |
+Wskaźniki:
+- M420…M425 — aktywny Program 1…6
+- M412 — WORK_ACTIVE
+- M301 — fizyczny status PRACA
+- M300 — automat dostępny
+- Y23 — RM5 INHIBIT
 
-Kod PLC:
+Czas:
+- D350 — pozostały czas [s]
+- D540 — pozostałe minuty
+- D541 — pozostałe sekundy
 
-```text
-MOV H3156 D500
-MOV H322E D501
-MOV H302E D502
-MOV H0000 D503
-```
+Do wyświetlenia MM:SS użyj dwóch pól D540 i D541 z separatorem ':'.
 
-W WSStudio użyj ASCII/String Display od D500, np. 16 znaków, RO.
-
-Jeżeli pary znaków są odwrócone, należy odwrócić kolejność bajtów stałych HEX.
-
-## Sterowanie
+## Ekran Admin
 
 | Adres | Funkcja | Dostęp |
 |---|---|---|
-| M400 | STOP | momentary |
-| M401…M406 | P1…P6 | momentary |
+| D520 | Nominalny czas automatyki / 1 impuls CREDIT [s] | RW |
+| D528 | Mnożnik zegara | RW |
+| D529 | Dzielnik zegara | RW |
+| M413 | D520 poprawne | RO |
+| M415 | Mnożnik/dzielnik poprawny | RO |
 | M410 | Pilotaggio enable | RW |
-| M411 | Reset licznika sesji | momentary |
-| M413 | Parametr D520 OK | RO |
-| M302 | Manual / Free status | RO |
+| M414 | Work lights enable | RW |
+| M411 | Reset liczników sesji | momentary |
+| D524 | zaakceptowane impulsy RM5 | RO |
+| D533 | wysłane impulsy CREDIT | RO |
+| D525:D526 | nominalny czas zaakceptowanych impulsów | RO |
+| D534:D535 | nominalny czas wysłanych impulsów | RO |
 
-M410 startuje w PLC jako 1. HMI może je przełączyć na 0.
+Touch control pozostaje funkcją wyłącznie HMI i nie używa bitu PLC.
 
-## Czas / impuls
+## Kalibracja czasu
 
-| Adres | Nazwa | Typ | Dostęp |
-|---|---|---|---|
-| D520 | Czas / impuls [s] | 16-bit | RW |
-| D350 | Pozostały czas [s] | 16-bit | RO |
-| D521 | Ostatnia paczka [imp] | 16-bit | RO |
-| D522:D523 | Ostatnia paczka [s] | 32-bit | RO |
-| D524 | Licznik impulsów sesji | 16-bit | RO |
-| D525:D526 | Czas równoważny sesji [s] | 32-bit | RO |
+Domyślnie:
+- D528=100
+- D529=100
 
-D520:
-- min 1,
-- max 600,
-- domyślnie 10 jeśli PLC wykryje wartość niepoprawną.
-
-Jeżeli D520 jest poza zakresem, M413=0 i RM5 jest blokowany.
-
-### Retencja
-
-PLC zachowuje poprawne D520 podczas pierwszego skanu, ale retencja po zaniku zasilania zależy od parametrów pamięci FX3UC. Jeżeli D520 nie jest latched, HMI może zapisywać parametr przy połączeniu albo należy ustawić odpowiedni obszar retencyjny PLC.
-
-## Licznik sesji
-
-D524 zwiększa się przy każdym zaakceptowanym impulsie RM5, maksymalnie do 30000.
+Efektywne tempo odliczania:
 
 ```text
-D525:D526 = D524 * D520
+tempo = D528 / D529
 ```
 
-M411 zeruje D524/D525/D526 i jest automatycznie resetowane przez PLC.
+Przykłady:
+- 100/100 = 1.000x
+- 105/100 = zegar HMI odlicza 5% szybciej
+- 95/100 = zegar HMI odlicza 5% wolniej
 
-## Diagnostyka
+Jeżeli automat kończy kredyt szybciej niż licznik HMI, zwiększ D528 względem D529.
+Jeżeli automat kończy kredyt wolniej, zmniejsz D528 względem D529.
 
-- M300 — automat dostępny
-- M301 — PRACA
-- M302 — MANUAL/FREE
-- M320 — zaakceptowany impuls RM5
-- M321 — aktywna paczka RM5
-- M412 — WORK_ACTIVE
-- M413 — parametr czasu OK
-- D320 — bieżąca paczka
-- D330 — kolejka CREDIT
-- D527 — próg saturacji
+Zakres obu parametrów: 1…1000.
 
-## Manual / Free
+Nie zaleca się zmiany D528/D529 podczas aktywnego programu.
 
-W V1.2.0 X13/M302 jest tylko statusem. Nie uruchamia programu bez D350.
+## Work lights
+
+M414 jest zezwoleniem. Fizyczne Y27 działa tylko podczas pracy:
+
+```text
+M414 AND M412 -> Y27
+```
+
+## Wersja PLC
+
+D500..D503 = V1.3.0
+D516=1
+D517=3
+D518=0
