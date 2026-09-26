@@ -8,7 +8,7 @@ X7,Input,Mechanical Program 3,Momentary
 X10,Input,Mechanical Program 4,Momentary
 X11,Input,Mechanical Program 5,Momentary
 X12,Input,Mechanical Program 6,Momentary
-X13,Input,MANUAL / FREE,Status only in V1.2.0
+X13,Input,MANUAL / FREE,Status only
 X27,Input,RM5 CH1,Pulse input
 Y0,Output,CREDIT / COMPTEUR,Pulsed
 Y1,Output,PILOTAGGIO POMPA,M410 AND M412
@@ -18,26 +18,29 @@ Y4,Output,Program 3,
 Y5,Output,Program 4,
 Y6,Output,Program 5,
 Y7,Output,Program 6,
-Y23,Output,RM5 INHIBIT,ON if M300=0 or M413=0
-Y27,Output,Lighting,M412
+Y23,Output,RM5 INHIBIT,ON if M300=0 or time params invalid
+Y27,Output,Work lighting,M414 AND M412
 M300,Bit,AUTOMATE_PRESENT copy,X0
 M301,Bit,PRACA copy,X1
 M302,Bit,MANUAL_FREE status,X13
-M320,Bit,RM5 one-scan pulse,LDP X27
+M320,Bit,Accepted RM5 one-scan pulse,LDP X27 gated by M300 M413 M415
 M321,Bit,RM5 packet active,
 M330,Bit,CREDIT ON phase,
 M331,Bit,CREDIT OFF phase,
-M400,Bit,HMI STOP,
-M401,Bit,HMI Program 1,
-M402,Bit,HMI Program 2,
-M403,Bit,HMI Program 3,
-M404,Bit,HMI Program 4,
-M405,Bit,HMI Program 5,
-M406,Bit,HMI Program 6,
+M400,Bit,HMI STOP,Momentary
+M401,Bit,HMI Program 1,Momentary
+M402,Bit,HMI Program 2,Momentary
+M403,Bit,HMI Program 3,Momentary
+M404,Bit,HMI Program 4,Momentary
+M405,Bit,HMI Program 5,Momentary
+M406,Bit,HMI Program 6,Momentary
 M410,Bit,PILOTAGGIO_ENABLE,SET on first scan
-M411,Bit,RESET_RM5_SESSION_COUNTERS,HMI momentary; self-reset
+M411,Bit,RESET_SESSION_COUNTERS,HMI momentary self-reset
 M412,Bit,WORK_ACTIVE,
-M413,Bit,TIME_PARAM_OK,D520 in 1..600
+M413,Bit,BASE_TIME_OK,D520 in 1..600
+M414,Bit,WORK_LIGHTS_ENABLE,HMI RW; SET on first scan
+M415,Bit,CLOCK_RATIO_OK,D528 and D529 in 1..1000
+M416,Bit,WORK_1S_TICK,Internal one-scan pulse
 M420,Bit,Program 1 active,
 M421,Bit,Program 2 active,
 M422,Bit,Program 3 active,
@@ -58,20 +61,28 @@ M454,Bit,P4_SELECT_PULSE,one scan
 M455,Bit,P5_SELECT_PULSE,one scan
 M456,Bit,P6_SELECT_PULSE,one scan
 D300,Data,RM5 CH1 value,10 at startup
-D320,Data,Current RM5 packet pulses,0 at startup
-D330,Data,CREDIT queue,0 at startup
-D350,Data,Remaining time seconds,0 at startup
-D351,Data,Reserved,0
-D500-D507,Data,PLC version ASCII,V1.2.0 at D500
+D320,Data,Current RM5 packet pulse count,0 at startup
+D330,Data,CREDIT output queue,0 at startup
+D350,Data,Remaining displayed time seconds,0 at startup max 32000
+D500-D507,Data,PLC version ASCII,V1.3.0
 D516,Data,VERSION_MAJOR,1
-D517,Data,VERSION_MINOR,2
+D517,Data,VERSION_MINOR,3
 D518,Data,VERSION_PATCH,0
-D520,Data,Seconds per RM5 pulse,HMI RW 1..600; default 10 only if invalid
-D521,Data,Last packet pulses,RO
-D522:D523,Data,Last packet converted seconds,RO 32-bit
-D524,Data,Session pulse counter,RO max 30000
-D525:D526,Data,Session equivalent seconds,RO 32-bit
+D520,Data,Nominal seconds per CREDIT pulse,HMI RW 1..600 default 10 if invalid
+D521,Data,Last RM5 packet pulse count,RO
+D522:D523,Data,Last packet nominal time seconds,RO 32-bit
+D524,Data,Accepted RM5 pulses session,RO max 30000
+D525:D526,Data,Accepted RM5 nominal time session,RO 32-bit
 D527,Data,Time saturation threshold,32000-D520
+D528,Data,Clock multiplier,HMI RW 1..1000 default 100
+D529,Data,Clock divider,HMI RW 1..1000 default 100
+D530,Data,Clock fractional accumulator,Internal
+D531,Data,Seconds decrement quotient current tick,Internal/diagnostic
+D532,Data,Clock remainder,Internal/diagnostic
+D533,Data,CREDIT pulses actually sent session,RO max 30000
+D534:D535,Data,Nominal time of sent CREDIT pulses,RO 32-bit
+D540,Data,Time left minutes,RO
+D541,Data,Time left seconds,RO
 T200,Timer,RM5 packet timeout,K100
 T201,Timer,CREDIT ON,K10
 T202,Timer,CREDIT OFF,K10
