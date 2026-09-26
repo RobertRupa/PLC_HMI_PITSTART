@@ -1,6 +1,6 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.3.1**.
+Aktualna wersja PLC: **V1.3.2**.
 
 ## Najważniejsze adresy
 
@@ -46,7 +46,7 @@ Domyślnie D528=100, czyli 1.00×. HMI powinno wyświetlać D528 z 2 miejscami p
 - D524 = impulsy RM5 przyjęte
 - D533 = impulsy CREDIT faktycznie wysłane
 - D525:D526 = nominalny czas przyjętych impulsów
-- D534:D535 = nominalny czas wysłanych impulsów
+- D534:D535 = skumulowany nominalny czas już wysłanych impulsów CREDIT; wartość rośnie i jest diagnostyczna
 
 ## Pliki PLC
 
@@ -55,6 +55,6 @@ Domyślnie D528=100, czyli 1.00×. HMI powinno wyświetlać D528 z 2 miejscami p
 - `plc/main_v1.3.1.csv` — CSV w takim samym 9-kolumnowym układzie jak aktualny eksport użytkownika
 - `plc/DEVICE_MAP.csv` — mapa urządzeń
 
-## Sesja V1.3.1
+## Sesja V1.3.2
 
 Nowa sesja jest wykrywana przy **pierwszym zaakceptowanym impulsie RM5, gdy D350<=0**. PLC zeruje wtedy liczniki diagnostyczne bieżącej sesji przed policzeniem pierwszego impulsu: D320, D521:D526, D530:D535. STOP nie rozpoczyna nowej sesji i nie zeruje D350.
