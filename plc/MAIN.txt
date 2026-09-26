@@ -1,24 +1,14 @@
 ; PLC_HMI_PITSTART
-; Production candidate V1.3.0 for FX3UC / GX Developer
-; Generated from the agreed I/O and HMI mapping.
-;
-; New in V1.3.0:
-; M414 WORK_LIGHTS_ENABLE (HMI RW, default ON)
-; M415 CLOCK_RATIO_OK (RO)
-; M416 one-scan 1-second work tick
-; D520 nominal seconds per CREDIT pulse, HMI RW, 1..600
-; D528 clock multiplier, HMI RW, 1..1000, default 100
-; D529 clock divider, HMI RW, 1..1000, default 100
-; D530 fractional clock accumulator
-; D531 decrement quotient for current tick
-; D532 division remainder
-; D533 CREDIT pulses actually sent in current session
-; D534:D535 nominal time represented by sent CREDIT pulses
-; D540 minutes left, D541 seconds left
-;
-; Countdown rate = D528 / D529 HMI-seconds per real second.
-; Example: 105/100 = 5% faster, 95/100 = 5% slower.
-; Touch control remains entirely inside HMI; no PLC bit is used.
+; Production candidate V1.3.1 for FX3UC / GX Developer
+; D528 = CLOCK_SCALE_X100: 100=1.00x, 101=1.01x, 99=0.99x, 1=0.01x
+; D529 is no longer used by the algorithm.
+; M414 = WORK_LIGHTS_ENABLE.
+; M415 = CLOCK_SCALE_OK (D528 in 1..500).
+; M417 = NEW_SESSION_PULSE.
+; A new session starts on the first accepted RM5 pulse while D350<=0.
+; Session counters are reset before the first pulse is counted.
+; Invalid D528 does not block RM5; countdown falls back to 1.00x.
+; Touch control remains entirely inside HMI.
 ;
 LD M8002
 MOV K10 D300
@@ -70,20 +60,14 @@ LD M8002
 AND<= D528 K0
 MOV K100 D528
 LD M8002
-AND> D528 K1000
+AND> D528 K500
 MOV K100 D528
-LD M8002
-AND<= D529 K0
-MOV K100 D529
-LD M8002
-AND> D529 K1000
-MOV K100 D529
 LD M8002
 MOV H3156 D500
 LD M8002
 MOV H332E D501
 LD M8002
-MOV H302E D502
+MOV H312E D502
 LD M8002
 MOV H0 D503
 LD M8002
@@ -91,7 +75,7 @@ MOV K1 D516
 LD M8002
 MOV K3 D517
 LD M8002
-MOV K0 D518
+MOV K1 D518
 LD M8002
 RST M320
 LD M8002
@@ -121,6 +105,8 @@ RST M412
 LD M8002
 RST M416
 LD M8002
+RST M417
+LD M8002
 RST M420
 LD M8002
 RST M421
@@ -146,19 +132,44 @@ LD> D520 K0
 AND<= D520 K600
 OUT M413
 LD> D528 K0
-AND<= D528 K1000
-AND> D529 K0
-AND<= D529 K1000
+AND<= D528 K500
 OUT M415
 LDI M300
 ORI M413
-ORI M415
 OUT Y23
 LDP X27
 AND M300
 AND M413
-AND M415
 OUT M320
+LD M320
+AND<= D350 K0
+OUT M417
+LD M417
+MOV K0 D320
+LD M417
+MOV K0 D521
+LD M417
+MOV K0 D522
+LD M417
+MOV K0 D523
+LD M417
+MOV K0 D524
+LD M417
+MOV K0 D525
+LD M417
+MOV K0 D526
+LD M417
+MOV K0 D530
+LD M417
+MOV K0 D531
+LD M417
+MOV K0 D532
+LD M417
+MOV K0 D533
+LD M417
+MOV K0 D534
+LD M417
+MOV K0 D535
 LD M320
 INC D320
 LD M320
@@ -431,7 +442,7 @@ AND M415
 ADD D530 D528 D530
 LD M416
 AND M415
-DIV D530 D529 D531
+DIV D530 K100 D531
 LD M416
 AND M415
 MOV D532 D530
