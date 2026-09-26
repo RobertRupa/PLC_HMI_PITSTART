@@ -1,92 +1,15 @@
 Device,Type,Function,Startup/Notes
-X0,Input,AUTOMATE_PRESENT / INVERTER_OK,Main enable
-X1,Input,PRACA,Status only
-X4,Input,Mechanical STOP,Momentary
-X5,Input,Mechanical Program 1,Momentary
-X6,Input,Mechanical Program 2,Momentary
-X7,Input,Mechanical Program 3,Momentary
-X10,Input,Mechanical Program 4,Momentary
-X11,Input,Mechanical Program 5,Momentary
-X12,Input,Mechanical Program 6,Momentary
-X13,Input,MANUAL / FREE,Status only
-X27,Input,RM5 CH1,Pulse input
-Y0,Output,CREDIT / COMPTEUR,Pulsed
-Y1,Output,PILOTAGGIO POMPA,M410 AND M412
-Y2,Output,Program 1,
-Y3,Output,Program 2,
-Y4,Output,Program 3,
-Y5,Output,Program 4,
-Y6,Output,Program 5,
-Y7,Output,Program 6,
-Y23,Output,RM5 INHIBIT,ON if M300=0 or D520 invalid
-Y27,Output,Work lighting,M414 AND M412
-M300,Bit,AUTOMATE_PRESENT copy,X0
-M301,Bit,PRACA copy,X1
-M302,Bit,MANUAL_FREE status,X13
-M320,Bit,Accepted RM5 one-scan pulse,LDP X27 gated by M300 M413
-M321,Bit,RM5 packet active,
-M330,Bit,CREDIT ON phase,
-M331,Bit,CREDIT OFF phase,
-M400,Bit,HMI STOP,Momentary
-M401,Bit,HMI Program 1,Momentary
-M402,Bit,HMI Program 2,Momentary
-M403,Bit,HMI Program 3,Momentary
-M404,Bit,HMI Program 4,Momentary
-M405,Bit,HMI Program 5,Momentary
-M406,Bit,HMI Program 6,Momentary
-M410,Bit,PILOTAGGIO_ENABLE,SET on first scan
-M411,Bit,RESET_SESSION_COUNTERS,HMI momentary self-reset
-M412,Bit,WORK_ACTIVE,
-M413,Bit,BASE_TIME_OK,D520 in 1..600
-M414,Bit,WORK_LIGHTS_ENABLE,HMI RW; SET on first scan
-M415,Bit,CLOCK_SCALE_OK,D528 in 1..500; displayed x0.01
-M416,Bit,WORK_1S_TICK,Internal one-scan pulse
-M417,Bit,NEW_SESSION_PULSE,First accepted RM5 pulse while D350<=0
-M420,Bit,Program 1 active,
-M421,Bit,Program 2 active,
-M422,Bit,Program 3 active,
-M423,Bit,Program 4 active,
-M424,Bit,Program 5 active,
-M425,Bit,Program 6 active,
-M440,Bit,STOP_CMD,X4 OR M400
-M441,Bit,P1_CMD,X5 OR M401
-M442,Bit,P2_CMD,X6 OR M402
-M443,Bit,P3_CMD,X7 OR M403
-M444,Bit,P4_CMD,X10 OR M404
-M445,Bit,P5_CMD,X11 OR M405
-M446,Bit,P6_CMD,X12 OR M406
-M451,Bit,P1_SELECT_PULSE,one scan
-M452,Bit,P2_SELECT_PULSE,one scan
-M453,Bit,P3_SELECT_PULSE,one scan
-M454,Bit,P4_SELECT_PULSE,one scan
-M455,Bit,P5_SELECT_PULSE,one scan
-M456,Bit,P6_SELECT_PULSE,one scan
-D300,Data,RM5 CH1 value,10 at startup
-D320,Data,Current RM5 packet pulse count,0 at startup
-D330,Data,CREDIT output queue,0 at startup
-D350,Data,Remaining displayed time seconds,0 at startup max 32000
-D500-D507,Data,PLC version ASCII,V1.3.1
-D516,Data,VERSION_MAJOR,1
-D517,Data,VERSION_MINOR,3
-D518,Data,VERSION_PATCH,0
-D520,Data,Nominal seconds per CREDIT pulse,HMI RW 1..600 default 10 if invalid
-D521,Data,Last RM5 packet pulse count,RO
-D522:D523,Data,Last packet nominal time seconds,RO 32-bit
-D524,Data,Accepted RM5 pulses session,RO max 30000
-D525:D526,Data,Accepted RM5 nominal time session,RO 32-bit
-D527,Data,Time saturation threshold,32000-D520
-D528,Data,Clock scale x100,HMI RW 1..500; 100=1.00; 101=1.01; 99=0.99
-D529,Data,Reserved,No longer used in V1.3.1
-D530,Data,Clock fractional accumulator,Internal
-D531,Data,Seconds decrement quotient current tick,Internal/diagnostic
-D532,Data,Clock remainder,Internal/diagnostic
-D533,Data,CREDIT pulses actually sent session,RO max 30000
-D534:D535,Data,Nominal time of sent CREDIT pulses,RO 32-bit
-D540,Data,Time left minutes,RO
-D541,Data,Time left seconds,RO
-T200,Timer,RM5 packet timeout,K100
-T201,Timer,CREDIT ON,K10
-T202,Timer,CREDIT OFF,K10
-M8000,System bit,Always ON,
-M8002,System bit,First scan,
-M8013,System bit,1-second clock,
+D300,Data,COIN_MULTIPLIER / CREDIT pulses per RM5 pulse,HMI RW 1..100 default 10
+D520,Data,Seconds per actually sent CREDIT pulse,HMI RW 1..600 default 10
+D350,Data,Remaining time seconds,Counts DOWN while WORK_ACTIVE
+D533,Data,CREDIT pulses actually sent in session,Counts UP
+D534:D535,Data,Cumulative nominal time delivered by sent CREDIT pulses,Counts UP; diagnostic
+D540,Data,Remaining minutes,RO
+D541,Data,Remaining seconds,RO
+D528,Data,Clock scale x100,HMI RW; 100=1.00x; valid 50..200
+M413,Bit,TIME_PER_CREDIT_OK,D520 valid
+M415,Bit,CLOCK_SCALE_OK,D528 valid
+M417,Bit,NEW_SESSION_PULSE,Internal one scan
+M418,Bit,COIN_MULTIPLIER_OK,D300 valid
+M414,Bit,WORK_LIGHTS_ENABLE,HMI RW
+Y0,Output,PITSTART_CREDITS,One pulse per queued CREDIT
