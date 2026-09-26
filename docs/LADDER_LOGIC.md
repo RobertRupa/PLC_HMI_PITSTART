@@ -1,71 +1,70 @@
-# Logika PLC — V1.3.1
+# Logika PLC — V1.3.2
 
-## Najważniejsze poprawki
+## Zmiana sposobu naliczania
 
-1. Usunięto D529 z algorytmu korekcji czasu.
-2. D528 jest stałoprzecinkowym współczynnikiem ×100.
-3. Niepoprawne D528 nie blokuje RM5.
-4. Dodano M417 = NEW_SESSION_PULSE.
-5. Liczniki sesji są zerowane automatycznie na pierwszym impulsie nowej sesji.
-6. M414 pozostaje WORK_LIGHTS_ENABLE.
+W V1.3.2 czas nie jest już dodawany przy wejściu RM5.
 
-## D528 — korekcja zegara
+`D300` jest faktycznym Coin multiplier:
 
 ```text
-D528=100 -> 1.00x
-D528=101 -> 1.01x
-D528=99  -> 0.99x
+CREDIT_COUNT = RM5_PULSES × D300
 ```
 
-M415=1, gdy D528 jest w zakresie 1…500.
-
-Przy każdym 1-sekundowym ticku podczas WORK_ACTIVE:
+Po końcu paczki:
 
 ```text
-D530 = D530 + D528
-DIV D530 K100 D531
-D531 = liczba sekund do odjęcia
-D532 = reszta
-D530 = D532
+MUL D320 D300 D542
+MOV D542 D330
 ```
 
-To zachowuje część ułamkową korekcji.
+`D330` jest kolejką impulsów `Y0/PITSTART_CREDITS`.
 
-Jeżeli M415=0, istniejący czas jest odliczany awaryjnie 1:1.
+## Dodawanie czasu
 
-## RM5
-
-RM5 jest blokowany tylko przez:
-- brak M300,
-- niepoprawny D520.
-
-Korekcja zegara D528 nie blokuje przyjmowania monet.
-
-## Automatyczny reset sesji
+Każdy faktycznie wysłany CREDIT kończy fazę ON na `T201`. Dopiero wtedy:
 
 ```text
-M320 AND D350<=0 -> M417
+T201 -> INC D533
+T201 -> D350 = D350 + D520
 ```
 
-M417 zeruje przed pierwszym impulsem:
-- D320,
-- D521:D526,
-- D530:D535.
+`D520` to sekundy / CREDIT. Domyślnie 10 s.
 
-Następnie ten sam impuls jest normalnie liczony do D320 i D524.
-
-STOP nie wywołuje M417 i nie zeruje sesji.
-
-## MM:SS
+Domyślnie `D300=10`, więc:
 
 ```text
-DIV D350 K60 D540
+1 RM5 -> 10 CREDIT -> 10 × 10 s = 100 s
 ```
 
-- D540 = minuty,
-- D541 = sekundy / reszta.
+## Odliczanie
 
-W HMI używaj dwóch 16-bitowych pól bez Offset address.
+`D350` jest pozostałym czasem. Odliczanie działa tylko przy `M412=WORK_ACTIVE`.
+
+`D528` jest korekcją x100:
+- 100=1.00x,
+- 101=1.01x,
+- 99=0.99x.
+
+Jeżeli D528 jest poza zakresem 50…200, odliczanie przechodzi awaryjnie na 1 s / tick.
+
+## Sesja
+
+Nowa sesja jest wykrywana tylko na pierwszym zaakceptowanym impulsie RM5, gdy:
+- D350<=0,
+- D330<=0,
+- M321=0,
+- M330=0,
+- M331=0.
+
+M417 zeruje liczniki sesji przed policzeniem pierwszego impulsu.
+
+## Diagnostyka
+
+- D524 = impulsy RM5 w sesji,
+- D533 = CREDIT faktycznie wysłane,
+- D534:D535 = skumulowany czas wysłanych CREDIT — rośnie,
+- D350 = czas pozostały — maleje,
+- D540/D541 = MM/SS czasu pozostałego.
 
 ## Oświetlenie
 
@@ -77,4 +76,4 @@ M414 AND M412 -> Y27
 
 - `plc/MAIN_GXDEV_ENTRY.txt`
 - `plc/MAIN.txt`
-- `plc/main_v1.3.1.csv`
+- `plc/main_v1.3.2.csv`
