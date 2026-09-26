@@ -1,5 +1,18 @@
 # Changelog
 
+## V1.3.2
+
+- D300 działa jako Coin multiplier: liczba impulsów PITSTART_CREDITS na impuls RM5,
+- domyślnie D300=10,
+- D520 jest czasem w sekundach przypadającym na jeden faktycznie wysłany CREDIT,
+- czas D350 jest dodawany przy T201, czyli po rzeczywistym impulsie Y0,
+- usunięto dodawanie czasu bezpośrednio przy impulsie RM5,
+- D528 jest pojedynczym współczynnikiem zegara x100; D529 nie jest używany,
+- poprawiono wykrywanie nowej sesji, aby wieloimpulsowa paczka RM5 nie resetowała licznika przy każdym impulsie,
+- D534:D535 pozostaje licznikiem skumulowanego czasu wysłanego i nie służy jako countdown,
+- wersja PLC/HMI V1.3.2.
+
+
 ## V1.3.1
 
 - usunięto D529 z algorytmu zegara,
