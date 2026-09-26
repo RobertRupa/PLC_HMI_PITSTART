@@ -1,4 +1,4 @@
-PLC_HMI_PITSTART - V1.3.0
+PLC_HMI_PITSTART - V1.3.1
 =================================================
 
 WEJŚCIA PLC
@@ -52,8 +52,9 @@ M411    RESET_SESSION_COUNTERS
 M412    WORK_ACTIVE
 M413    BASE_TIME_OK
 M414    WORK_LIGHTS_ENABLE
-M415    CLOCK_RATIO_OK
+M415    CLOCK_SCALE_OK
 M416    WORK_1S_TICK
+M417    NEW_SESSION_PULSE
 
 M420-M425 PROGRAM 1-6 ACTIVE
 M440       STOP_CMD
@@ -67,10 +68,10 @@ D320    bieżąca paczka impulsów
 D330    kolejka CREDIT
 D350    pozostały czas [s], max 32000
 
-D500-D503  string V1.3.0
+D500-D503  string V1.3.1
 D516       VERSION_MAJOR = 1
 D517       VERSION_MINOR = 3
-D518       VERSION_PATCH = 0
+D518       VERSION_PATCH = 1
 
 D520    nominalny czas / 1 impuls CREDIT [s]
         HMI RW, 1...600, domyślnie 10
@@ -81,20 +82,31 @@ D524    zaakceptowane impulsy RM5 sesji
 D525:D526 nominalny czas zaakceptowanych impulsów
 D527    32000-D520
 
-D528    CLOCK_MULTIPLIER
-        HMI RW, 1...1000, domyślnie 100
-D529    CLOCK_DIVIDER
-        HMI RW, 1...1000, domyślnie 100
+D528    CLOCK_SCALE_X100
+        HMI RW, 1...500
+        100 = 1.00x
+        101 = 1.01x
+        99  = 0.99x
+        domyślnie 100
+D529    REZERWA - niewykorzystywany od V1.3.1
 
 D530    akumulator ułamkowego zegara
 D531    liczba sekund do odjęcia w bieżącym ticku
-D532    reszta dzielenia
+D532    reszta dzielenia przez 100
 
 D533    faktycznie wysłane impulsy CREDIT sesji
 D534:D535 nominalny czas wysłanych impulsów CREDIT
 
 D540    Time left - minuty
 D541    Time left - sekundy
+
+NOWA SESJA
+----------
+Pierwszy zaakceptowany impuls RM5 przy D350<=0 ustawia M417.
+Przed policzeniem tego impulsu zerowane są:
+D320, D521:D526, D530:D535.
+
+STOP nie zeruje sesji ani D350.
 
 TIMERY
 ------
@@ -110,11 +122,13 @@ M8013 1 sec clock
 
 ZEGAR
 -----
-tempo odliczania = D528 / D529
+tempo odliczania = D528 / 100
 
-100/100 = 1.000x
-105/100 = 1.050x
-95/100  = 0.950x
+100 = 1.00x
+101 = 1.01x
+99  = 0.99x
+
+Niepoprawne D528 nie blokuje RM5; odliczanie działa awaryjnie 1.00x.
 
 WORK LIGHTS
 -----------
