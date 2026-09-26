@@ -1,5 +1,19 @@
 # Changelog
 
+## V1.3.1
+
+- usunięto D529 z algorytmu zegara,
+- D528 jest współczynnikiem stałoprzecinkowym ×100,
+- 100=1.00×, 101=1.01×, 99=0.99×,
+- zakres D528: 1…500,
+- niepoprawne D528 nie blokuje RM5; odliczanie przechodzi na 1.00×,
+- dodano M417 NEW_SESSION_PULSE,
+- nowa sesja zaczyna się na pierwszym zaakceptowanym impulsie RM5 przy D350<=0,
+- na początku sesji automatycznie zerowane są D320, D521:D526 i D530:D535,
+- STOP nie resetuje sesji ani pozostałego czasu,
+- poprawiono dokumentację MM:SS oraz 32-bitowych pól HMI,
+- wersja PLC/HMI podniesiona do V1.3.1.
+
 ## V1.3.0
 
 - dodano M414 WORK_LIGHTS_ENABLE,
