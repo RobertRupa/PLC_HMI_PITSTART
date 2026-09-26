@@ -27,3 +27,7 @@ M429 = 0
 ```
 
 Po potwierdzeniu sygnału X1/PRACA można ustawić M429=1.
+
+## CSV column mapping
+
+See `IMPORT_CSV.md`. Column E of `main_v1.4.0.csv` is mapped as **Note** during import.
