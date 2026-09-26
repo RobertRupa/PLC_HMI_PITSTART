@@ -1,33 +1,48 @@
-# Start i parametry — V1.3.1
+# Start i obsługa — V1.3.2
 
-Na M8002:
-- zerowane są D320/D330/D350 i rejestry robocze/liczniki sesji,
-- D520 pozostaje bez zmian, jeżeli 1…600; inaczej =10,
-- D528 pozostaje bez zmian, jeżeli 1…500; inaczej =100,
-- D529 nie jest używany,
-- M410 jest SET,
-- M414 jest SET,
-- programy M420…M425 są resetowane,
-- M417 jest resetowane,
-- wersja HMI ustawiana jest na V1.3.1.
+## Start PLC
 
-D330 jest zawsze zerowane przy starcie, aby stara kolejka CREDIT nie została wznowiona.
+Na pierwszym skanie:
+- kolejka CREDIT D330 = 0,
+- pozostały czas D350 = 0,
+- liczniki sesji = 0,
+- programy P1…P6 = OFF,
+- M410 Pilotaggio enable = ON,
+- M414 Work lights enable = ON.
 
-D350 jest zerowane przy starcie zgodnie z polityką bezpieczeństwa projektu.
+Parametry HMI są korygowane do wartości domyślnych tylko gdy są poza zakresem:
+- D300: 1…100, domyślnie 10,
+- D520: 1…600, domyślnie 10,
+- D528: 50…200, domyślnie 100.
 
 ## Nowa sesja
 
-Nowa sesja zaczyna się przy pierwszym zaakceptowanym impulsie RM5, gdy D350<=0:
+M417 powstaje przy pierwszym zaakceptowanym impulsie RM5, gdy:
+- nie ma aktywnej paczki,
+- D350<=0,
+- D330<=0,
+- generator CREDIT jest bezczynny.
 
-```text
-M320 AND D350<=0 -> M417
-```
+M417 zeruje liczniki sesji przed policzeniem pierwszego impulsu.
 
-M417 zeruje:
-- D320,
-- D521:D526,
-- D530:D535,
+## STOP
 
-a następnie pierwszy impuls nowej sesji jest normalnie liczony.
+STOP resetuje aktywny program, ale:
+- nie kasuje D350,
+- nie kasuje D330,
+- nie resetuje liczników sesji.
 
-STOP nie tworzy nowej sesji, nie zeruje D350 i nie kasuje liczników bieżącej sesji.
+Po STOP czas jest pauzowany, ponieważ D350 odlicza tylko gdy M412=WORK_ACTIVE.
+
+## Programy
+
+HMI:
+- M400 STOP,
+- M401…M406 P1…P6.
+
+Fizyczne:
+- X4 STOP,
+- X5…X12 P1…P6.
+
+Stany aktywnych programów:
+- M420…M425.
