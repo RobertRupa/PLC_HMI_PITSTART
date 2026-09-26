@@ -1,8 +1,8 @@
-PLC_HMI_PITSTART - V1.3.2
+PLC_HMI_PITSTART - V1.4.0
 =====================================
 
-WEJŚCIA
--------
+I/O
+---
 X000  AUTOMATE_PRESENT / INVERTER_OK
 X001  PRACA
 X004  STOP
@@ -12,71 +12,78 @@ X007  P3
 X010  P4
 X011  P5
 X012  P6
-X013  MANUAL/FREE status
+X013  MANUAL / FREE status
 X027  RM5 CH1
 
-WYJŚCIA
--------
-Y000  PITSTART_CREDITS / COMPTEUR
+Y000  PITSTART_CREDITS / COUNTER (1 impuls = 0,10 EUR)
 Y001  PILOTAGGIO
 Y002..Y007  P1..P6
 Y023  RM5 INHIBIT
 Y027  WORK LIGHTS
 
-HMI / BITY
-----------
+HMI COMMANDS
+------------
 M400  STOP
 M401..M406  P1..P6
 M410  PILOTAGGIO_ENABLE
-M411  RESET_SESSION_COUNTERS
-M412  WORK_ACTIVE
-M413  D520_VALID
+M411  RESET_DIAGNOSTIC_COUNTERS
 M414  WORK_LIGHTS_ENABLE
-M415  D528_VALID
-M417  NEW_SESSION_PULSE
-M418  D300_VALID
+M429  SYNC_COUNTDOWN_WITH_PRACA
 
-REJESTRY
---------
-D300  COIN_MULTIPLIER
-      liczba impulsów CREDIT na 1 impuls RM5
-      RW HMI, 1..100, domyślnie 10
+HMI STATUS
+----------
+M300  AUTOMATE_PRESENT
+M301  PRACA
+M302  MANUAL/FREE
+M412  WORK_ACTIVE
+M413  RM5_VALUE_OK
+M415  TARIFF_CONFIG_OK
+M419  HMI_WAKE_REQUEST (~3 s)
+M420..M425  P1..P6 ACTIVE
+M426  TIME_DISPLAY_VALID
+M427  CREDIT_AVAILABLE
+M430  RUN_TIME_ENABLE
 
-D320  impulsy bieżącej paczki RM5
-D330  kolejka impulsów CREDIT
-D350  pozostały czas [s], countdown
+PARAMETRY
+---------
+D300  RM5 CH1 VALUE [x0,10 EUR], 1..100, default 10
+D528  CLOCK CORRECTION x100, 50..200, default 100
+D549  MAX CREDIT [x0,10 EUR], 1..50, default 50
+D550  BASE PRICE [x0,10 EUR], 1..D549, default 5
+D551  P1 TIME [s] at base price, 1..600, default 70
+D552  P2 TIME [s] at base price, 1..600, default 70
+D553  P3 TIME [s] at base price, 1..600, default 70
+D554  P4 TIME [s] at base price, 1..600, default 70
+D555  P5 TIME [s] at base price, 1..600, default 70
+D556  P6 TIME [s] at base price, 1..600, default 70
 
-D520  TIME_PER_CREDIT_S
-      sekundy dodawane za 1 faktycznie wysłany CREDIT
-      RW HMI, 1..600, domyślnie 10
+ODCZYTY
+-------
+D350  REMAINING TIME [s]
+D540  REMAINING MINUTES
+D541  REMAINING SECONDS
+D557  LAST SELECTED PROGRAM TIME
+D558  LAST SELECTED PROGRAM NUMBER
+D560  REMAINING CREDIT INTERNAL x100 (100=0,10 EUR)
+D565  HMI WAKE / COIN EVENT COUNTER
+D580  WHOLE REMAINING 0,10 EUR UNITS
+D582  REMAINING CREDIT [cents]
+D521  LAST RM5 PACKET RAW PULSES
+D522  LAST PACKET COUNTER PULSES
+D524  SESSION RM5 RAW PULSES
+D525:D526  EXPECTED SESSION COUNTER PULSES
+D533  COUNTER PULSES ACTUALLY SENT
 
-D521  ostatnia paczka RM5 [imp]
-D522:D523  nominalny czas ostatniej paczki
-D524  impulsy RM5 sesji
-D525:D526  nominalny czas przyjęty w sesji
-D528  CLOCK_SCALE_X100
-      100=1.00x, 101=1.01x, 99=0.99x
-      zakres 50..200, domyślnie 100
+TIMERY
+------
+T200 K100  RM5 packet timeout
+T201 K10   CREDIT ON
+T202 K10   CREDIT OFF
+T203 K300  HMI wake hold ~3 s
 
-D530..D532  robocze korekcji zegara
-D533  faktycznie wysłane impulsy CREDIT sesji
-D534:D535  skumulowany czas wysłanych CREDIT; ROŚNIE
-D540  minuty pozostałego czasu
-D541  sekundy pozostałego czasu
-D542:D543  roboczy wynik RM5 * D300
-D544:D545  roboczy wynik sesji RM5 * D300
-
-DOMYŚLNE PRZELICZENIE
----------------------
-1 impuls RM5
-x D300=10
-= 10 impulsów PITSTART_CREDITS
-
-każdy CREDIT
-x D520=10 s
-= 100 s łącznie
-
-UWAGA
------
-Do countdown na HMI używaj D350 albo D540:D541.
-D534:D535 nie jest czasem pozostałym.
+WERSJA
+------
+D500..D503 = V1.4.0
+D516=1
+D517=4
+D518=0
