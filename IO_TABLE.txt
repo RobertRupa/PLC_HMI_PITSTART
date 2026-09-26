@@ -1,10 +1,10 @@
-PLC_HMI_PITSTART - V1.2.0
+PLC_HMI_PITSTART - V1.3.0
 =================================================
 
 WEJŚCIA PLC
 -----------
 X000    AUTOMATE_PRESENT / INVERTER_OK
-X001    PRACA - status
+X001    PRACA
 X004    STOP
 X005    PROGRAM 1
 X006    PROGRAM 2
@@ -12,7 +12,7 @@ X007    PROGRAM 3
 X010    PROGRAM 4
 X011    PROGRAM 5
 X012    PROGRAM 6
-X013    MANUAL / FREE - status w V1.2.0
+X013    MANUAL / FREE - status
 X014    REZERWA
 X027    RM5 CH1
 
@@ -27,155 +27,97 @@ Y005    PROGRAM 4
 Y006    PROGRAM 5
 Y007    PROGRAM 6
 Y023    RM5 INHIBIT
-Y027    OŚWIETLENIE
+Y027    WORK LIGHTS
 
-STATUS / RM5
-------------
-M300    AUTOMATE_PRESENT copy
-M301    PRACA copy
+BITY M
+------
+M300    AUTOMATE_PRESENT
+M301    PRACA
 M302    MANUAL_FREE status
-M320    RM5 accepted one-scan pulse
-M321    RM5 packet active
-M330    CREDIT ON phase
-M331    CREDIT OFF phase
+M320    zaakceptowany impuls RM5
+M321    aktywna paczka RM5
+M330    faza ON CREDIT
+M331    faza OFF CREDIT
 
-HMI
----
-M400    STOP
-M401    PROGRAM 1
-M402    PROGRAM 2
-M403    PROGRAM 3
-M404    PROGRAM 4
-M405    PROGRAM 5
-M406    PROGRAM 6
+M400    HMI STOP
+M401    HMI P1
+M402    HMI P2
+M403    HMI P3
+M404    HMI P4
+M405    HMI P5
+M406    HMI P6
+
 M410    PILOTAGGIO_ENABLE
-        SET przy pierwszym skanie
-M411    RESET_RM5_SESSION_COUNTERS
-        przycisk chwilowy; PLC sam RST M411
-M413    TIME_PARAM_OK
-        1 gdy D520 = 1...600
-
-KOMENDY WSPÓLNE
----------------
-M440    STOP_CMD = X004 OR M400
-M441    P1_CMD   = X005 OR M401
-M442    P2_CMD   = X006 OR M402
-M443    P3_CMD   = X007 OR M403
-M444    P4_CMD   = X010 OR M404
-M445    P5_CMD   = X011 OR M405
-M446    P6_CMD   = X012 OR M406
-
-IMPULSY WYBORU
---------------
-M451    P1_SELECT_PULSE
-M452    P2_SELECT_PULSE
-M453    P3_SELECT_PULSE
-M454    P4_SELECT_PULSE
-M455    P5_SELECT_PULSE
-M456    P6_SELECT_PULSE
-
-AKTYWNY PROGRAM
----------------
-M420    PROGRAM 1 ACTIVE
-M421    PROGRAM 2 ACTIVE
-M422    PROGRAM 3 ACTIVE
-M423    PROGRAM 4 ACTIVE
-M424    PROGRAM 5 ACTIVE
-M425    PROGRAM 6 ACTIVE
+M411    RESET_SESSION_COUNTERS
 M412    WORK_ACTIVE
+M413    BASE_TIME_OK
+M414    WORK_LIGHTS_ENABLE
+M415    CLOCK_RATIO_OK
+M416    WORK_1S_TICK
 
-REJESTRY D
-----------
-D300    RM5 CH1 VALUE
-        10 przy starcie; pole informacyjne / konfiguracyjne
-        konwersja czasu używa D520
+M420-M425 PROGRAM 1-6 ACTIVE
+M440       STOP_CMD
+M441-M446 P1-P6 CMD
+M451-M456 P1-P6 SELECT PULSE
 
-D320    impulsy bieżącej paczki RM5
-        0 przy starcie
+REJESTRY
+--------
+D300    RM5 CH1 VALUE = 10
+D320    bieżąca paczka impulsów
+D330    kolejka CREDIT
+D350    pozostały czas [s], max 32000
 
-D330    kolejka CREDIT do Y000
-        0 przy starcie - nie wolno wznawiać po restarcie
+D500-D503  string V1.3.0
+D516       VERSION_MAJOR = 1
+D517       VERSION_MINOR = 3
+D518       VERSION_PATCH = 0
 
-D350    pozostały czas [s]
-        0 przy starcie
-        odliczany tylko gdy M412=1
-        max 32000
+D520    nominalny czas / 1 impuls CREDIT [s]
+        HMI RW, 1...600, domyślnie 10
 
-D351    rezerwa
+D521    impulsy ostatniej paczki
+D522:D523 czas ostatniej paczki
+D524    zaakceptowane impulsy RM5 sesji
+D525:D526 nominalny czas zaakceptowanych impulsów
+D527    32000-D520
 
-D500    "V1"
-D501    ".2"
-D502    ".0"
-D503    0
-D504-D507 rezerwa stringu wersji
+D528    CLOCK_MULTIPLIER
+        HMI RW, 1...1000, domyślnie 100
+D529    CLOCK_DIVIDER
+        HMI RW, 1...1000, domyślnie 100
 
-D516    VERSION_MAJOR = 1
-D517    VERSION_MINOR = 2
-D518    VERSION_PATCH = 0
+D530    akumulator ułamkowego zegara
+D531    liczba sekund do odjęcia w bieżącym ticku
+D532    reszta dzielenia
 
-D520    TIME_PER_RM5_PULSE_S
-        HMI RW
-        zakres 1...600
-        domyślne 10 tylko jeśli wartość startowa jest niepoprawna
+D533    faktycznie wysłane impulsy CREDIT sesji
+D534:D535 nominalny czas wysłanych impulsów CREDIT
 
-D521    LAST_PACKET_PULSES
-D522    LAST_PACKET_TIME_S low word
-D523    LAST_PACKET_TIME_S high word
-D524    RM5_SESSION_PULSE_COUNTER, max 30000
-D525    RM5_SESSION_EQUIV_TIME_S low word
-D526    RM5_SESSION_EQUIV_TIME_S high word
-D527    TIME_ADD_LIMIT_THRESHOLD = 32000 - D520
+D540    Time left - minuty
+D541    Time left - sekundy
 
 TIMERY
 ------
-T200 K100    RM5 packet timeout ~1,0 s
-T201 K10     CREDIT ON ~0,1 s
-T202 K10     CREDIT OFF ~0,1 s
+T200 K100    timeout paczki RM5
+T201 K10     CREDIT ON
+T202 K10     CREDIT OFF
 
-BITY SYSTEMOWE
---------------
-M8000        zawsze ON
-M8002        pierwszy skan
-M8013        zegar 1 s, używany przez LDP
+SYSTEM
+------
+M8000 always ON
+M8002 first scan
+M8013 1 sec clock
 
-BEZPIECZNY START
-----------------
-D300 = 10
-D320 = 0
-D330 = 0
-D350 = 0
-D351 = 0
-D521...D527 = 0 początkowo; D527 jest następnie obliczane z D520
-D520 pozostaje bez zmian, jeśli 1...600; w przeciwnym razie = 10
-
-M320 = 0
-M321 = 0
-M330 = 0
-M331 = 0
-M400...M406 = 0
-M411 = 0
-M412 = 0
-M420...M425 = 0
-M410 = 1
-
-RM5 - STANDARDOWE ZŁĄCZE 10-PIN
---------------------------------
-Pin 1    GND
-Pin 2    +12...24 VDC
-Pin 3    CH5
-Pin 4    CH6
-Pin 5    N.U. / zależne od konfiguracji
-Pin 6    INHIBIT <- Y023
-Pin 7    CH1 -> X027
-Pin 8    CH2
-Pin 9    CH3
-Pin 10   CH4
-
-PITSTART
---------
-CN8 1-2    Presence automatic device -> X000
-CN8 3-4    Manual / Free -> X013 -> M302
-
-UWAGA
+ZEGAR
 -----
-W V1.2.0 Manual / Free jest tylko statusem. Nie omija D350 i nie uruchamia programu bez kredytu.
+tempo odliczania = D528 / D529
+
+100/100 = 1.000x
+105/100 = 1.050x
+95/100  = 0.950x
+
+WORK LIGHTS
+-----------
+M414 AND M412 -> Y027
+
+Touch control jest wyłącznie w HMI i nie używa bitu PLC.
