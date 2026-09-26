@@ -1,28 +1,11 @@
-# Comestero RM5 Evolution — V1.2.0
+# Comestero RM5 Evolution — V1.3.0
 
 ## Połączenie
 
-- RM5 pin 7 CH1 -> PLC X27
-- RM5 pin 6 INHIBIT <- PLC Y23
-- RM5 pin 1 GND -> wspólne 0 V / COM wejść
-- RM5 pin 2 -> +12…24 VDC
-
-## Standardowe złącze 10-pin
-
-| Pin | Funkcja |
-|---:|---|
-| 1 | GND |
-| 2 | +12…24 VDC |
-| 3 | CH5 |
-| 4 | CH6 |
-| 5 | N.U. / zależne od konfiguracji |
-| 6 | INHIBIT |
-| 7 | CH1 |
-| 8 | CH2 |
-| 9 | CH3 |
-| 10 | CH4 |
-
-Wyjście CH1 jest open collector / aktywne do GND.
+- pin 7 CH1 -> X27
+- pin 6 INHIBIT <- Y23
+- pin 1 GND -> 0 V / COM
+- pin 2 -> +12…24 VDC
 
 ## Akceptacja impulsu
 
@@ -30,55 +13,32 @@ Wyjście CH1 jest open collector / aktywne do GND.
 LDP X27
 AND M300
 AND M413
+AND M415
 OUT M320
 ```
 
-M300 = automat dostępny.
-M413 = D520 w zakresie 1…600.
+Impuls jest przyjmowany tylko gdy:
+- automat jest dostępny,
+- D520 jest poprawne,
+- mnożnik/dzielnik zegara są poprawne.
 
 ## INHIBIT
 
 ```text
-/M300 OR /M413 -> Y23
+/M300 OR /M413 OR /M415 -> Y23
 ```
 
-RM5 jest blokowany, gdy automat nie jest dostępny lub parametr czasu jest niepoprawny.
+## Nominalny czas
 
-## Liczenie
+D520 = nominalne sekundy automatyki na jeden impuls CREDIT.
 
-Każdy M320:
-- zwiększa D320,
-- zwiększa D524 do 30000,
-- dodaje D520 sekund do D350,
-- ogranicza D350 do 32000 s,
-- ustawia M321 i restartuje T200.
+Każdy zaakceptowany impuls zwiększa D350 o D520, a po zakończeniu paczki ta sama liczba impulsów trafia do kolejki D330 i jest wysyłana na Y0.
 
-## Koniec paczki
+## Diagnostyka
 
-Po około 1 s bez kolejnego impulsu:
+- D524 = impulsy zaakceptowane z RM5
+- D533 = impulsy CREDIT faktycznie wysłane na Y0
+- D525:D526 = nominalny czas zaakceptowanych impulsów
+- D534:D535 = nominalny czas wysłanych impulsów
 
-```text
-D521 = D320
-D522:D523 = D320 * D520
-D330 = D320
-D320 = 0
-M321 = 0
-```
-
-D330 steruje generatorem CREDIT Y0.
-
-## Parametry
-
-- D300 = 10 — wartość kanału 1 RM5 / pole konfiguracyjne
-- D520 = sekundy za impuls, 1…600
-- D350 = pozostały czas
-- D524 = licznik impulsów sesji
-- D525:D526 = równoważny czas sesji
-
-Aktualna logika czasu używa D520; D300 nie jest mnożnikiem czasu.
-
-## Restart
-
-D330 jest zerowane na pierwszym skanie, aby nie wysyłać ponownie starych impulsów CREDIT.
-
-D520 jest ustawiane na 10 tylko wtedy, gdy wartość startowa jest poza 1…600.
+Różnica D524-D533 pozwala zobaczyć, czy w kolejce CREDIT pozostały jeszcze impulsy.
