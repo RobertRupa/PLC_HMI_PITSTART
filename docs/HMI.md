@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.4.8
+# HMI — WSStudio — V1.4.9
 
 ## Ekran Home
 
@@ -119,10 +119,10 @@ M429:
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.4.8
+D500..D503 = V1.4.9
 D516 = 1
 D517 = 4
-D518 = 8
+D518 = 9
 ```
 
 
@@ -206,13 +206,6 @@ Dzięki temu przy `X0=0` ekran "Stanowisko nieczynne" ma pierwszeństwo nad "Sta
 
 W WSStudio użyj `D585` jako rejestru numeru/indeksu ekranu.
 
-### Wake po RM5
-
-`D586 = HMI_WAKE_REQUEST_WORD`:
-- 1 przez około 3 s po zaakceptowanym impulsie RM5,
-- 0 poza tym oknem.
-
-Jeżeli WSStudio pozwala na osobny rejestr "wake" lub zdarzenie systemowe, użyj D586.
 
 ### Domyślne ustawienia
 
@@ -224,3 +217,41 @@ M431 = 1   Auto Start Program enabled
 ```
 
 Oba bity nadal mogą być zmieniane z HMI podczas pracy.
+
+
+## Konfiguracja systemowa WSStudio
+
+Projekt HMI używa czterech ekranów:
+
+| Index | Nazwa w projekcie | Funkcja |
+|---:|---|---|
+| 0 | Home | ekran pracy / wybór programu |
+| 1 | Admin | parametry i ustawienia |
+| 2 | Error | „Stanowisko nieczynne” |
+| 3 | Ready | „Stanowisko wolne” |
+
+### PLC Control
+
+`System Settings -> plcCtrl`:
+
+- **Control Screen Switch**: ON
+- adres: `[Mitsubishi_Fx1n]D585`
+
+PLC wpisuje do D585 numer ekranu według warunków procesu.
+
+### HMI State
+
+`System Settings -> HMI Status`:
+
+- **Screen Index**: ON
+- adres: `[Mitsubishi_Fx1n]D586`
+
+HMI zapisuje do D586 numer aktualnie wyświetlanego ekranu. D586 jest więc kanałem **HMI -> PLC** i PLC nie może go nadpisywać.
+
+### Wake / impuls RM5
+
+- `M419` — wake request przez około 3 s,
+- `D587` — word mirror M419 (0/1),
+- `D565` — licznik zaakceptowanych zdarzeń RM5.
+
+Aktualna konfiguracja WSStudio nie ma osobnego, potwierdzonego pola „wake by PLC word”, dlatego D587 pozostaje dostępny do diagnostyki lub przyszłej konfiguracji.
