@@ -1,66 +1,86 @@
-# Comestero PitStart — odniesienie dla V1.4.0
+# Comestero PitStart — odniesienie funkcjonalne dla V1.5.7
 
-Źródło projektu: **Gamma Pit – Sistemi di attivazione – Manuale operativo**, PitStart-F, Rev. 00, 13/10/2009.
+Źródło odniesienia projektu: **Gamma Pit – Sistemi di attivazione – Manuale operativo**, PitStart-F, Rev. 00, 13/10/2009.
+
+Ten dokument opisuje, jak funkcje oryginalnego PitStart są odwzorowane w aktualnym PLC. Nie jest kopią instrukcji producenta.
 
 ## Wyjścia maszyny
 
-PitStart ma:
-- wyjście Counter / Compteur,
+Funkcje PitStart:
+- Counter / Compteur,
 - Pilotaggio pompa,
 - P1…P6.
 
-W modelu V1.4.0:
-- Y0 = Counter / PITSTART_CREDITS,
-- Y1 = Pilotaggio,
-- Y2…Y7 = P1…P6.
+Aktualne mapowanie:
 
-Każdy impuls Y0 reprezentuje jedną jednostkę 0,10 EUR.
+```text
+Y0  Counter / PITSTART_CREDITS
+Y1  Pilotaggio
+Y3  P1
+Y4  P2
+Y5  P3
+Y6  P4
+Y7  P5
+Y10 P6
+```
 
-## Cena bazowa i czasy programów
+Y2 jest używane przez RM5 INHIBIT, dlatego programy zaczynają się od Y3.
 
-PitStart ma jedną wspólną cenę bazową dla sześciu programów, natomiast czas przypisany do tej ceny może być osobny dla każdego programu.
+Każdy impuls Y0 reprezentuje 0,10 EUR.
 
-W projekcie:
-- D550 = cena bazowa w jednostkach 0,10 EUR,
-- D551…D556 = czas P1…P6 w sekundach dla ceny bazowej.
+## Cena bazowa i czasy
 
-Przykład:
-- D550=5 -> 0,50 EUR,
-- D551=70 -> P1 = 70 s za 0,50 EUR.
+```text
+D550 = wspólna cena bazowa [x0,10 EUR]
+D551 = P1 seconds
+D552 = P2 seconds
+...
+D556 = P6 seconds
+```
 
-## RM5
+Pozostały kredyt pieniężny jest przechowywany w D560. Zmiana programu nie kasuje kredytu, tylko przelicza pozostały czas według nowej taryfy.
 
-D300 jest wartością kanału RM5 CH1 wyrażoną w jednostkach 0,10 EUR.
+## RM5 Evolution
 
-Przykład:
-- D300=10 -> zaakceptowany impuls RM5 CH1 reprezentuje 1,00 EUR,
-- PLC generuje 10 impulsów Counter/Y0.
+`D300` określa wartość pojedynczego impulsu CH1 w jednostkach 0,10 EUR.
 
-## Kredyt i zmiana programu
+```text
+D300=1  -> CH1 = 0,10 EUR
+D300=10 -> CH1 = 1,00 EUR
+```
 
-PLC utrzymuje pozostały kredyt pieniężny w D560.
-
-Po zmianie programu kredyt nie jest kasowany. Zmienia się tylko przeliczony dostępny czas zgodnie z czasem wybranego programu.
+PLC generuje odpowiednią liczbę impulsów Y0.
 
 ## Pilotaggio
 
-M410 AND M412 -> Y1.
+```text
+M410 AND M412 -> Y1
+```
 
-M412 powstaje po wyborze programu przy dostępnym kredycie. STOP wyłącza program i Pilotaggio, ale pozostawia kredyt.
+STOP wyłącza aktywny program i M412, więc Y1 wyłącza się natychmiast.
 
 ## Manual / Free
 
-X13 -> M302 pozostaje w V1.4.0 statusem. Pełne działanie FREE bez kredytu nie jest jeszcze aktywowane.
+`X13 -> M302` jest obecnie statusem. Pełny tryb FREE bez kredytu nie jest zaimplementowany.
 
-## PRACA
+## PRACA / RUN
 
-X1/M301 nie jest standardowym wejściem PitStart z manuala. Jest dodatkowym feedbackiem naszej automatyki.
+X1/M301 jest dodatkowym feedbackiem automatyki, którego nie należy mylić z funkcjami oryginalnego PitStart.
 
-M429 pozwala zdecydować, czy zużycie kredytu ma być synchronizowane z tym feedbackiem:
-- M429=0 -> WORK_ACTIVE,
-- M429=1 -> WORK_ACTIVE + PRACA.
+`M429 = Sync time with RUN`:
 
-## HMI wake
+```text
+M429=0 -> odliczanie wg M412/WORK_ACTIVE
+M429=1 -> odliczanie wg M301/PRACA-RUN
+```
 
-M419 = około 3 s po zaakceptowanej monecie.
-D565 = licznik zdarzeń monet.
+Przy M429=1 czas może nadal schodzić po STOP, jeśli RUN pozostaje aktywny.
+
+## HMI
+
+- D585 — indeks ekranu zadawany przez PLC,
+- D586 — indeks aktualnego ekranu zwracany przez HMI,
+- M419/D587 — sygnał zdarzenia RM5,
+- D565 — licznik zaakceptowanych impulsów RM5.
+
+Aktualny projekt HMI: [../projects/hmi/pitstart.hs](../projects/hmi/pitstart.hs).
