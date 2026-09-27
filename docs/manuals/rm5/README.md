@@ -1,9 +1,15 @@
-# RM5 manuals
+# RM5 Evolution manual
 
-Umieszczaj tutaj instrukcje dotyczące Comestero RM5 Evolution.
+Manual jest obecny w repo:
 
-Docelowa nazwa głównego manuala:
+[manual_rm5.pdf](manual_rm5.pdf)
 
-```text
-manual_rm5.pdf
-```
+Dokument stanowi lokalne źródło dla opisu:
+- złącza głównego CN5,
+- zasilania 12–24 VDC,
+- CH1…CH6,
+- wejścia INHIBIT,
+- złącza programującego/serial,
+- konfiguracji i serwisu RM5 Evolution.
+
+Konfiguracja używana w projekcie, screeny Clone5 i mapowanie do PLC są opisane w [../../RM5.md](../../RM5.md).
