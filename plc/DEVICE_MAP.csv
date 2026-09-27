@@ -21,6 +21,7 @@ D580,Data,Whole remaining 0.10 EUR credit units,RO
 D581,Data,Fractional credit remainder 0..99,RO
 D582,Data,Remaining credit cents,RO
 D583,Data,Remaining 0.1-cent remainder,RO
+D584,Data,Auto start program number,HMI RW 1..6 default 1
 D350,Data,Remaining time seconds for last selected program,RO
 D540,Data,Remaining minutes,RO
 D541,Data,Remaining seconds,RO
@@ -46,9 +47,12 @@ M426,Bit,TIME_DISPLAY_VALID,RO
 M427,Bit,CREDIT_AVAILABLE,RO
 M429,Bit,SYNC_COUNTDOWN_WITH_PRACA,HMI RW default OFF
 M430,Bit,RUN_TIME_ENABLE,PRACA OR not M429
-M431,Bit,AUTO_START_TIMER_ENABLE,HMI RW default OFF
-M432,Bit,AUTO_TIMER_ACTIVE,RO; starts after Y0 queue fully finishes and program is active
-M433,Bit,COUNTDOWN_ENABLE,RO; final gate for 1-second countdown
+M431,Bit,AUTO_START_PROGRAM_ENABLE,HMI RW default OFF
+M432,Bit,AUTO_START_TRIGGER,RO one-scan trigger after Y0 queue is fully idle
+M433,Bit,AUTO_START_DONE,RO latch prevents repeated automatic start in same session
+M434,Bit,AUTO_START_PROGRAM_OK,RO; D584 is 1..6
+M460-M465,Bit,AUTO_SELECT_P1_P6,Internal one-scan auto program select
+M470-M475,Bit,EFFECTIVE_SELECT_P1_P6,Internal manual/HMI OR auto select
 Y0,Output,PITSTART_CREDITS / Counter,One pulse = 0.10 EUR
 Y1,Output,PILOTAGGIO,M410 AND M412
 Y23,Output,RM5 INHIBIT,ON only when X0=0
