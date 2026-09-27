@@ -1,4 +1,4 @@
-# Logika PLC — V1.5.6
+# Logika PLC — V1.5.7
 
 ## RM5 INHIBIT
 
@@ -73,29 +73,28 @@ Przy zmianie programu D561…D563 są zerowane. Błąd spowodowany zmianą taryf
 
 ## Synchronizacja z PRACA
 
-`M430 = M301 OR /M429 OR /M410`.
-
-Domyślnie po pierwszym skanie `M429=1`.
-
-- M429=0: M430 jest zawsze aktywne, więc czas jest zużywany zgodnie z WORK_ACTIVE.
-- M429=1: M430 = M301 OR /M429 OR /M410. Przy M429=1 sygnał PRACA zatrzymuje odliczanie tylko wtedy, gdy M410/Pilotaggio jest włączone.
-
-Bramka odliczania:
+`M429 = Sync time with RUN` wybiera źródło odliczania.
 
 ```text
-M449 = M412 OR M448
+M429=0 -> M448 = M412 / WORK_ACTIVE
+M429=1 -> M449 = M301 / PRACA-RUN
+M449 = (NOT M429 AND M412) OR (M429 AND M301)
+M430 = M449
 ```
 
-Tick:
+Tick zużycia kredytu:
 
 ```text
 LDP M8013
 AND M449
-AND M430
 AND M426
 ANI M436
 OUT M416
 ```
+
+Przy `M429=1` naciśnięcie STOP zeruje aktywny program i wyjścia, ale nie zatrzymuje odliczania, jeżeli `M301/RUN=1`. Czas zatrzymuje się po zaniku RUN.
+
+Przy `M429=0` odliczanie działa tylko wtedy, gdy `M412=WORK_ACTIVE`.
 
 ## Obliczenie czasu
 
