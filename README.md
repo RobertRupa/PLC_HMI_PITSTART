@@ -1,8 +1,8 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.4.3**.
+Aktualna wersja PLC: **V1.4.4**.
 
-Logika V1.4.3 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
+Logika V1.4.4 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
 - `D300` określa wartość RM5 CH1 w jednostkach 0,10 EUR,
 - wspólna cena bazowa jest w `D550`,
@@ -105,7 +105,8 @@ Jeżeli WSStudio potrafi wybudzać/przełączać ekran po bicie PLC, użyj M419.
 - M411 — reset liczników diagnostycznych sesji
 - M414 — WORK_LIGHTS_ENABLE
 - M429 — synchronizacja odliczania z PRACA
-- M431 — AUTO_START_TIMER_ENABLE; czeka z odliczaniem do końca wysyłania Y0
+- M431 — AUTO_START_PROGRAM_ENABLE; automatycznie uruchamia wybrany program po zakończeniu wysyłania Y0
+- D584 — numer programu Auto Start 1…6
 
 Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
@@ -113,7 +114,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.4.0.csv` — CSV w układzie eksportu GX,
+- `plc/main_v1.4.4.csv` — CSV w układzie eksportu GX,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
