@@ -14,6 +14,76 @@ Aktualna wersja PLC: **V1.5.7**.
 - czasy P1…P6 dla ceny bazowej są w `D551…D556`,
 - PLC prowadzi pozostały kredyt pieniężny i z niego oblicza czas dla wybranego programu.
 
+## HMI — podgląd ekranów
+
+| Home | Admin |
+|---|---|
+| <img src="docs/images/hmi/hmi_v1_5_6_screen_000_home.png" width="390"> | <img src="docs/images/hmi/hmi_v1_5_6_screen_001_admin.png" width="390"> |
+| Ekran pracy: Program 1…5, pozostały czas, pasek czasu i STOP. PLC obsługuje również P6, ale aktualny ekran Home nie ma osobnego przycisku P6. | Ekran konfiguracji: przełączniki funkcji oraz parametry kredytu, czasu i Auto Start. |
+
+| Error / Stanowisko nieczynne | Ready / Stanowisko wolne |
+|---|---|
+| <img src="docs/images/hmi/hmi_v1_5_6_screen_002_error.png" width="390"> | <img src="docs/images/hmi/hmi_v1_5_6_screen_003_ready.png" width="390"> |
+| Wyświetlany przy braku dostępności automatu: `D585=2`. | Wyświetlany gdy automat jest dostępny, ale nie ma kredytu: `D585=3`. |
+
+### Konfiguracja przełączania ekranów
+
+| PLC Control | HMI Status |
+|---|---|
+| <img src="docs/images/hmi/hmi_v1_5_6_system_plc_control.png" width="390"> | <img src="docs/images/hmi/hmi_v1_5_6_system_hmi_status.png" width="390"> |
+| `Control Screen Switch = ON`, adres `[Mitsubishi_Fx1n]D585`. PLC wybiera ekran HMI. | `Screen Index = ON`, adres `[Mitsubishi_Fx1n]D586`. HMI zwraca do PLC indeks aktualnego ekranu. |
+
+Indeksy ekranów:
+
+```text
+0 = Home
+1 = Admin
+2 = Error / Stanowisko nieczynne
+3 = Ready / Stanowisko wolne
+```
+
+Priorytet PLC: **Admin > Nieczynne > Wolne > Home**.
+
+## Konfiguracja dostępna z ekranu Admin
+
+| Element HMI | Adres | Typ | Zakres / domyślne | Działanie |
+|---|---|---|---|---|
+| Touch control* | `LB555` | toggle lokalny HMI | ON/OFF | Lokalna funkcja panelu; nie zapisuje bitu PLC. |
+| Work lights* | `M414` | toggle | default ON | Zezwolenie na Y27. Fizyczne światła działają jako `M414 AND M412`. |
+| Auto start program | `M431` | toggle | default ON | Po zaksięgowaniu kredytu może automatycznie wybrać program wskazany przez D584. |
+| Auto Start Program | `D584` | liczba | 1…6, default 1 | `1=P1 ... 6=P6`. Pozwala również uruchomić P6 mimo braku bezpośredniego przycisku P6 na aktualnym Home. |
+| Sync time with RUN | `M429` | toggle | default ON | OFF: odliczanie wg M412/WORK_ACTIVE. ON: odliczanie wg M301/PRACA-RUN; STOP nie zatrzyma czasu, jeśli RUN pozostaje 1. |
+| Pilotaggio pompa | `M410` | toggle | default ON | Zezwolenie na Y1; wyjście działa jako `M410 AND M412`. |
+| Coin multiplier | `D300` | liczba | 1…100, default 10 | Wartość jednego impulsu RM5 CH1 w jednostkach 0,10 EUR. `10 = 1,00 EUR`. |
+| Max credits | `D549` | liczba | 1…999, default 50 | Maksymalny kredyt w jednostkach 0,10 EUR. `50=5,00 EUR`, `999=99,90 EUR`. |
+| Base price | `D550` | liczba | HMI 1…50, default 10 | Wspólna cena bazowa P1…P6 w jednostkach 0,10 EUR. M415 dodatkowo wymaga `D550<=D549`. |
+| Time correction | `D528` | liczba | 50…200, default 100 | Korekcja tempa zużycia kredytu: 100=1,00x, 50=0,50x, 200=2,00x. |
+| Program 1 time | `D551` | liczba | 1…600 s, default 300 | Czas P1 przypisany do ceny bazowej D550. |
+| Program 2 time | `D552` | liczba | 1…600 s, default 300 | Czas P2 przypisany do ceny bazowej D550. |
+| Program 3 time | `D553` | liczba | 1…600 s, default 300 | Czas P3 przypisany do ceny bazowej D550. |
+| Program 4 time | `D554` | liczba | 1…600 s, default 300 | Czas P4 przypisany do ceny bazowej D550. |
+| Program 5 time | `D555` | liczba | 1…600 s, default 300 | Czas P5 przypisany do ceny bazowej D550. |
+| Program 6 time* | `D556` | liczba | 1…600 s, default 300 | Czas P6. P6 jest obsługiwany przez PLC i Auto Start, chociaż aktualny Home nie pokazuje przycisku Program 6. |
+| Touch Calibration | `LW4057` | funkcja lokalna HMI | — | Otwiera kalibrację dotyku panelu. |
+
+`* Touch control` i `Touch Calibration` używają lokalnych urządzeń HMI `LB/LW`, nie pamięci PLC.
+
+Aktualny ekran Admin **nie pokazuje osobnego przełącznika `M439=PILOTAGGIO_DEFAULT`**. Bit M439 istnieje w PLC i domyślnie jest ON, ale nie należy traktować go jako obecnie dostępnej nastawy operatora na pokazanym ekranie HMI.
+
+### Komunikacja HMI z PLC
+
+Dla WSB7020R używana jest konfiguracja:
+
+```text
+Driver: Mitsubishi_Fx1n
+Baud:   38400
+Mode:   RS232
+```
+
+Po pobraniu projektu do HMI kabel download należy odłączyć; manual WSB podaje, że przy podłączonym kablu komunikacja HMI <-> PLC nie działa.
+
+Szczegóły: [docs/HMI.md](docs/HMI.md).
+
 ## I/O
 
 ### Wejścia
@@ -134,6 +204,30 @@ Przełączanie ekranów jest realizowane przez `D585` w funkcji PLC Control / Co
 
 Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
+## Dokumentacja oryginalnego Comestero PitStart
+
+Przesłana instrukcja to **Gamma Pit — Sistemi di attivazione — Manuale operativo**, identyfikowana jako `PitStart-F - c27-M-PIT-EK`, z datą 13/10/2009.
+
+Docelowe miejsce w repo:
+
+```text
+docs/manuals/pitstart/Gamma_Pit_PitStart_F_c27-M-PIT-EK_2009-10-13.pdf
+```
+
+Nazwa celowo nie zawiera numeru rewizji: strona 2 PDF pokazuje `Rev. 01`, podczas gdy nagłówki dalszych stron pokazują `Rev. 00`.
+
+Najważniejsze rozdziały dla tego projektu:
+- `9.5 PitStart` — zasilanie, połączenie z automatyką, wejście obecności automatu i Manual/Free,
+- `9.5.4` — konfiguracja MultiConfig: maksymalna wartość, wspólna cena bazowa, tabela RM5, język i poziomy wejść,
+- `9.5.5` — programowanie ręczne cen/czasów,
+- `9.5.6` — inicjalizacja,
+- `10.5` — schemat elektryczny PitStart.
+
+Oryginalny manual potwierdza m.in. suche styki NO wyjść, wyjście Counter generujące impulsy co 0,1 EUR, wyjście Pilotaggio pompa oraz programy P1…P6. Aktualny projekt odwzorowuje te funkcje na PLC, ale nie jest kopią firmware PitStart.
+
+Opis mapowania: [docs/PITSTART.md](docs/PITSTART.md).  
+Przygotowany katalog dokumentacji: [docs/manuals/pitstart/README.md](docs/manuals/pitstart/README.md).
+
 ## Pliki
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
@@ -144,6 +238,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 - `docs/manuals/hmi/WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf` — główny manual WSB7020R,
 - `docs/manuals/hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf` — manual WSC/WSCH jako dokumentacja porównawcza,
 - `docs/manuals/rm5/manual_rm5.pdf` — lokalny manual RM5 Evolution,
+- `docs/manuals/pitstart/Gamma_Pit_PitStart_F_c27-M-PIT-EK_2009-10-13.pdf` — docelowa nazwa manuala oryginalnego PitStart,
 - `docs/LADDER_LOGIC.md` — opis logiki,
 - `CHANGELOG.md` — historia zmian.
 
