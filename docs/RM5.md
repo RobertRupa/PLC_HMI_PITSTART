@@ -1,4 +1,25 @@
-# Comestero RM5 Evolution — V1.5.5
+# Comestero RM5 Evolution — konfiguracja projektu V1.5.7
+
+## Lokalny manual RM5
+
+- [manual_rm5.pdf](manuals/rm5/manual_rm5.pdf)
+- [opis katalogu manuali](manuals/rm5/README.md)
+
+Pinouty złączy pokazane niżej są przechowywane także jako wycinki w `docs/images/rm5/`.
+
+## Udokumentowany egzemplarz
+
+Screeny Clone5 dotyczą konkretnego RM5:
+
+```text
+Serial Number:     1669567
+Hardware Release:  5.3
+Assembly date:     30.07.2025
+Programming date:  27.09.2026
+Software date:     05.03.2004
+```
+
+Dane HFU/LF/HFL/Amp. oraz wartości referencyjne są egzemplarzowe. Nie należy przenosić ich do innego akceptora.
 
 ## Założenie projektu
 
