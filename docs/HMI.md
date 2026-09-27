@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.4.3
+# HMI — WSStudio — V1.4.4
 
 ## Ekran Home
 
@@ -69,6 +69,7 @@ Alternatywa: reagowanie na zmianę D565.
 | D555 | P5 time [s] | 16-bit unsigned RW | 1…600 | 70 |
 | D556 | P6 time [s] | 16-bit unsigned RW | 1…600 | 70 |
 | D528 | Clock correction x100 | 16-bit unsigned RW | 50…200 | 100 |
+| D584 | Auto start program | 16-bit unsigned RW | 1…6 | 1 |
 
 Interpretacja:
 - D300=10 oznacza 1,00 EUR za zaakceptowany impuls RM5 CH1,
@@ -85,7 +86,7 @@ Jeżeli chcesz pokazywać D528 jako 1.00 zamiast 100, użyj na HMI dwóch miejsc
 | M410 | Pilotaggio enable |
 | M414 | Work lights enable |
 | M429 | Sync countdown with PRACA |
-| M431 | Auto start timer after CREDIT output |
+| M431 | Auto start program after CREDIT output |
 
 M429:
 - OFF — odliczanie bazuje na WORK_ACTIVE; najlepsze do uruchomienia/testu,
@@ -117,10 +118,10 @@ M429:
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.4.3
+D500..D503 = V1.4.4
 D516 = 1
 D517 = 4
-D518 = 3
+D518 = 4
 ```
 
 
@@ -140,26 +141,35 @@ Do paska postępu użyj:
 Dzięki temu pasek pokazuje procent pozostałego czasu aktualnej sesji/programu.
 
 
-### Auto start timer
+### Auto start program
 
-`M431 = AUTO_START_TIMER_ENABLE` — przełącznik HMI.
+`M431 = AUTO_START_PROGRAM_ENABLE` — przełącznik HMI.
 
-Gdy M431=OFF:
-- licznik czasu działa jak dotąd podczas aktywnego programu,
-- M429 może dodatkowo synchronizować odliczanie z X1/M301 PRACA.
+`D584 = AUTO_START_PROGRAM_NO` — numer programu uruchamianego automatycznie:
+- 1 = Program 1,
+- 2 = Program 2,
+- 3 = Program 3,
+- 4 = Program 4,
+- 5 = Program 5,
+- 6 = Program 6.
 
-Gdy M431=ON:
-- wybór programu może nastąpić przed lub po zakończeniu wysyłania CREDIT,
-- PLC czeka aż cała kolejka `Y0/PITSTART_CREDITS` zostanie wysłana,
-- warunek końca transmisji: `D330=0`, `M321=0`, `M330=0`, `M331=0`,
-- jeżeli program jest aktywny, PLC ustawia `M432=AUTO_TIMER_ACTIVE`,
-- od tego momentu odliczanie jest zezwolone przez `M433=COUNTDOWN_ENABLE`.
+Najlepiej ustawić D584 jako pole/selector 16-bit unsigned z zakresem 1…6.
 
-Jeśli CREDIT skończyły się wcześniej niż użytkownik wybrał program, timer wystartuje natychmiast po późniejszym wyborze programu.
+Działanie:
+1. klient wrzuca monetę,
+2. PLC wysyła pełną kolejkę `Y0/PITSTART_CREDITS`,
+3. PLC czeka aż `D330=0`, `M321=0`, `M330=0`, `M331=0`,
+4. jeżeli `M431=1`, kredyt jest dostępny, automat ma X0 i żaden program nie jest już aktywny, PLC generuje `M432=AUTO_START_TRIGGER`,
+5. D584 wybiera P1…P6,
+6. program jest uruchamiany przez tę samą logikę wyboru co przyciski ręczne/HMI.
 
-STOP, utrata X0 lub wyczerpanie kredytu resetują M432.
+Jeśli użytkownik ręcznie wybierze program przed końcem wysyłania CREDIT, Auto Start **nie przełącza go później** na inny program.
 
-Do diagnostyki:
-- `M431` — Auto Start włączony,
-- `M432` — Auto Timer faktycznie wystartował,
-- `M433` — końcowe zezwolenie na odliczanie.
+STOP podczas oczekiwania anuluje automatyczny start dla bieżącej sesji, aby program nie uruchomił się sam po zwolnieniu STOP.
+
+Status:
+- `M432` — jednocyklowy impuls Auto Start,
+- `M433` — Auto Start wykonany/anulowany dla bieżącej sesji,
+- `M434` — D584 ma poprawną wartość 1…6.
+
+Odliczanie czasu nie jest już opóźniane przez M431. Po uruchomieniu programu działa normalnie według `M412` i opcjonalnie `M429/PRACA`.
