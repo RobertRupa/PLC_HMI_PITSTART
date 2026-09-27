@@ -1,8 +1,8 @@
-# Opis projektu — V1.4.4
+# Opis projektu — V1.4.5
 
 Projekt emuluje funkcje PitStart dla sterownika myjni.
 
-Najważniejsza zmiana V1.4.4: źródłem prawdy nie jest już sztuczny licznik sekund przypisywany do monety. Źródłem prawdy jest pozostały **kredyt pieniężny**, a czas jest wyliczany z taryfy programu.
+Najważniejsza zmiana V1.4.5: źródłem prawdy nie jest już sztuczny licznik sekund przypisywany do monety. Źródłem prawdy jest pozostały **kredyt pieniężny**, a czas jest wyliczany z taryfy programu.
 
 ## Taryfa
 
@@ -46,3 +46,12 @@ STOP, loss of X0 and exhausted credit reset the auto timer.
 - `D584` — program 1…6,
 - start następuje po zakończeniu pełnej kolejki Y0/CREDIT,
 - ręczny wybór programu ma pierwszeństwo; Auto Start nie nadpisuje już pracującego programu.
+
+
+## Admin screen request
+
+```text
+X14 -> M303 = ADMIN_SCREEN_REQUEST
+```
+
+M303 jest statusem tylko do odczytu dla HMI. Stan 1 oznacza żądanie ekranu Admin, stan 0 oznacza Home.
