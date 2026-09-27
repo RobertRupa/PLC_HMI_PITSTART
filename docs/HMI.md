@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.4.9
+# HMI — WSStudio — V1.5.0
 
 ## Ekran Home
 
@@ -60,7 +60,7 @@ Przełączanie ekranów jest realizowane przez `D585` w funkcji **PLC Control / 
 | Adres | Nazwa | Typ HMI | Zakres | Domyślnie |
 |---|---|---|---:|---:|
 | D300 | RM5 CH1 value [x0.10 EUR] | 16-bit unsigned RW | 1…100 | 10 |
-| D549 | Max credit [x0.10 EUR] | 16-bit unsigned RW | 1…50 | 50 |
+| D549 | Max credit [x0.10 EUR] | 16-bit unsigned RW | 1…999 | 50 |
 | D550 | Base price [x0.10 EUR] | 16-bit unsigned RW | 1…D549 | 5 |
 | D551 | P1 time [s] | 16-bit unsigned RW | 1…600 | 70 |
 | D552 | P2 time [s] | 16-bit unsigned RW | 1…600 | 70 |
@@ -91,7 +91,8 @@ Jeżeli chcesz pokazywać D528 jako 1.00 zamiast 100, użyj na HMI dwóch miejsc
 M429:
 - domyślnie ON po starcie PLC,
 - OFF — odliczanie bazuje tylko na WORK_ACTIVE,
-- ON — kredyt jest zużywany tylko gdy X1/M301 PRACA=1.
+- ON — synchronizacja z X1/M301 jest aktywna tylko wtedy, gdy M410/Pilotaggio jest włączone,
+- gdy M410=0, odliczanie nie zatrzymuje się przy chwilowym zaniku X1/PRACA.
 
 ### Diagnostyka
 
@@ -119,7 +120,7 @@ M429:
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.4.9
+D500..D503 = V1.5.0
 D516 = 1
 D517 = 4
 D518 = 9
@@ -328,3 +329,43 @@ Kierunek tego rejestru jest przeciwny do D585:
 - `D586`: HMI -> PLC, aktualnie wyświetlany ekran.
 
 PLC nie zapisuje D586.
+
+
+### Limit kredytu i RM5
+
+`D549` ma zakres 1…999 w jednostkach 0,10 EUR. Przykład:
+
+```text
+D549 = 50  -> 5,00 EUR
+D549 = 999 -> 99,90 EUR
+```
+
+Po osiągnięciu limitu:
+- `M435=1`,
+- `Y2=1` i `Y23=1`,
+- RM5 jest zablokowany przez INHIBIT,
+- kolejne impulsy X27 nie są przyjmowane przez PLC.
+
+W ekranie Admin ustaw dla pola D549:
+- DataType: 16-Bit Unsigned Int,
+- Min: 1,
+- Max: 999.
+
+### Doładowanie podczas aktywnego programu
+
+Dołożenie monet nie zmienia aktywnego programu. Kredyt jest dopisywany do bieżącej sesji, a pozostały czas zwiększa się dla aktualnie wybranej taryfy.
+
+Auto Start Program może wystąpić tylko wtedy, gdy `D558=0`, czyli w sesji nie został jeszcze wybrany program. Po wybraniu programu kolejne impulsy RM5 nie mogą przełączyć go na D584.
+
+### Restart PLC
+
+Na pierwszym skanie PLC zerowane są dane bieżącej sesji i liczniki runtime, w tym:
+- D320, D330,
+- D350, D540, D541,
+- D521…D526,
+- D533…D535,
+- D557…D563,
+- D565…D583,
+- aktywne programy M420…M425.
+
+Po restarcie nie powinien pozostać kredyt ani czas poprzedniej sesji.
