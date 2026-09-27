@@ -1,6 +1,6 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.5.6**.
+Aktualna wersja PLC: **V1.5.7**.
 
 ## Model kredytu
 
@@ -82,17 +82,17 @@ Rejestry HMI:
 
 ## Synchronizacja z automatyką
 
-Domyślnie `M429=1`. Synchronizacja z `X1/M301 = PRACA` zatrzymuje odliczanie tylko wtedy, gdy `M410/PILOTAGGIO_ENABLE=1`. Przy `M410=0` czas jest odliczany dalej mimo zaniku PRACA.
+`M429 = Sync time with RUN` wybiera źródło sygnału odliczania:
 
-Po potwierdzeniu, że `X1/M301 = PRACA` jest wiarygodnym sygnałem rzeczywistej pracy automatyki, ustaw na HMI:
+- `M429=0` — czas jest zużywany przy `M412=WORK_ACTIVE`,
+- `M429=1` — czas jest zużywany przy `M301=PRACA/RUN`.
+
+Przy `M429=1` STOP może wyłączyć aktywny program i wyjścia, ale **nie zatrzymuje czasu, dopóki M301/RUN pozostaje w stanie 1**. Odliczanie zatrzymuje się dopiero po zaniku RUN.
 
 ```text
-M429 = 1
+M429=0 -> COUNTDOWN_ACTIVE = M412
+M429=1 -> COUNTDOWN_ACTIVE = M301
 ```
-
-Wtedy kredyt jest zużywany tylko gdy jednocześnie:
-- program jest aktywny,
-- M301/PRACA = 1.
 
 `D528` pozostaje globalną korekcją zegara x100:
 - 100 = 1,00x,
@@ -134,7 +134,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.5.5.csv` — ostatni zapisany CSV importowy; źródła V1.5.6 są w `MAIN_GXDEV_ENTRY.txt` i `MAIN.txt`,
+- `plc/main_v1.5.7.csv` — aktualny CSV do importu w GX Developer,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
@@ -205,7 +205,7 @@ Po wejściu PLC w RUN timer T204 utrzymuje przez krótki czas `M438=STARTUP_RESE
 
 ## STOP podczas aktywnego RUN
 
-Jeżeli STOP zostanie naciśnięty podczas aktywnego `M301/RUN` i `M412/WORK_ACTIVE`, wyjścia programu są wyłączane, ale odliczanie kredytu pozostaje aktywne do zaniku RUN. Stan ten jest przechowywany w `M448`; `M449 = M412 OR M448` jest bramką zużycia kredytu.
+Przy `M429=1` STOP wyłącza wyjścia programu, ale nie zatrzymuje odliczania, jeśli `M301/RUN=1`. `M449` jest wtedy sterowane bezpośrednio przez RUN. Przy `M429=0` odliczanie zależy od `M412/WORK_ACTIVE`.
 
 ## Pilotaggio default
 
