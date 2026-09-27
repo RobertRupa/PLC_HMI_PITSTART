@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.4.5
+# HMI — WSStudio — V1.4.6
 
 ## Ekran Home
 
@@ -47,7 +47,8 @@ Przykład: D582=100 -> 1,00 EUR.
 
 ### Wybudzenie HMI
 
-- `M419` = HMI_WAKE_REQUEST, utrzymywany około 3 s po zaakceptowanej monecie,
+- `M419` = HMI_WAKE_REQUEST, około 3 s,
+- `D586` = HMI_WAKE_REQUEST_WORD, 0/1 mirror M419 — preferowane dla HMI bez obsługi M,
 - `D565` = HMI_WAKE_EVENT_COUNTER.
 
 Preferowane: wybudzenie/przejście na Home na zboczu M419.
@@ -118,10 +119,10 @@ M429:
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.4.5
+D500..D503 = V1.4.6
 D516 = 1
 D517 = 4
-D518 = 5
+D518 = 6
 ```
 
 
@@ -183,11 +184,19 @@ PLC kopiuje stan fizycznego wejścia:
 X14 -> M303
 ```
 
-`M303 = ADMIN_SCREEN_REQUEST` jest przeznaczony dla HMI:
+`M303 = ADMIN_SCREEN_REQUEST` jest bitem PLC. Dla HMI, które nie potrafi używać M jako triggera, użyj `D585 = ADMIN_SCREEN_REQUEST_WORD`:
 
-- M303=1 — przełącz / utrzymuj ekran **Admin**,
-- M303=0 — wróć / utrzymuj ekran **Home**.
+- D585=1 — przełącz / utrzymuj ekran **Admin**,
+- D585=0 — wróć / utrzymuj ekran **Home**.
 
 M303 jest tylko odczytem stanu fizycznego przełącznika X14; HMI nie powinno zapisywać do M303.
 
-Jeżeli WSStudio ma funkcję przełączania ekranu sterowaną bitem PLC, użyj M303 bezpośrednio. Dla przełącznika bistabilnego nie jest potrzebny dodatkowy impuls zbocza.
+D585 jest tylko do odczytu i stale odzwierciedla M303/X14.
+
+Dla wybudzenia po monecie:
+- `D586=1` przez około 3 s po zaakceptowanym impulsie RM5,
+- `D586=0` poza tym oknem.
+
+Jeśli WSStudio pozwala używać tylko rejestrów D w akcjach systemowych, użyj:
+- `D585` do przełączania Admin/Home,
+- `D586` do Wake / przejścia na Home po monecie.
