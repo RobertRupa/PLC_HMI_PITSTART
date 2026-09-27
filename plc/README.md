@@ -1,10 +1,10 @@
-# PLC V1.4.9
+# PLC V1.5.0
 
 ## Pliki
 
 - `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
 - `MAIN.txt` — wersja komentowana,
-- `main_v1.4.9.csv` — czysty CSV do importu GX,
+- `main_v1.5.0.csv` — czysty CSV do importu GX,
 - `DEVICE_MAP.csv` — mapa urządzeń,
 - `DEVICE_COMMENTS.csv` / `DEVICE_COMMENTS.txt` — komentarze urządzeń,
 - `IMPORT_CSV.md` — mapowanie kolumn importu.
@@ -30,8 +30,8 @@ FX numeruje X/Y ósemkowo, dlatego po Y7 występuje Y10.
 Y2 i Y23 mają identyczną logikę INHIBIT:
 
 ```text
-X0=0 -> ON
-X0=1 -> OFF
+X0=0 OR M435=1 -> ON
+X0=1 AND M435=0 -> OFF
 ```
 
 Na obecnym sprzęcie używany jest Y2; Y23 pozostaje dla przyszłego sterownika z większą liczbą wyjść.
@@ -52,7 +52,7 @@ Wszystkie używane kanały/nominały RM5 muszą generować impulsy na CH1. PLC n
 ```text
 D300 = RM5 CH1 value [x0,10 EUR]
 D528 = clock correction x100
-D549 = max credit [x0,10 EUR]
+D549 = max credit [x0,10 EUR], 1..999
 D550 = base price [x0,10 EUR]
 D551..D556 = P1..P6 time [s]
 D584 = Auto Start Program 1..6
@@ -65,7 +65,9 @@ D350 = remaining time [s]
 D540 = minutes
 D541 = seconds
 D559 = TIME_BAR_MAX
-D582 = credit cents
+D560 = remaining credit cents
+D582 = credit cents mirror
+M435 = max credit reached
 D585 = HMI_SCREEN_INDEX (0 Main, 1 Admin, 2 inactive, 3 free)
 D586 = HMI_CURRENT_SCREEN_INDEX (HMI -> PLC)
 D587 = HMI_WAKE_REQUEST_WORD
@@ -73,7 +75,7 @@ D587 = HMI_WAKE_REQUEST_WORD
 
 ## Import CSV
 
-Kolumny pliku `main_v1.4.9.csv`:
+Kolumny pliku `main_v1.5.0.csv`:
 
 - A = Step number
 - B = Skip
@@ -84,7 +86,7 @@ Kolumny pliku `main_v1.4.9.csv`:
 Komentarze urządzeń importuj osobno, jeśli używana wersja GX Developer na to pozwala.
 
 
-## Defaults V1.4.9
+## Defaults V1.5.0
 
 ```text
 M429 = 1 default  ; Sync countdown with PRACA
