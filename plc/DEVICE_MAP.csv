@@ -22,7 +22,7 @@ D581,Data,Fractional credit remainder 0..99,RO
 D582,Data,Remaining credit cents,RO
 D583,Data,Remaining 0.1-cent remainder,RO
 D584,Data,Auto start program number,HMI RW 1..6 default 1
-D585,Data,ADMIN_SCREEN_REQUEST_WORD,RO 0/1 mirror of M303/X14
+D585,Data,HMI_SCREEN_INDEX,RO; 0 main 1 admin 2 inactive 3 free
 D586,Data,HMI_WAKE_REQUEST_WORD,RO 0/1 mirror of M419
 D350,Data,Remaining time seconds for last selected program,RO
 D540,Data,Remaining minutes,RO
@@ -48,9 +48,9 @@ M419,Bit,HMI_WAKE_REQUEST,RO held approx 3 s after accepted coin
 M420-M425,Bit,Program 1..6 active,RO
 M426,Bit,TIME_DISPLAY_VALID,RO
 M427,Bit,CREDIT_AVAILABLE,RO
-M429,Bit,SYNC_COUNTDOWN_WITH_PRACA,HMI RW default OFF
+M429,Bit,SYNC_COUNTDOWN_WITH_PRACA,HMI RW default ON
 M430,Bit,RUN_TIME_ENABLE,PRACA OR not M429
-M431,Bit,AUTO_START_PROGRAM_ENABLE,HMI RW default OFF
+M431,Bit,AUTO_START_PROGRAM_ENABLE,HMI RW default ON
 M432,Bit,AUTO_START_TRIGGER,RO one-scan trigger after Y0 queue is fully idle
 M433,Bit,AUTO_START_DONE,RO latch prevents repeated automatic start in same session
 M434,Bit,AUTO_START_PROGRAM_OK,RO; D584 is 1..6
