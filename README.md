@@ -1,8 +1,8 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.4.5**.
+Aktualna wersja PLC: **V1.4.6**.
 
-Logika V1.4.5 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
+Logika V1.4.6 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
 - `D300` określa wartość RM5 CH1 w jednostkach 0,10 EUR,
 - wspólna cena bazowa jest w `D550`,
@@ -101,6 +101,8 @@ Jeżeli WSStudio potrafi wybudzać/przełączać ekran po bicie PLC, użyj M419.
 ## HMI ekran Admin
 
 - M303 — ADMIN_SCREEN_REQUEST, bezpośrednie odwzorowanie X14.
+- D585 — ADMIN_SCREEN_REQUEST_WORD = 0/1 mirror M303 dla HMI.
+- D586 — HMI_WAKE_REQUEST_WORD = 0/1 mirror M419 dla HMI.
 - M303=1 -> Admin.
 - M303=0 -> Home.
 
@@ -121,7 +123,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.4.5.csv` — CSV w układzie eksportu GX,
+- `plc/main_v1.4.6.csv` — CSV w układzie eksportu GX,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
