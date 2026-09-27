@@ -2,8 +2,12 @@
 
 Aktualna wersja PLC: **V1.5.7**.
 
-## Model kredytu
+## Stan projektu
 
+- PLC: **V1.5.7**,
+- HMI: `projects/hmi/pitstart.hs`; interfejs ma oznaczenie **HMI V1.0.0**,
+- projekt PLC: `projects/plc/PitStart.zip`,
+- import GX Developer: `plc/main_v1.5.7.csv`,
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
 - `D300` określa wartość RM5 CH1 w jednostkach 0,10 EUR,
 - wspólna cena bazowa jest w `D550`,
@@ -137,8 +141,9 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 - `plc/main_v1.5.7.csv` — aktualny CSV do importu w GX Developer,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
-- `docs/manuals/hmi/WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf` — główny manual WSB7020R, do ręcznego uploadu,
-- `docs/manuals/hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf` — manual WSC/WSCH jako dokumentacja porównawcza, do ręcznego uploadu,
+- `docs/manuals/hmi/WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf` — główny manual WSB7020R,
+- `docs/manuals/hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf` — manual WSC/WSCH jako dokumentacja porównawcza,
+- `docs/manuals/rm5/manual_rm5.pdf` — lokalny manual RM5 Evolution,
 - `docs/LADDER_LOGIC.md` — opis logiki,
 - `CHANGELOG.md` — historia zmian.
 
@@ -175,11 +180,10 @@ Priorytet: Admin > Nieczynne > Wolne > Main.
 - `projects/plc/PitStart.zip` — projekt PLC,
 - `projects/hmi/pitstart.hs` — główny edytowalny projekt HMI KinSealStudio,
 - `projects/hmi/README.md` — parametry i opis pliku HMI,
-- `projects/hmi/pitstart_hmi.zip` — starsze archiwum transportowe.
 
 Dokumentacja ekranów i konfiguracji:
 - `docs/HMI.md` — mapowanie ekranów, D585/D586, ustawienia Home/Admin i WSStudio,
-- dokumentacja producenta WSB7020R i HMI_Setup V5.1 jest podlinkowana bezpośrednio w `docs/HMI.md`,
+- lokalne manuale WSB/WSC oraz HMI_Setup/HMI Studio 5.1 są opisane w `docs/HMI.md` i `docs/SOFTWARE.md`,
 - `docs/images/hmi/` — podglądy ekranów i ustawień systemowych,
 - `docs/RM5.md` — konfiguracja RM5, pinout CN5 i złącza programującego TTL, wymóg COM1 dla Clone5 Professional oraz dokumentacja ustawień i danych referencyjnych konkretnego egzemplarza.
 - `docs/SOFTWARE.md` — linki do Clone5 Professional, Clone5, Unio oraz dokumentacji Unio.
@@ -233,3 +237,15 @@ D551..D556 = 300
 ```
 
 Przy tych wartościach jeden impuls z RM5 daje 300 s, czyli 5 minut, dla każdego programu.
+
+## Znane ograniczenie D350
+
+`D350` jest pojedynczym rejestrem 16-bit. Aktualna walidacja M415 nie sprawdza kombinacji maksymalnego kredytu, ceny bazowej i czasu programu pod kątem przepełnienia.
+
+Konserwatywnie utrzymuj:
+
+```text
+D549 * D557 / D550 <= 32767 s
+```
+
+Domyślne ustawienia dają maksymalnie 1500 s dla domyślnego limitu 5,00 EUR.
