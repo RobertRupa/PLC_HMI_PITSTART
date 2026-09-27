@@ -1,8 +1,8 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.4.1**.
+Aktualna wersja PLC: **V1.4.2**.
 
-Logika V1.4.1 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
+Logika V1.4.2 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
 - `D300` określa wartość RM5 CH1 w jednostkach 0,10 EUR,
 - wspólna cena bazowa jest w `D550`,
@@ -65,6 +65,7 @@ Rejestry HMI:
 - D350 — pozostały czas [s],
 - D540 — minuty,
 - D541 — sekundy,
+- D559 — TIME_BAR_MAX dla paska postępu,
 - D582 — pozostały kredyt w centach,
 - M426 — TIME_DISPLAY_VALID,
 - M427 — CREDIT_AVAILABLE.
