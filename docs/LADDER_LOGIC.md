@@ -1,4 +1,4 @@
-# Logika PLC — V1.4.2
+# Logika PLC — V1.4.3
 
 ## RM5 INHIBIT
 
@@ -149,3 +149,46 @@ MOV D350 D559
 ```
 
 Na początku nowej sesji oraz przy zmianie programu D559 jest zerowane, więc nowe maksimum jest wyznaczane z aktualnego D350. Podczas odliczania D559 nie maleje.
+
+
+## Auto Start Timer
+
+```text
+M431 = AUTO_START_TIMER_ENABLE
+M432 = AUTO_TIMER_ACTIVE
+M433 = COUNTDOWN_ENABLE
+```
+
+Start M432:
+
+```text
+M431
+AND M412
+AND D330<=0
+AND /M321
+AND /M330
+AND /M331
+-> SET M432
+```
+
+M432 jest resetowane przez:
+- M431=0,
+- STOP,
+- utratę X0/M300,
+- D560<=0,
+- nową sesję.
+
+Końcowa bramka czasu:
+
+```text
+(M412 AND /M431) OR M432
+AND M430
+-> M433
+
+LDP M8013
+AND M433
+AND M426
+-> M416
+```
+
+Czyli przy M431=ON odliczanie nie zacznie się przed zakończeniem pełnej kolejki CREDIT Y0.
