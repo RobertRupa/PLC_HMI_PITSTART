@@ -1,4 +1,4 @@
-# HMI — WSStudio / KinSealStudio — V1.5.6
+# HMI — WSStudio / KinSealStudio — V1.5.7
 
 ## Ekrany
 
