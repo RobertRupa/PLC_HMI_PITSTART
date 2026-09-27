@@ -1,4 +1,4 @@
-# Comestero RM5 Evolution — V1.5.2
+# Comestero RM5 Evolution — V1.5.5
 
 ## Założenie projektu
 
@@ -54,6 +54,44 @@ OUT Y23
 
 Na obecnym sterowniku do pinu 6 RM5 należy używać **Y2**. Y23 jest zachowane wyłącznie jako zgodny logicznie zapas pod przyszły PLC.
 
+## Połączenie serwisowe TTL z Clone5 Professional
+
+Do programowania RM5 używane jest połączenie szeregowe **TTL**. Nie jest to klasyczny port RS-232 z poziomami napięć ±12 V.
+
+Połączenie:
+
+```text
+USB-UART TTL TX  -> RM5 RX
+USB-UART TTL RX  -> RM5 TX
+USB-UART TTL GND -> RM5 GND
+```
+
+RM5 powinien być zasilany normalnie z instalacji. Linie komunikacyjne wymagają wspólnej masy. Nie podawać 24 V na TX/RX interfejsu TTL.
+
+### COM1
+
+W użytej konfiguracji **Clone5 Professional wykrywa RM5 po ustawieniu interfejsu jako COM1**. Jeżeli adapter USB-UART pojawi się jako COM3, COM5 itd., trzeba zmienić numer portu w Windows:
+
+```text
+Menedżer urządzeń
+  -> Porty (COM i LPT)
+  -> właściwości adaptera USB-UART
+  -> Ustawienia portu
+  -> Zaawansowane
+  -> Numer portu COM: COM1
+```
+
+Po zmianie numeru portu zamknąć i uruchomić ponownie Clone5 Professional. Jeżeli COM1 jest zajęty przez nieużywane urządzenie, najpierw zwolnić ten numer.
+
+## Dane kalibracyjne
+
+Wartości pokazane w zakładce kalibracji dotyczą **konkretnego egzemplarza RM5**. Nie należy ich kopiować do innego akceptora.
+
+Kalibracja opisuje charakterystykę czujników i tolerancje zaprogramowane dla danego mechanizmu. Przy wymianie RM5, płyty elektroniki albo głowicy pomiarowej należy zachować dane właściwe dla tego urządzenia lub przeprowadzić poprawną procedurę kalibracji.
+
+W repo zrzut kalibracji służy jako dokumentacja tego egzemplarza, a nie jako zestaw wartości wzorcowych.
+
+
 ## Konfiguracja Clone5 / RM5
 
 W Clone5 należy skonfigurować akceptor tak, aby:
@@ -107,30 +145,41 @@ Y2/Y23 INHIBIT zależą od X0 oraz M435. M435 jest ustawiane także wtedy, gdy k
 
 ## Clone5 Professional — zrzuty konfiguracji
 
+Pliki są przechowywane w `docs/images/rm5/`.
+
 ### Control / diagnostyka
 
 ![Clone5 Control](images/rm5/clone5_control.png)
 
-Zakładka pozwala sprawdzić m.in. stan wejścia, INHIBIT, Anti-Fishing, Cash Sensor oraz diagnostykę Sensor / E²prom / Timer / Rom.
+Podgląd stanu wejść, INHIBIT, Anti-Fishing, Cash Sensor i diagnostyki RM5.
 
 ### Kanały 1–10
 
 ![Clone5 Channels](images/rm5/clone5_channels_1_10.png)
 
-W projekcie PLC wykorzystywane jest tylko fizyczne wyjście **CH1**, dlatego wszystkie obsługiwane nominały należy skonfigurować tak, aby ich impulsy trafiały na CH1. Liczba impulsów musi odpowiadać wartości monety przy przyjętej wartości `D300`.
+Ustawienia kanałów monet. W tym projekcie PLC używa wyłącznie fizycznego wyjścia CH1.
 
 ### Configuration
 
 ![Clone5 Configuration](images/rm5/clone5_configuration.png)
 
-Dla tego projektu istotne są:
-- typ pracy **00 - Validator**,
-- aktywne **Inhibition Id**,
-- `Credit pulse width` zgodne z wymaganym czasem impulsu wejściowego,
-- wyjście wartości monet kierowane na CH1.
+Istotne dla projektu:
+- tryb `00 - Validator`,
+- aktywne `Inhibition Id`,
+- czas impulsu kredytowego dopasowany do wejścia PLC,
+- wartości monet wyprowadzane jako impulsy CH1.
 
-PLC nie wykorzystuje osobnych wejść dla CH2…CH6.
+### Calibration
 
+![Clone5 Calibration](images/rm5/clone5_calibration.png)
+
+**Nie kopiować tych wartości do innego RM5.** Są to dane konkretnego egzemplarza.
+
+### Połączenie / port COM
+
+![Clone5 COM1](images/rm5/clone5_com1.png)
+
+Interfejs programujący pracuje po TTL. W tej konfiguracji Clone5 Professional wymaga przypisania adapterowi numeru `COM1`.
 
 ## Limit kredytu
 
