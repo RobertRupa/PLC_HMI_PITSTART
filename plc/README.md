@@ -1,4 +1,4 @@
-# PLC V1.4.2
+# PLC V1.4.3
 
 ## Import
 
@@ -41,3 +41,12 @@ See `IMPORT_CSV.md`. Column E of `main_v1.4.0.csv` is mapped as **Note** during 
 - reset przy zmianie programu,
 - aktualizacja w górę gdy D350 wzrośnie po doładowaniu,
 - nie maleje podczas normalnego odliczania.
+
+
+## Auto Start Timer
+
+- `M431` — HMI RW, Auto Start Timer enable.
+- `M432` — RO, Auto Timer active.
+- `M433` — RO, final countdown enable.
+
+When M431=ON, countdown waits until the whole Y0/CREDIT queue is finished. If the queue finished before a program was selected, countdown starts after the program is selected.
