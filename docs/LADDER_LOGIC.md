@@ -1,4 +1,4 @@
-# Logika PLC — V1.4.3
+# Logika PLC — V1.4.4
 
 ## RM5 INHIBIT
 
@@ -151,44 +151,57 @@ MOV D350 D559
 Na początku nowej sesji oraz przy zmianie programu D559 jest zerowane, więc nowe maksimum jest wyznaczane z aktualnego D350. Podczas odliczania D559 nie maleje.
 
 
-## Auto Start Timer
+## Auto Start Program
+
+Adresy:
 
 ```text
-M431 = AUTO_START_TIMER_ENABLE
-M432 = AUTO_TIMER_ACTIVE
-M433 = COUNTDOWN_ENABLE
+M431 = AUTO_START_PROGRAM_ENABLE
+D584 = AUTO_START_PROGRAM_NO (1..6)
+M432 = AUTO_START_TRIGGER
+M433 = AUTO_START_DONE
+M434 = AUTO_START_PROGRAM_OK
+
+M460..M465 = AUTO_SELECT_P1..P6
+M470..M475 = EFFECTIVE_SELECT_P1..P6
 ```
 
-Start M432:
+Warunek automatycznego startu:
 
 ```text
 M431
-AND M412
+AND M434
+AND M300
+AND /M440
+AND D560>0
 AND D330<=0
 AND /M321
 AND /M330
 AND /M331
--> SET M432
+AND /M412
+AND /M433
+-> M432
 ```
 
-M432 jest resetowane przez:
-- M431=0,
-- STOP,
-- utratę X0/M300,
-- D560<=0,
-- nową sesję.
-
-Końcowa bramka czasu:
+M432 wybiera jeden z M460…M465 według D584. Następnie:
 
 ```text
-(M412 AND /M431) OR M432
-AND M430
--> M433
-
-LDP M8013
-AND M433
-AND M426
--> M416
+M470 = M451 OR M460
+M471 = M452 OR M461
+...
+M475 = M456 OR M465
 ```
 
-Czyli przy M431=ON odliczanie nie zacznie się przed zakończeniem pełnej kolejki CREDIT Y0.
+Dalsza logika programu korzysta z M470…M475, dlatego start automatyczny i ręczny przechodzą przez ten sam latch programu, ustawienie D557/D558 oraz D559.
+
+M433 jest ustawiane po Auto Start i blokuje kolejne automatyczne uruchomienia w tej samej sesji. Nowa sesja zeruje M433. STOP podczas oczekiwania ustawia M433 i anuluje automatyczne uruchomienie.
+
+Odliczanie czasu wróciło do standardowej bramki:
+
+```text
+LDP M8013
+AND M412
+AND M430
+AND M426
+OUT M416
+```
