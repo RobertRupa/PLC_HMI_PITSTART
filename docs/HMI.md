@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.5.0
+# HMI — WSStudio — V1.5.1
 
 ## Podgląd ekranu Admin
 
@@ -111,6 +111,8 @@ M429:
 | M419 | wake request |
 | M426 | czas może być wyświetlany |
 | M427 | kredyt dostępny |
+| M435 | osiągnięty/zarezerwowany limit kredytu |
+| M436 | top-up RM5 w trakcie |
 | D521 | impulsy RM5 ostatniej paczki |
 | D522 | impulsy Counter wygenerowane dla ostatniej paczki |
 | D524 | impulsy RM5 sesji |
@@ -118,7 +120,7 @@ M429:
 | D533 | impulsy Counter faktycznie wysłane Y0 |
 | D557 | czas taryfy ostatniego programu |
 | D558 | numer ostatniego programu |
-| D560 | kredyt wewnętrzny x100 |
+| D560 | pozostały kredyt w centach |
 | D580 | pełne pozostałe jednostki 0,10 EUR |
 | D582 | pozostały kredyt w centach |
 | D350 | pozostały czas [s] |
@@ -126,10 +128,10 @@ M429:
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.5.0
+D500..D503 = V1.5.1
 D516 = 1
-D517 = 4
-D518 = 9
+D517 = 5
+D518 = 1
 ```
 
 
@@ -346,7 +348,9 @@ D549 = 50  -> 5,00 EUR
 D549 = 999 -> 99,90 EUR
 ```
 
-Po osiągnięciu limitu:
+Limit obejmuje kredyt zapisany w `D560` oraz impulsy Y0 oczekujące w `D330`.
+
+Po wypełnieniu limitu:
 - `M435=1`,
 - `Y2=1` i `Y23=1`,
 - RM5 jest zablokowany przez INHIBIT,
@@ -359,19 +363,23 @@ W ekranie Admin ustaw dla pola D549:
 
 ### Doładowanie podczas aktywnego programu
 
-Dołożenie monet nie zmienia aktywnego programu. Kredyt jest dopisywany do bieżącej sesji, a pozostały czas zwiększa się dla aktualnie wybranej taryfy.
+Doładowanie nie zmienia `D558` ani aktywnego programu.
 
-Auto Start Program może wystąpić tylko wtedy, gdy `D558=0`, czyli w sesji nie został jeszcze wybrany program. Po wybraniu programu kolejne impulsy RM5 nie mogą przełączyć go na D584.
+Nowa paczka RM5 jest dopisywana do istniejącej kolejki `D330`. `M436=RM5_TOPUP_BUSY` pozostaje aktywne od odbioru paczki do zakończenia kolejki Y0. W tym czasie tick zużycia kredytu jest zatrzymany, więc aktywna sesja nie kończy się przed dopisaniem zaakceptowanego kredytu.
+
+Auto Start Program działa tylko przy `D558=0`.
 
 ### Restart PLC
 
-Na pierwszym skanie PLC zerowane są dane bieżącej sesji i liczniki runtime, w tym:
+Na pierwszym skanie PLC zerowane są dane bieżącej sesji:
 - D320, D330,
 - D350, D540, D541,
 - D521…D526,
 - D533…D535,
 - D557…D563,
 - D565…D583,
-- aktywne programy M420…M425.
+- D588…D592,
+- M420…M425,
+- M435 i M436.
 
-Po restarcie nie powinien pozostać kredyt ani czas poprzedniej sesji.
+Po restarcie nie pozostaje kredyt, czas ani kolejka impulsów poprzedniej sesji.
