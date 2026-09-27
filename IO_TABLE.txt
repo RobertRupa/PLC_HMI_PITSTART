@@ -1,4 +1,4 @@
-PLC_HMI_PITSTART - V1.5.0
+PLC_HMI_PITSTART - V1.5.1
 =====================================
 
 I/O
@@ -57,7 +57,8 @@ M420..M425  P1..P6 ACTIVE
 M426  TIME_DISPLAY_VALID
 M427  CREDIT_AVAILABLE
 M430  RUN_TIME_ENABLE = M301 OR /M429 OR /M410
-M435  MAX_CREDIT_REACHED
+M435  MAX_CREDIT_REACHED / RESERVED BY Y0 QUEUE
+M436  RM5_TOPUP_BUSY
 
 PARAMETRY
 ---------
@@ -79,6 +80,7 @@ D585  HMI SCREEN INDEX, RO
       3 = STANOWISKO WOLNE (X14=0 and X0=1 and M427=0)
 D586  HMI CURRENT SCREEN INDEX, written by HMI (Screen Index)
 D587  HMI WAKE REQUEST WORD, RO 0/1 = M419
+D588..D592  INTERNAL RM5 QUEUE / MAX CREDIT CALC
 
 ODCZYTY
 -------
@@ -107,7 +109,15 @@ T203 K300  HMI wake hold ~3 s
 
 WERSJA
 ------
-D500..D503 = V1.5.0
+D500..D503 = V1.5.1
 D516=1
-D517=4
-D518=9
+D517=5
+D518=1
+
+
+DOŁADOWANIE
+-----------
+Doładowanie aktywnego programu nie zmienia D558 ani aktywnego programu.
+Nowe impulsy są dopisywane do kolejki Y0.
+M436 zatrzymuje zużycie kredytu na czas obsługi zaakceptowanego doładowania,
+żeby program nie zgasł przed dopisaniem nowego kredytu.
