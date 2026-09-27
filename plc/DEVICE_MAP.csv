@@ -2,7 +2,7 @@ Device,Type,Function,Startup/Notes
 D300,Data,RM5 CH1 value in 0.10 EUR units,HMI RW 1..100 default 10
 D528,Data,Global clock correction x100,HMI RW 50..200 default 100
 D549,Data,Maximum credit in 0.10 EUR units,HMI RW 1..999 default 50
-D550,Data,Common base price in 0.10 EUR units,HMI RW 1..D549 default 5
+D550,Data,Common base price in 0.10 EUR units,HMI RW 1..D549 default 10
 D551,Data,Program 1 seconds at base price,HMI RW 1..600 default 70
 D552,Data,Program 2 seconds at base price,HMI RW 1..600 default 70
 D553,Data,Program 3 seconds at base price,HMI RW 1..600 default 70
@@ -63,6 +63,7 @@ M435,Bit,RM5_INHIBIT_LIMIT,RO; another full RM5 input pulse cannot fit below D54
 M436,Bit,RM5_TOPUP_BUSY,RO; RM5 packet or Y0 queue is being processed
 M437,Bit,RM5_PENDING_AT_LIMIT,RO; pending RM5 packet reserved all remaining credit slots
 M438,Bit,STARTUP_RESET_ACTIVE,RO; active while T204 startup reset window is running
+M439,Bit,PILOTAGGIO_DEFAULT,HMI RW default ON; restores M410 at program start when M410 is OFF
 M460-M465,Bit,AUTO_SELECT_P1_P6,Internal one-scan auto program select
 M470-M475,Bit,EFFECTIVE_SELECT_P1_P6,Internal manual/HMI OR auto select
 Y0,Output,PITSTART_CREDITS / Counter,One pulse = 0.10 EUR
