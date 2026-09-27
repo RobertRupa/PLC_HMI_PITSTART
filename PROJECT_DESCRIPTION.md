@@ -1,8 +1,8 @@
-# Opis projektu — V1.4.1
+# Opis projektu — V1.4.2
 
 Projekt emuluje funkcje PitStart dla sterownika myjni.
 
-Najważniejsza zmiana V1.4.1: źródłem prawdy nie jest już sztuczny licznik sekund przypisywany do monety. Źródłem prawdy jest pozostały **kredyt pieniężny**, a czas jest wyliczany z taryfy programu.
+Najważniejsza zmiana V1.4.2: źródłem prawdy nie jest już sztuczny licznik sekund przypisywany do monety. Źródłem prawdy jest pozostały **kredyt pieniężny**, a czas jest wyliczany z taryfy programu.
 
 ## Taryfa
 
