@@ -1,5 +1,14 @@
 # Changelog
 
+## V1.5.3
+
+- dodano M439 PILOTAGGIO_DEFAULT, domyślnie ON,
+- przy starcie programu M410 jest przywracane z M439, jeżeli M410 było wyłączone,
+- domyślna taryfa: D300=10, D550=10, D551…D556=300,
+- jeden impuls RM5 odpowiada domyślnie 5 minutom,
+- wersja PLC V1.5.3.
+
+
 ## V1.5.2
 
 - RM5 INHIBIT przechodzi w stan wysoki, gdy kolejny pełny impuls RM5 nie mieści się już poniżej D549,
