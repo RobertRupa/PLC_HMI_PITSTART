@@ -56,21 +56,38 @@ Na obecnym sterowniku do pinu 6 RM5 należy używać **Y2**. Y23 jest zachowane 
 
 ## Połączenie serwisowe TTL z Clone5 Professional
 
-Do programowania RM5 używane jest połączenie szeregowe **TTL**. Nie jest to klasyczny port RS-232 z poziomami napięć ±12 V.
+RM5 ma osobne 6-pinowe złącze programowania i wyjścia szeregowego. Z dokumentacji:
 
-Połączenie:
+![RM5 programming connector](images/rm5/rm5_programming_connector_ttl.png)
+
+Pinout złącza programującego:
+
+| Pin | Funkcja |
+|---:|---|
+| 1 | GND |
+| 2 | +5 VDC |
+| 3 | TX |
+| 4 | RX |
+| 5 | N.U. |
+| 6 | N.U. |
+
+Do komunikacji z PC używany jest konwerter USB-UART TTL:
 
 ```text
-USB-UART TTL TX  -> RM5 RX
-USB-UART TTL RX  -> RM5 TX
-USB-UART TTL GND -> RM5 GND
+USB-UART TX  -> RM5 pin 4 RX
+USB-UART RX  -> RM5 pin 3 TX
+USB-UART GND -> RM5 pin 1 GND
 ```
 
-RM5 powinien być zasilany normalnie z instalacji. Linie komunikacyjne wymagają wspólnej masy. Nie podawać 24 V na TX/RX interfejsu TTL.
+Nie używać klasycznego interfejsu RS-232 z poziomami napięć dodatnich i ujemnych. Nie podawać 12/24 V na piny TX/RX.
+
+Pin 2 złącza serwisowego jest oznaczony jako +5 VDC. Do samej komunikacji wystarczają GND, TX i RX; RM5 może pozostawać zasilany normalnie przez główne złącze CN5.
 
 ### COM1
 
-W użytej konfiguracji **Clone5 Professional wykrywa RM5 po ustawieniu interfejsu jako COM1**. Jeżeli adapter USB-UART pojawi się jako COM3, COM5 itd., trzeba zmienić numer portu w Windows:
+W używanej konfiguracji Clone5 Professional 2.0 wykrywa RM5 po przypisaniu adapterowi USB-UART numeru **COM1**.
+
+Jeżeli Windows nada adapterowi inny numer:
 
 ```text
 Menedżer urządzeń
@@ -81,27 +98,117 @@ Menedżer urządzeń
   -> Numer portu COM: COM1
 ```
 
-Po zmianie numeru portu zamknąć i uruchomić ponownie Clone5 Professional. Jeżeli COM1 jest zajęty przez nieużywane urządzenie, najpierw zwolnić ten numer.
+Po zmianie numeru portu należy ponownie uruchomić Clone5 Professional.
 
-## Dane kalibracyjne
+## Złącze główne CN5 — 10 pin
 
-Wartości pokazane w zakładce kalibracji dotyczą **konkretnego egzemplarza RM5**. Nie należy ich kopiować do innego akceptora.
+![RM5 CN5 10-pin](images/rm5/rm5_cn5_10pin_standard.png)
 
-Kalibracja opisuje charakterystykę czujników i tolerancje zaprogramowane dla danego mechanizmu. Przy wymianie RM5, płyty elektroniki albo głowicy pomiarowej należy zachować dane właściwe dla tego urządzenia lub przeprowadzić poprawną procedurę kalibracji.
+Pinout CN5 według dokumentacji:
 
-W repo zrzut kalibracji służy jako dokumentacja tego egzemplarza, a nie jako zestaw wartości wzorcowych.
+| Pin | Funkcja |
+|---:|---|
+| 1 | GND |
+| 2 | +12…24 VDC |
+| 3 | CH5 |
+| 4 | CH6 |
+| 5 | N.U. |
+| 6 | INHIBIT |
+| 7 | CH1 |
+| 8 | CH2 |
+| 9 | CH3 |
+| 10 | CH4 |
 
+W tym projekcie używane są przede wszystkim:
+- pin 1 — GND,
+- pin 2 — zasilanie,
+- pin 6 — INHIBIT z Y2,
+- pin 7 — CH1 do X27.
 
-## Konfiguracja Clone5 / RM5
+## Konfiguracja Clone5 Professional
 
-W Clone5 należy skonfigurować akceptor tak, aby:
+### Configuration
 
-1. wszystkie używane nominały były aktywne,
-2. wszystkie te nominały generowały sygnał na fizycznym wyjściu CH1,
-3. liczba impulsów CH1 odpowiadała wartości monety w przyjętej jednostce projektu,
-4. INHIBIT był aktywny z wejścia inhibit RM5.
+![Clone5 Configuration](images/rm5/clone5_configuration.png)
 
-Projekt nie zakłada osobnych wejść PLC dla CH2…CH6.
+Stan pokazany na screenie:
+- Type: `00 - Validator`,
+- `Multi pulse`: ON,
+- `Credit pulse width`: **100 ms**,
+- Base Value, Channel 1…30: **1**,
+- Base Value, Channel 31…60: **1**,
+- Output: `Vending anti-jam`,
+- `Limit`: OFF,
+- `Binary output`: OFF,
+- `Inhibition Id`: OFF,
+- `Holed tokens/coins`: OFF,
+- `Watch dog (Pin 10)`: OFF.
+
+Opcja `Inhibition Id` widoczna w Clone5 nie jest w tej dokumentacji utożsamiana z fizycznym wejściem **INHIBIT na pinie 6 CN5**. Sterowanie fizycznym INHIBIT w projekcie PLC pozostaje zgodne z opisem Y2 -> pin 6.
+
+### Kanały 1–10
+
+![Clone5 Channels 1-10](images/rm5/clone5_channels_1_10.png)
+
+Screen dokumentuje aktualne parametry kanałów oraz wartości pomiarowe używanego egzemplarza RM5.
+
+**Wartości HFU / Dim. / LF / HFL / Amp. są danymi kalibracyjnymi konkretnego egzemplarza. Nie należy ich kopiować do innego RM5.**
+
+Dla konfiguracji PLC istotne są pola:
+- `Enable`,
+- `Value`,
+- `Sub.`,
+- `Sep.`,
+- sposób generowania impulsów wyjściowych.
+
+PLC nie rozpoznaje kanału źródłowego. Odczytuje tylko impulsy na fizycznym CH1 podłączonym do X27.
+
+### Hardware / wartości referencyjne
+
+![Clone5 Hardware Reference](images/rm5/clone5_hardware_reference.png)
+
+Dla udokumentowanego egzemplarza ekran pokazuje:
+
+```text
+Standby Value:
+HFU = 515
+LF  = 57
+HFL = 1038
+
+Reference Value:
+HFU = 515
+LF  = 57
+HFL = 1038
+```
+
+Są to wartości referencyjne **tego konkretnego akceptora**. Przy wymianie RM5 nie należy przepisywać ich do nowego urządzenia.
+
+Na ekranie Hardware można też sprawdzić:
+- stan DIP switch,
+- Input 1,
+- Inhibit,
+- Anti-Fishing,
+- Cash Sensor,
+- diagnostykę Sensor / E²prom / Timer / Rom,
+- test wartości przez port szeregowy,
+- Hardware Test i Output Test.
+
+## Zasada konfiguracji kanałów dla PLC
+
+W Clone5 należy skonfigurować używane monety tak, aby ich wartość została przekazana przez **CH1** w postaci właściwej liczby impulsów.
+
+Projekt nie wykorzystuje CH2…CH6 jako osobnych wejść PLC.
+
+Przykład dla `D300=1`:
+
+```text
+1 impuls CH1  = 0,10 EUR
+5 impulsów    = 0,50 EUR
+10 impulsów   = 1,00 EUR
+20 impulsów   = 2,00 EUR
+```
+
+Przy `D300=10` jeden impuls CH1 oznacza 1,00 EUR.
 
 ## Wartość impulsu
 
@@ -124,14 +231,13 @@ Każdy impuls Y0/Counter odpowiada 0,10 EUR.
 ## Akceptacja programowa
 
 Impuls X27 jest przyjmowany tylko przy:
-
 - M300=1,
 - M413=1,
 - M415=1.
 
 Y2/Y23 INHIBIT zależą od X0 oraz M435. M435 jest ustawiane także wtedy, gdy kolejny pełny impuls RM5 nie mieści się już w wolnym limicie lub bieżąca paczka RM5 wypełniła pozostałe miejsce.
 
-## Diagnostyka
+## Diagnostyka PLC
 
 - D320 — impulsy bieżącej paczki RM5,
 - D521 — impulsy ostatniej paczki,
@@ -142,44 +248,6 @@ Y2/Y23 INHIBIT zależą od X0 oraz M435. M435 jest ustawiane także wtedy, gdy k
 - D565 — licznik zaakceptowanych zdarzeń RM5,
 - M419 / D587 — żądanie wake HMI przez około 3 s.
 
-
-## Clone5 Professional — zrzuty konfiguracji
-
-Pliki są przechowywane w `docs/images/rm5/`.
-
-### Control / diagnostyka
-
-![Clone5 Control](images/rm5/clone5_control.png)
-
-Podgląd stanu wejść, INHIBIT, Anti-Fishing, Cash Sensor i diagnostyki RM5.
-
-### Kanały 1–10
-
-![Clone5 Channels](images/rm5/clone5_channels_1_10.png)
-
-Ustawienia kanałów monet. W tym projekcie PLC używa wyłącznie fizycznego wyjścia CH1.
-
-### Configuration
-
-![Clone5 Configuration](images/rm5/clone5_configuration.png)
-
-Istotne dla projektu:
-- tryb `00 - Validator`,
-- aktywne `Inhibition Id`,
-- czas impulsu kredytowego dopasowany do wejścia PLC,
-- wartości monet wyprowadzane jako impulsy CH1.
-
-### Calibration
-
-![Clone5 Calibration](images/rm5/clone5_calibration.png)
-
-**Nie kopiować tych wartości do innego RM5.** Są to dane konkretnego egzemplarza.
-
-### Połączenie / port COM
-
-![Clone5 COM1](images/rm5/clone5_com1.png)
-
-Interfejs programujący pracuje po TTL. W tej konfiguracji Clone5 Professional wymaga przypisania adapterowi numeru `COM1`.
 
 ## Limit kredytu
 
