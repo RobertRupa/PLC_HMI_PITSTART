@@ -1,5 +1,14 @@
 # Changelog
 
+## V1.4.5
+
+- dodano fizyczny przełącznik ADMIN na X14,
+- dodano `M303 = ADMIN_SCREEN_REQUEST`,
+- `M303` bezpośrednio śledzi stan X14,
+- HMI może użyć M303=1 do ekranu Admin i M303=0 do Home,
+- wersja PLC/HMI V1.4.5.
+
+
 ## V1.4.4
 
 - zastąpiono Auto Start Timer funkcją Auto Start Program,
