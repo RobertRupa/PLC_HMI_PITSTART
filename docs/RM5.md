@@ -1,4 +1,4 @@
-# Comestero RM5 Evolution — V1.4.7
+# Comestero RM5 Evolution — V1.4.9
 
 ## Założenie projektu
 
@@ -99,4 +99,31 @@ Y2/Y23 INHIBIT nadal zależą wyłącznie od X0.
 - D524 — impulsy RM5 sesji,
 - D533 — impulsy Y0 faktycznie wysłane,
 - D565 — licznik zaakceptowanych zdarzeń RM5,
-- M419 / D586 — żądanie wake HMI przez około 3 s.
+- M419 / D587 — żądanie wake HMI przez około 3 s.
+
+
+## Clone5 Professional — zrzuty konfiguracji
+
+### Control / diagnostyka
+
+![Clone5 Control](images/rm5/clone5_control.png)
+
+Zakładka pozwala sprawdzić m.in. stan wejścia, INHIBIT, Anti-Fishing, Cash Sensor oraz diagnostykę Sensor / E²prom / Timer / Rom.
+
+### Kanały 1–10
+
+![Clone5 Channels](images/rm5/clone5_channels_1_10.png)
+
+W projekcie PLC wykorzystywane jest tylko fizyczne wyjście **CH1**, dlatego wszystkie obsługiwane nominały należy skonfigurować tak, aby ich impulsy trafiały na CH1. Liczba impulsów musi odpowiadać wartości monety przy przyjętej wartości `D300`.
+
+### Configuration
+
+![Clone5 Configuration](images/rm5/clone5_configuration.png)
+
+Dla tego projektu istotne są:
+- typ pracy **00 - Validator**,
+- aktywne **Inhibition Id**,
+- `Credit pulse width` zgodne z wymaganym czasem impulsu wejściowego,
+- wyjście wartości monet kierowane na CH1.
+
+PLC nie wykorzystuje osobnych wejść dla CH2…CH6.
