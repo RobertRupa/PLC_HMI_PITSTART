@@ -1,4 +1,4 @@
-# PLC V1.4.4
+# PLC V1.4.5
 
 ## Import
 
@@ -58,3 +58,12 @@ When M431=ON, countdown waits until the whole Y0/CREDIT queue is finished. If th
 - `D584` — program 1…6,
 - start następuje po zakończeniu pełnej kolejki Y0/CREDIT,
 - ręczny wybór programu ma pierwszeństwo; Auto Start nie nadpisuje już pracującego programu.
+
+
+## Admin screen request
+
+```text
+X14 -> M303 = ADMIN_SCREEN_REQUEST
+```
+
+M303 jest statusem tylko do odczytu dla HMI. Stan 1 oznacza żądanie ekranu Admin, stan 0 oznacza Home.
