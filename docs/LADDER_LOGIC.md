@@ -1,4 +1,4 @@
-# Logika PLC — V1.5.0
+# Logika PLC — V1.5.1
 
 ## RM5 INHIBIT
 
@@ -41,11 +41,11 @@ D556 = P6 sekundy za D550
 
 ## Pozostały kredyt
 
-PLC utrzymuje kredyt w `D560` z rozdzielczością 1/100 impulsu Counter:
+PLC utrzymuje kredyt w `D560` w centach:
 
 ```text
-100  = 0,10 EUR
-1000 = 1,00 EUR
+10  = 0,10 EUR
+100 = 1,00 EUR
 ```
 
 Kredyt jest dodawany dopiero po rzeczywiście wysłanym impulsie Y0/T201.
@@ -55,8 +55,8 @@ Kredyt jest dodawany dopiero po rzeczywiście wysłanym impulsie Y0/T201.
 Dla wybranego programu:
 
 ```text
-base_scaled = D550 × 100
-rate = base_scaled × D528 / 100
+base_cents = D550 × 10
+rate = base_cents × D528 / 100
 ```
 
 Co sekundę podczas aktywnej pracy:
@@ -73,7 +73,7 @@ Przy zmianie programu D561…D563 są zerowane. Błąd spowodowany zmianą taryf
 
 ## Synchronizacja z PRACA
 
-`M430 = M301 OR /M429`.
+`M430 = M301 OR /M429 OR /M410`.
 
 Domyślnie po pierwszym skanie `M429=1`.
 
@@ -263,24 +263,46 @@ Wake request pozostaje w `M419`, a jego word mirror został przeniesiony do `D58
 
 ```text
 D566 = D549 * 10
-M435 = (D560 >= D566)
-Y2   = /X0 OR M435
-Y23  = /X0 OR M435
+D588 = D330 * 10
+D590 = D560 + D588
+M435 = (D590 >= D566)
+
+Y2  = /X0 OR M435
+Y23 = /X0 OR M435
 ```
 
-D560 jest przechowywany w centach, dlatego maksymalne D549=999 daje D566=9990.
+D330 jest kolejką impulsów Y0; każdy oczekujący impuls odpowiada 10 centom kredytu. M435 uwzględnia więc także kredyt już przyjęty, ale jeszcze niewysłany przez Y0.
 
-Wejście RM5 jest dodatkowo blokowane przez `ANI M435`.
+D549 ma zakres 1…999, czyli do 99,90 EUR.
 
 ## Doładowanie bez zmiany programu
 
-Auto Start wymaga teraz również:
+Auto Start wymaga:
 
 ```text
 D558 = 0
 ```
 
-Po wybraniu programu D558 ma wartość 1…6, więc kolejne paczki RM5 tylko zwiększają D560 i czas. Nie generują Auto Select dla innego programu.
+Po wybraniu programu D558 ma wartość 1…6. Kolejne paczki RM5 nie generują Auto Select.
+
+Przy zamknięciu paczki T200 nowa liczba impulsów jest ograniczana do wolnego miejsca wynikającego z D549 i dodawana do bieżącej kolejki:
+
+```text
+free_cents  = max_credit_cents - D560
+free_pulses = free_cents / 10
+free_slots  = max(free_pulses - D330, 0)
+packet_y0   = min(packet_y0, free_slots)
+
+D330 = D330 + packet_y0
+```
+
+`M436 = RM5_TOPUP_BUSY`:
+
+```text
+M436 = (D330>0) OR M321 OR M330 OR M331
+```
+
+Tick zużycia kredytu ma dodatkowy warunek `/M436`. Jeżeli moneta została zaakceptowana podczas aktywnej sesji, odliczanie czeka do zakończenia paczki i kolejki Y0.
 
 ## Countdown / PRACA / Pilotaggio
 
@@ -291,3 +313,8 @@ M430 = M301 OR /M429 OR /M410
 Dla domyślnego `M429=1`:
 - M410=1 -> odliczanie wymaga X1/M301,
 - M410=0 -> odliczanie trwa niezależnie od X1/M301.
+
+
+## Restart PLC
+
+Pierwszy skan zeruje kredyt, czas, liczniki sesji, kolejkę Y0, D588…D592 oraz M436. Parametry taryfy i konfiguracja HMI nie są zerowane.
