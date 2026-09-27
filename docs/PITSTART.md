@@ -1,8 +1,32 @@
 # Comestero PitStart — odniesienie funkcjonalne dla V1.5.7
 
-Źródło odniesienia projektu: **Gamma Pit – Sistemi di attivazione – Manuale operativo**, PitStart-F, Rev. 00, 13/10/2009.
+Źródło odniesienia projektu: **Gamma Pit – Sistemi di attivazione – Manuale operativo**, `PitStart-F - c27-M-PIT-EK`, 13/10/2009.
+
+Docelowa lokalna kopia w repo:
+
+```text
+docs/manuals/pitstart/Gamma_Pit_PitStart_F_c27-M-PIT-EK_2009-10-13.pdf
+```
+
+Numer rewizji nie został umieszczony w nazwie pliku, ponieważ strona 2 PDF podaje `Rev. 01`, a nagłówki dalszej części dokumentu `Rev. 00`.
 
 Ten dokument opisuje, jak funkcje oryginalnego PitStart są odwzorowane w aktualnym PLC. Nie jest kopią instrukcji producenta.
+
+## Co potwierdza oryginalny manual
+
+Sekcja 9.5 opisuje bezpośrednio PitStart. Oryginalna dokumentacja podaje:
+- zasilanie PitStart 24 VAC lub VDC,
+- wszystkie wyjścia jako suche styki normalnie otwarte,
+- osobne wyjście Counter generujące impulsy dla wielokrotności 0,1 EUR,
+- wyjście Pilotaggio pompa aktywowane od żądania pierwszego programu do utraty kredytu lub STOP,
+- sześć wyjść programów P1…P6,
+- wejście obecności automatu na CN8 1–2,
+- wejście Manual/Free na CN8 3–4,
+- jedną wspólną cenę bazową dla sześciu programów, przy osobnych czasach programów,
+- konfigurację tabeli RM5, języka i poziomów wejść przez MultiConfig,
+- schemat elektryczny PitStart w rozdziale 10.5.
+
+Aktualny PLC zachowuje te funkcje użytkowe, ale dodaje własny model kredytu, HMI, Auto Start, limit kredytu oraz synchronizację z PRACA/RUN.
 
 ## Wyjścia maszyny
 
