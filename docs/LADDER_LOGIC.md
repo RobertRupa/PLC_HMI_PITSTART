@@ -1,4 +1,4 @@
-# Logika PLC — V1.5.5
+# Logika PLC — V1.5.6
 
 ## RM5 INHIBIT
 
@@ -80,13 +80,20 @@ Domyślnie po pierwszym skanie `M429=1`.
 - M429=0: M430 jest zawsze aktywne, więc czas jest zużywany zgodnie z WORK_ACTIVE.
 - M429=1: M430 = M301 OR /M429 OR /M410. Przy M429=1 sygnał PRACA zatrzymuje odliczanie tylko wtedy, gdy M410/Pilotaggio jest włączone.
 
+Bramka odliczania:
+
+```text
+M449 = M412 OR M448
+```
+
 Tick:
 
 ```text
 LDP M8013
-AND M412
+AND M449
 AND M430
 AND M426
+ANI M436
 OUT M416
 ```
 
@@ -132,12 +139,35 @@ Zakres D549 i maksymalny czas programu zostały ograniczone tak, aby D350 pozost
 
 ## STOP
 
-STOP:
-- kasuje aktywny program,
+STOP nadal:
+- kasuje aktywny program M420…M425,
 - wyłącza Y1/Y3…Y7/Y10/Y27,
 - nie kasuje D560,
-- nie kasuje D558,
+- nie kasuje D558 ani D557,
 - nie kasuje pozostałego czasu.
+
+Od V1.5.6 naciśnięcie STOP nie zatrzymuje odliczania, jeżeli w chwili naciśnięcia:
+- M301 / PRACA / RUN = 1,
+- M412 / WORK_ACTIVE = 1.
+
+Na zboczu STOP ustawiany jest latch:
+
+```text
+LDP M440
+AND M301
+AND M412
+SET M448
+```
+
+M448 jest kasowany gdy:
+- M301/RUN spadnie do 0,
+- M300/AUTOMATE_PRESENT spadnie do 0,
+- kredyt D560 spadnie do 0,
+- zostanie wybrany nowy program.
+
+`M449 = M412 OR M448` steruje wyłącznie odliczaniem. Wyjścia programu, Pilotaggio i Work Lights nadal korzystają z M412, dlatego po STOP pozostają wyłączone.
+
+W efekcie: jeśli operator naciśnie STOP podczas aktywnego RUN, wyjścia programu wyłączą się od razu, ale kredyt/czas będzie zużywany aż do zaniku sygnału RUN. Późniejsze ponowne pojawienie się RUN nie uruchamia odliczania ponownie bez nowego zdarzenia STOP podczas aktywnej pracy.
 
 Po ponownym wyborze programu pozostały kredyt jest przeliczany według wybranej taryfy.
 
