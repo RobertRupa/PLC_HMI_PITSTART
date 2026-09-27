@@ -1,4 +1,4 @@
-; PLC_HMI_PITSTART V1.5.0
+; PLC_HMI_PITSTART V1.5.1
 ; PitStart-compatible monetary-credit/time model
 ;
 ; Counter/PITSTART_CREDITS Y0 represents 0.10 EUR units.
@@ -17,10 +17,13 @@
 ;        Reset on new session / program change; increases when added credit raises D350.
 ; D540/D541 = MM/SS for HMI.
 ; D528 = global clock correction x100 (100=1.00x).
+; D588..D592 = internal RM5 max-credit / queue calculations.
 ;
 ; Time/credit consumption occurs only during WORK_ACTIVE.
 ; With M429=1, PRACA/X1 pauses countdown only when M410 PILOTAGGIO is enabled.
 ; With M410=0, countdown continues even if X1/PRACA drops.
+; Accepted RM5 top-up temporarily pauses the countdown until the packet and Y0 queue are complete,
+; so an active program is not lost while the additional credit is being transferred.
 ;
 ; Auto start program:
 ; M431 = AUTO_START_PROGRAM_ENABLE (HMI RW, default ON).
@@ -28,7 +31,8 @@
 ; M432 = one-scan AUTO_START_TRIGGER after the complete Y0 CREDIT queue is idle and only if no program has been selected (D558=0).
 ; M433 = AUTO_START_DONE latch, prevents repeated automatic starts in the same session.
 ; M434 = AUTO_START_PROGRAM_OK.
-; M435 = MAX_CREDIT_REACHED; drives RM5 INHIBIT together with /X0.
+; M435 = MAX_CREDIT_REACHED; includes credit already queued for Y0 and drives RM5 INHIBIT with /X0.
+; M436 = RM5_TOPUP_BUSY; active while an accepted RM5 packet / Y0 queue is being processed.
 ; M460..M465 = auto-select pulses P1..P6.
 ; M470..M475 = effective select pulses (manual/HMI OR auto).
 ;
@@ -131,6 +135,16 @@ MOV K0 D585
 LD M8002
 MOV K0 D587
 LD M8002
+MOV K0 D588
+LD M8002
+MOV K0 D589
+LD M8002
+MOV K0 D590
+LD M8002
+MOV K0 D591
+LD M8002
+MOV K0 D592
+LD M8002
 AND<= D300 K0
 MOV K10 D300
 LD M8002
@@ -201,7 +215,7 @@ MOV H3156 D500
 LD M8002
 MOV H352E D501
 LD M8002
-MOV H302E D502
+MOV H312E D502
 LD M8002
 MOV H0 D503
 LD M8002
@@ -209,7 +223,7 @@ MOV K1 D516
 LD M8002
 MOV K5 D517
 LD M8002
-MOV K0 D518
+MOV K1 D518
 LD M8002
 RST M320
 LD M8002
@@ -268,6 +282,8 @@ LD M8002
 RST M433
 LD M8002
 RST M435
+LD M8002
+RST M436
 LD X0
 OUT M300
 LD X1
@@ -322,7 +338,11 @@ LD M8000
 MUL D549 K10 D566
 LD M8000
 SUB D566 K10 D567
-LD>= D560 D566
+LD M8000
+MUL D330 K10 D588
+LD M8000
+ADD D560 D588 D590
+LD>= D590 D566
 OUT M435
 LDI X0
 OR M435
@@ -415,9 +435,26 @@ MOV D320 D521
 LD T200
 MUL D320 D300 D542
 LD T200
+AND> D566 D560
+SUB D566 D560 D588
+LD T200
+AND<= D566 D560
+MOV K0 D588
+LD T200
+DIV D588 K10 D590
+LD T200
+AND> D590 D330
+SUB D590 D330 D592
+LD T200
+AND<= D590 D330
+MOV K0 D592
+LD T200
+AND> D542 D592
+MOV D592 D542
+LD T200
 MOV D542 D522
 LD T200
-MOV D542 D330
+ADD D330 D542 D330
 LD T200
 MOV K0 D320
 LD T200
@@ -465,6 +502,11 @@ LD M331
 OUT T202 K10
 LD T202
 RST M331
+LD> D330 K0
+OR M321
+OR M330
+OR M331
+OUT M436
 LD X4
 OR M400
 OUT M440
@@ -802,6 +844,7 @@ LDP M8013
 AND M412
 AND M430
 AND M426
+ANI M436
 OUT M416
 LD M416
 ADD D561 D574 D561
