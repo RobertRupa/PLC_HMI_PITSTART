@@ -23,7 +23,8 @@ D582,Data,Remaining credit cents,RO
 D583,Data,Remaining 0.1-cent remainder,RO
 D584,Data,Auto start program number,HMI RW 1..6 default 1
 D585,Data,HMI_SCREEN_INDEX,RO; 0 main 1 admin 2 inactive 3 free
-D586,Data,HMI_WAKE_REQUEST_WORD,RO 0/1 mirror of M419
+D586,Data,HMI_CURRENT_SCREEN_INDEX,HMI writes active screen index; PLC does not write
+D587,Data,HMI_WAKE_REQUEST_WORD,RO 0/1 mirror of M419
 D350,Data,Remaining time seconds for last selected program,RO
 D540,Data,Remaining minutes,RO
 D541,Data,Remaining seconds,RO
