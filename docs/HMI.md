@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.4.4
+# HMI — WSStudio — V1.4.5
 
 ## Ekran Home
 
@@ -118,10 +118,10 @@ M429:
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.4.4
+D500..D503 = V1.4.5
 D516 = 1
 D517 = 4
-D518 = 4
+D518 = 5
 ```
 
 
@@ -173,3 +173,21 @@ Status:
 - `M434` — D584 ma poprawną wartość 1…6.
 
 Odliczanie czasu nie jest już opóźniane przez M431. Po uruchomieniu programu działa normalnie według `M412` i opcjonalnie `M429/PRACA`.
+
+
+### Przełącznik ADMIN X14
+
+PLC kopiuje stan fizycznego wejścia:
+
+```text
+X14 -> M303
+```
+
+`M303 = ADMIN_SCREEN_REQUEST` jest przeznaczony dla HMI:
+
+- M303=1 — przełącz / utrzymuj ekran **Admin**,
+- M303=0 — wróć / utrzymuj ekran **Home**.
+
+M303 jest tylko odczytem stanu fizycznego przełącznika X14; HMI nie powinno zapisywać do M303.
+
+Jeżeli WSStudio ma funkcję przełączania ekranu sterowaną bitem PLC, użyj M303 bezpośrednio. Dla przełącznika bistabilnego nie jest potrzebny dodatkowy impuls zbocza.
