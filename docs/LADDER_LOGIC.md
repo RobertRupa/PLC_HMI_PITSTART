@@ -1,4 +1,4 @@
-# Logika PLC — V1.5.3
+# Logika PLC — V1.5.4
 
 ## RM5 INHIBIT
 
@@ -328,18 +328,27 @@ Po wejściu PLC w RUN działa T204. Dopóki T204 nie upłynie, M438=1 i PLC zeru
 
 ```text
 M439 = PILOTAGGIO_DEFAULT
+M447 = NEW_PROGRAM_START
 ```
 
-Po utworzeniu M470…M475:
+M447 jest generowane tylko wtedy, gdy występuje wybór M470…M475 i żaden z M420…M425 nie był wcześniej aktywny.
 
 ```text
-M470 OR M471 OR M472 OR M473 OR M474 OR M475
-AND /M410
-AND M439
-SET M410
+(M470 OR ... OR M475)
+AND /M420
+AND /M421
+AND /M422
+AND /M423
+AND /M424
+AND /M425
+-> M447
+
+M447 AND M439  -> SET M410
+M447 AND /M439 -> RST M410
 ```
 
-Domyślnie M439=1.
+Zmiana programu przy aktywnym M420…M425 nie zmienia M410. M439 jest nastawą dla kolejnego startu, nie sterowaniem bieżącej sesji.
+
 
 ## Domyślna taryfa
 
