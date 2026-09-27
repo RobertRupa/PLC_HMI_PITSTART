@@ -165,3 +165,13 @@ Jeżeli RM5 wyśle po jednym impulsie niezależnie od nominału, PLC potraktuje 
 ```
 
 Priorytet: Admin > Nieczynne > Wolne > Main.
+
+
+## Pliki projektów
+
+- `projects/plc/PitStart.zip` — projekt PLC GX Developer,
+- `projects/hmi/pitstart_hmi.zip` — projekt HMI; archiwum zawiera `pitstart.hs`.
+
+Dokumentacja ekranów i konfiguracji:
+- `docs/HMI.md`,
+- `docs/RM5.md`.
