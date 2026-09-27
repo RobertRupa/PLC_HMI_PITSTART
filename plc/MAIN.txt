@@ -14,8 +14,8 @@ OUT M438
 ; D300=10, D550=10, D551..D556=300.
 ; D300 = RM5 CH1 value in 0.10 EUR units. Example D300=10 => 1.00 EUR.
 ; D549 = maximum admitted credit in 0.10 EUR units, valid 1..999. Default 50 => 5.00 EUR.
-; D550 = common base price in 0.10 EUR units. Default 5 => 0.50 EUR.
-; D551..D556 = service time in seconds for P1..P6 at D550 base price.
+; D550 = common base price in 0.10 EUR units. Default 10 => 1.00 EUR.
+; D551..D556 = service time in seconds for P1..P6 at D550 base price. Default 300 s.
 ; D560 = remaining monetary credit in cents:
 ;        10 = 0.10 EUR, 100 = 1.00 EUR.
 ; D350 = calculated remaining service time for the last selected program.
