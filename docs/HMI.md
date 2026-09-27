@@ -1,4 +1,4 @@
-# HMI — WSStudio / KinSealStudio — V1.5.1
+# HMI — WSStudio / KinSealStudio — V1.5.2
 
 ## Ekrany
 
@@ -194,8 +194,8 @@ W dostępnej konfiguracji WSStudio nie ma potwierdzonej osobnej funkcji „wake 
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.5.1
+D500..D503 = V1.5.2
 D516 = 1
 D517 = 5
-D518 = 1
+D518 = 2
 ```
