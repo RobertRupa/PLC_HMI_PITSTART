@@ -1,23 +1,32 @@
-# Opis projektu — V1.5.6
+# Opis projektu — V1.5.7
 
-Projekt zastępuje funkcje Comestero PitStart w sterowniku myjni i współpracuje z HMI oraz akceptorem monet RM5 Evolution.
+Projekt odtwarza funkcje Comestero PitStart w sterowniku myjni i integruje PLC, HMI oraz akceptor monet RM5 Evolution.
+
+## Aktualne pliki
+
+```text
+PLC project: projects/plc/PitStart.zip
+PLC import:  plc/main_v1.5.7.csv
+PLC IL:      plc/MAIN_GXDEV_ENTRY.txt
+HMI project: projects/hmi/pitstart.hs
+```
 
 ## Model kredytu
 
 Źródłem prawdy jest pozostały kredyt pieniężny.
 
-- Y0 / PITSTART_CREDITS = impulsy po 0,10 EUR,
-- D300 = wartość jednego impulsu wejściowego RM5 CH1 w jednostkach 0,10 EUR,
-- D550 = wspólna cena bazowa,
-- D551…D556 = czasy P1…P6 dla ceny bazowej,
-- D560 = pozostały kredyt w centach,
-- D350 / D540 / D541 = pozostały czas.
+- `Y0 / PITSTART_CREDITS` = impulsy po 0,10 EUR,
+- `D300` = wartość jednego impulsu RM5 CH1 w jednostkach 0,10 EUR,
+- `D550` = wspólna cena bazowa w jednostkach 0,10 EUR,
+- `D551…D556` = czas P1…P6 dla ceny bazowej,
+- `D560` = pozostały kredyt w centach,
+- `D350 / D540 / D541` = pozostały czas.
 
 ## Wejścia
 
 ```text
 X0   AUTOMATE_PRESENT / INVERTER_OK
-X1   PRACA
+X1   PRACA / RUN
 X4   STOP
 X5   P1
 X6   P2
@@ -46,104 +55,95 @@ Y23  RM5 INHIBIT compatibility mirror
 Y27  WORK LIGHTS
 ```
 
-FX używa ósemkowej numeracji X/Y: po Y7 jest Y10. Adres Y8 nie istnieje.
-
-Y2 jest aktualnym fizycznym wyjściem INHIBIT. Y23 wykonuje tę samą funkcję logiczną i pozostaje w projekcie na wypadek użycia sterownika z większą liczbą fizycznych wyjść.
+FX używa ósemkowej numeracji X/Y: po Y7 występuje Y10.
 
 ## RM5 Evolution
 
-RM5 jest podłączony przez CH1 do X27. Wszystkie używane kanały/nominały muszą być skonfigurowane w RM5 tak, aby generować impulsy na wyjściu CH1.
-
-PLC nie czyta CH2…CH6.
-
-Jeżeli różne monety mają różne wartości, wartość powinna być zakodowana liczbą impulsów CH1. Każdy impuls X27 jest liczony jednakowo i mnożony przez D300.
-
-INHIBIT:
+Aktualne fizyczne połączenie:
 
 ```text
-X0=0 lub M435=1 -> Y2=1 oraz Y23=1
-X0=1 i M435=0 -> Y2=0 oraz Y23=0
+RM5 CH1 pin 7 -> X27
+RM5 INHIBIT pin 6 <- Y2
 ```
 
-## Programy
+Y23 ma identyczną logikę jak Y2, ale pozostaje tylko kompatybilnym mirrorem.
 
-Program może być wybrany z:
-- fizycznych przycisków X5…X12,
+```text
+X0=0 OR M435=1 -> Y2=1, Y23=1
+X0=1 AND M435=0 -> Y2=0, Y23=0
+```
+
+Wszystkie używane wartości monet muszą być przekazane przez CH1. Szczegóły: [docs/RM5.md](docs/RM5.md).
+
+## Wybór programu
+
+Program może zostać wybrany przez:
+- fizyczne wejścia X5…X12,
 - HMI M401…M406,
 - Auto Start Program.
 
-Aktywne stany:
-- M420…M425 = P1…P6.
+Aktywne stany programu: `M420…M425`.
 
-Zmiana programu zachowuje kredyt i przelicza pozostały czas według taryfy wybranego programu.
+Zmiana programu nie kasuje kredytu. `D557` i wynikowy czas są aktualizowane zgodnie z taryfą wybranego programu.
 
 ## Auto Start Program
 
-- M431 = enable,
-- D584 = numer programu 1…6,
-- M432 = jednocyklowy trigger,
-- M433 = wykonano/anulowano Auto Start,
-- M434 = poprawny numer programu.
-
-Auto Start czeka na całkowite zakończenie kolejki Y0/CREDIT i wymaga D558=0. Jeżeli program jest już wybrany, kolejne doładowanie zwiększa kredyt i czas bez zmiany programu.
-
-Paczki RM5 są dopisywane do D330. M436 pozostaje aktywne do zakończenia obsługi pakietu i kolejki Y0. Podczas M436=1 zużycie kredytu jest wstrzymane.
-
-## Synchronizacja czasu
-
-M429 wybiera synchronizację z PRACA. Przy M429=1 X1/M301 jest wymagane tylko gdy M410/Pilotaggio jest włączone. Przy M410=0 odliczanie trwa niezależnie od X1.
-
-## STOP podczas RUN
-
-Jeżeli STOP zostanie naciśnięty podczas aktywnego `M301=RUN` i `M412=WORK_ACTIVE`, wyjścia programu są wyłączane od razu, ale odliczanie kredytu trwa do zaniku RUN.
-
 ```text
-M448 = STOP_RUN_COUNTDOWN
-M449 = M412 OR M448
+M431 = AUTO_START_PROGRAM_ENABLE
+D584 = program 1..6
+M432 = AUTO_START_TRIGGER
+M433 = AUTO_START_DONE
+M434 = AUTO_START_PROGRAM_OK
 ```
 
-M448 jest kasowany po zaniku RUN, utracie M300, wyzerowaniu kredytu lub wyborze nowego programu.
+Auto Start wymaga m.in. ważnego numeru programu, dostępnego kredytu, pustej kolejki Y0, braku aktywnego programu oraz `D558=0`. Późniejsze doładowanie nie zmienia już wybranego programu.
+
+## Sync time with RUN
+
+V1.5.7 używa jednoznacznego selektora źródła odliczania:
+
+```text
+M429=0 -> COUNTDOWN_ACTIVE = M412 / WORK_ACTIVE
+M429=1 -> COUNTDOWN_ACTIVE = M301 / PRACA-RUN
+```
+
+`M449` jest końcową bramką odliczania, a `M430` jej mirrorem diagnostycznym.
+
+### STOP przy aktywnym RUN
+
+STOP kasuje M420…M425 i natychmiast wyłącza wyjścia programu. Jeżeli jednak `M429=1` i `M301/RUN=1`, kredyt/czas nadal jest zużywany. Po zaniku RUN odliczanie staje.
+
+Przy `M429=0` STOP zatrzymuje odliczanie razem z `M412=WORK_ACTIVE`.
 
 ## HMI
 
-- D559 = TIME_BAR_MAX,
-- D582 = pozostały kredyt w centach,
-- D585 = HMI_SCREEN_INDEX: 0 Main, 1 Admin, 2 Nieczynne, 3 Wolne,
-- D586 = aktualny indeks ekranu zapisywany przez HMI,
-- D587 = HMI_WAKE_REQUEST_WORD, mirror M419,
-- D565 = licznik zaakceptowanych zdarzeń RM5.
+Aktualny projekt: [projects/hmi/pitstart.hs](projects/hmi/pitstart.hs).
 
-X14 steruje M303. D585 wybiera ekran według priorytetu:
-- 1 Admin, gdy X14=1,
-- 2 Stanowisko nieczynne, gdy X14=0 i X0=0,
-- 3 Stanowisko wolne, gdy X14=0, X0=1 i M427=0,
-- 0 Main/Work w pozostałym przypadku.
+Projekt zawiera:
+- KinSealStudio V1.0.2,
+- profil SUP070 / wsb-070-16M,
+- 800×480,
+- sterownik `Mitsubishi_Fx1n`,
+- ekrany 000 Home, 001 Admin, 002 Error, 003 Ready.
 
-Po zaakceptowanym impulsie RM5 M419 jest aktywne około 3 s, a D565 zwiększa licznik zdarzeń.
+Sterowanie ekranami:
 
+```text
+D585 = PLC -> HMI screen index
+D586 = HMI -> PLC current screen index
+```
 
-## Domyślne przełączniki
+Szczegóły: [docs/HMI.md](docs/HMI.md).
 
-M429 i M431 startują domyślnie w stanie ON:
-- M429 = Sync countdown with PRACA,
-- M431 = Auto Start Program.
+## Restart PLC
 
+`T204/M438` tworzy okno resetu stanu sesji po wejściu PLC w RUN. Zerowane są dane bieżącej sesji, ale parametry taryfy i przełączniki konfiguracyjne pozostają zachowane lub są korygowane tylko wtedy, gdy są poza dopuszczalnym zakresem.
 
-## Limit kredytu
-
-D549: 1…999 jednostek po 0,10 EUR. M435 blokuje RM5, gdy kolejny pełny impuls RM5 nie mieści się już w wolnym limicie albo bieżąca paczka zarezerwowała całe dostępne miejsce.
-
-
-## Restart
-
-Po wejściu PLC w RUN T204 tworzy okno resetu startowego. Gdy M438=1 zerowane są stan sesji, kredyt, czas, kolejka Y0, liczniki diagnostyczne i rejestry robocze D588…D594.
-
+Domyślnie ustawiane są m.in. `M410`, `M414`, `M429`, `M431` i `M439`.
 
 ## Pilotaggio default
 
-`M439` przechowuje domyślny stan Pilotaggio i jest dostępne z HMI.
-
-Od V1.5.5 wartość M439 jest stosowana po zakończeniu kolejki Y0, gdy M410 jest wyłączone. M439=1 ustawia wtedy M410; M439=0 pozostawia M410 wyłączone.
+`M439 = PILOTAGGIO_DEFAULT` jest wartością domyślną stosowaną po zakończeniu całej kolejki Y0, jeżeli bieżące `M410` jest wyłączone.
 
 ## Domyślna taryfa
 
@@ -153,4 +153,16 @@ D550=10
 D551..D556=300
 ```
 
-Jeden impuls RM5 daje wtedy 5 minut dla P1…P6.
+Przy tych ustawieniach jeden impuls RM5 CH1 daje 10 impulsów Y0 i 300 s dla każdego programu.
+
+## Znane ograniczenie czasu
+
+`D350` jest pojedynczym rejestrem 16-bit. Bieżąca walidacja `M415` nie sprawdza kombinacji maksymalnego kredytu, ceny bazowej i czasu programu pod kątem przepełnienia D350.
+
+Konserwatywny warunek konfiguracji:
+
+```text
+D549 * D557 / D550 <= 32767 s
+```
+
+Domyślne ustawienia są daleko poniżej tego limitu.
