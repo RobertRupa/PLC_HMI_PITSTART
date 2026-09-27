@@ -63,8 +63,8 @@ M435,Bit,RM5_INHIBIT_LIMIT,RO; another full RM5 input pulse cannot fit below D54
 M436,Bit,RM5_TOPUP_BUSY,RO; RM5 packet or Y0 queue is being processed
 M437,Bit,RM5_PENDING_AT_LIMIT,RO; pending RM5 packet reserved all remaining credit slots
 M438,Bit,STARTUP_RESET_ACTIVE,RO; active while T204 startup reset window is running
-M439,Bit,PILOTAGGIO_DEFAULT,HMI RW default ON; copied to M410 only on fresh program start
-M447,Bit,NEW_PROGRAM_START,Internal one-scan pulse when selecting a program from idle state
+M439,Bit,PILOTAGGIO_DEFAULT,HMI RW default ON; when M410 is OFF current M439 is applied after complete Y0 queue
+M447,Bit,NEW_PROGRAM_START,Internal diagnostic one-scan pulse when selecting a program from idle state; does not change M410
 M460-M465,Bit,AUTO_SELECT_P1_P6,Internal one-scan auto program select
 M470-M475,Bit,EFFECTIVE_SELECT_P1_P6,Internal manual/HMI OR auto select
 Y0,Output,PITSTART_CREDITS / Counter,One pulse = 0.10 EUR
