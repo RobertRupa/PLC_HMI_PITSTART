@@ -1,85 +1,83 @@
-# PLC V1.4.6
+# PLC V1.4.7
 
-## Import
+## Pliki
 
-- `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji,
-- `main_v1.4.0.csv` — CSV w układzie eksportu GX,
-- `MAIN.txt` — lista z komentarzami,
-- `DEVICE_MAP.csv` — mapa adresów.
+- `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
+- `MAIN.txt` — wersja komentowana,
+- `main_v1.4.7.csv` — czysty CSV do importu GX,
+- `DEVICE_MAP.csv` — mapa urządzeń,
+- `DEVICE_COMMENTS.csv` / `DEVICE_COMMENTS.txt` — komentarze urządzeń,
+- `IMPORT_CSV.md` — mapowanie kolumn importu.
 
-## Model
+## Aktualna mapa wyjść
 
 ```text
-RM5 -> D300 jednostek po 0,10 EUR -> Y0 Counter
-Y0 faktycznie wysłany -> +0,10 EUR do wewnętrznego kredytu
-kredyt + wybrany program -> obliczony czas
+Y0   PITSTART_CREDITS
+Y1   PILOTAGGIO
+Y2   RM5_INHIBIT_PRIMARY
+Y3   PROGRAM_1
+Y4   PROGRAM_2
+Y5   PROGRAM_3
+Y6   PROGRAM_4
+Y7   PROGRAM_5
+Y10  PROGRAM_6
+Y23  RM5_INHIBIT_COMPAT
+Y27  WORK_LIGHTS
 ```
 
-## Najważniejsze ustawienia testowe
+FX numeruje X/Y ósemkowo, dlatego po Y7 występuje Y10.
+
+Y2 i Y23 mają identyczną logikę INHIBIT:
 
 ```text
-D300 = 10
-D549 = 50
-D550 = 5
-D551..D556 = 70
-D528 = 100
-M429 = 0
+X0=0 -> ON
+X0=1 -> OFF
 ```
 
-Po potwierdzeniu sygnału X1/PRACA można ustawić M429=1.
+Na obecnym sprzęcie używany jest Y2; Y23 pozostaje dla przyszłego sterownika z większą liczbą wyjść.
 
-## CSV column mapping
-
-See `IMPORT_CSV.md`. Column E of `main_v1.4.0.csv` is mapped as **Note** during import.
-
-
-## TIME_BAR_MAX
-
-`D559` = maksymalny czas paska HMI dla aktualnej sesji/programu.
-
-- reset przy nowej sesji,
-- reset przy zmianie programu,
-- aktualizacja w górę gdy D350 wzrośnie po doładowaniu,
-- nie maleje podczas normalnego odliczania.
-
-
-## Auto Start Program
-
-- `M431` — HMI RW, Auto Start Program enable.
-- `M432` — RO, Auto Timer active.
-- `M433` — RO, final countdown enable.
-
-When M431=ON, countdown waits until the whole Y0/CREDIT queue is finished. If the queue finished before a program was selected, countdown starts after the program is selected.
-
-
-## Auto Start Program
-
-- `M431` — enable,
-- `D584` — program 1…6,
-- start następuje po zakończeniu pełnej kolejki Y0/CREDIT,
-- ręczny wybór programu ma pierwszeństwo; Auto Start nie nadpisuje już pracującego programu.
-
-
-## Admin screen request
+## RM5
 
 ```text
-X14 -> M303 = ADMIN_SCREEN_REQUEST
+RM5 CH1 -> X27
+RM5 INHIBIT <- Y2
 ```
 
-M303 jest statusem tylko do odczytu dla HMI. Stan 1 oznacza żądanie ekranu Admin, stan 0 oznacza Home.
+Wszystkie używane kanały/nominały RM5 muszą generować impulsy na CH1. PLC nie odczytuje CH2…CH6.
 
+`D300` określa wartość pojedynczego impulsu CH1 w jednostkach po 0,10 EUR.
 
-## HMI word triggers
-
-Dla HMI bez obsługi bitów M jako triggerów ekranów:
+## Parametry
 
 ```text
+D300 = RM5 CH1 value [x0,10 EUR]
+D528 = clock correction x100
+D549 = max credit [x0,10 EUR]
+D550 = base price [x0,10 EUR]
+D551..D556 = P1..P6 time [s]
+D584 = Auto Start Program 1..6
+```
+
+## HMI
+
+```text
+D350 = remaining time [s]
+D540 = minutes
+D541 = seconds
+D559 = TIME_BAR_MAX
+D582 = credit cents
 D585 = ADMIN_SCREEN_REQUEST_WORD
-       0/1 mirror X14 -> M303
-
 D586 = HMI_WAKE_REQUEST_WORD
-       0/1 mirror M419
 ```
 
-D585=1 oznacza ekran Admin, D585=0 ekran Home.
-D586=1 jest aktywne około 3 s po zaakceptowanym impulsie RM5.
+## Import CSV
+
+Kolumny pliku `main_v1.4.7.csv`:
+
+- A = Step number
+- B = Skip
+- C = Instruction
+- D = I/O(Device)
+- E…I = Skip
+
+Komentarze urządzeń importuj osobno, jeśli używana wersja GX Developer na to pozwala.
