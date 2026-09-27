@@ -1,5 +1,7 @@
 # Changelog
 
+- Dokumentacja: zaktualizowano `docs/WIRING.md` i `docs/wiring.svg`; schemat obejmuje zasilanie 24 VDC, RM5 CH1→X27, INHIBIT przez Y2, kompletne I/O PLC oraz połączenia z automatyką myjni.
+
 ## V1.5.7
 
 - główny README rozszerzono o podglądy ekranów Home/Admin/Error/Ready oraz konfigurację D585/D586,
