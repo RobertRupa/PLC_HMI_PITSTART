@@ -2,6 +2,9 @@
 
 ## V1.5.7
 
+- przygotowano katalog i nazwy lokalnych manuali HMI: `WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf` oraz `WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf`,
+- oznaczono WSB V1.79 jako podstawową instrukcję dla WSB7020R,
+- oznaczono WSC V1.13 jako dokumentację porównawczą dla innej rodziny WSC/WSCH,
 - przygotowano repo pod `projects/hmi/pitstart.hs` jako główny edytowalny plik projektu HMI,
 - dodano `projects/hmi/README.md` z parametrami odczytanymi z pliku KinSealStudio,
 - udokumentowano profil SUP070 / wsb-070-16M, ekran 7.0" 800x480, COM1/COM2, USB device i sterownik Mitsubishi_Fx1n,
