@@ -1,4 +1,4 @@
-PLC_HMI_PITSTART - V1.4.5
+PLC_HMI_PITSTART - V1.4.6
 =====================================
 
 I/O
@@ -63,6 +63,8 @@ D554  P4 TIME [s] at base price, 1..600, default 70
 D555  P5 TIME [s] at base price, 1..600, default 70
 D556  P6 TIME [s] at base price, 1..600, default 70
 D584  AUTO START PROGRAM NUMBER, 1..6, default 1
+D585  ADMIN SCREEN REQUEST WORD, RO 0/1 = X14/M303
+D586  HMI WAKE REQUEST WORD, RO 0/1 = M419
 
 ODCZYTY
 -------
@@ -91,7 +93,7 @@ T203 K300  HMI wake hold ~3 s
 
 WERSJA
 ------
-D500..D503 = V1.4.5
+D500..D503 = V1.4.6
 D516=1
 D517=4
-D518=5
+D518=6
