@@ -1,4 +1,4 @@
-# Opis projektu — V1.4.9
+# Opis projektu — V1.5.0
 
 Projekt zastępuje funkcje Comestero PitStart w sterowniku myjni i współpracuje z HMI oraz akceptorem monet RM5 Evolution.
 
@@ -10,7 +10,7 @@ Projekt zastępuje funkcje Comestero PitStart w sterowniku myjni i współpracuj
 - D300 = wartość jednego impulsu wejściowego RM5 CH1 w jednostkach 0,10 EUR,
 - D550 = wspólna cena bazowa,
 - D551…D556 = czasy P1…P6 dla ceny bazowej,
-- D560 = pozostały kredyt wewnętrzny,
+- D560 = pozostały kredyt w centach,
 - D350 / D540 / D541 = pozostały czas.
 
 ## Wejścia
@@ -61,8 +61,8 @@ Jeżeli różne monety mają różne wartości, wartość powinna być zakodowan
 INHIBIT:
 
 ```text
-X0=0 -> Y2=1 oraz Y23=1
-X0=1 -> Y2=0 oraz Y23=0
+X0=0 lub M435=1 -> Y2=1 oraz Y23=1
+X0=1 i M435=0 -> Y2=0 oraz Y23=0
 ```
 
 ## Programy
@@ -85,13 +85,11 @@ Zmiana programu zachowuje kredyt i przelicza pozostały czas według taryfy wybr
 - M433 = wykonano/anulowano Auto Start,
 - M434 = poprawny numer programu.
 
-Auto Start czeka na całkowite zakończenie kolejki Y0/CREDIT. Jeżeli wcześniej wybrano program ręcznie, Auto Start go nie nadpisuje.
+Auto Start czeka na całkowite zakończenie kolejki Y0/CREDIT i wymaga D558=0. Jeżeli program został wcześniej wybrany, kolejne doładowanie tylko zwiększa kredyt/czas i nie zmienia programu.
 
 ## Synchronizacja czasu
 
-M429 wybiera sposób zużycia kredytu:
-- M429=0 — podczas WORK_ACTIVE,
-- M429=1 — dodatkowo wymagane X1/M301 PRACA.
+M429 wybiera synchronizację z PRACA. Przy M429=1 X1/M301 jest wymagane tylko gdy M410/Pilotaggio jest włączone. Przy M410=0 odliczanie trwa niezależnie od X1.
 
 ## HMI
 
@@ -116,3 +114,8 @@ Po zaakceptowanym impulsie RM5 M419 jest aktywne około 3 s, a D565 zwiększa li
 M429 i M431 startują domyślnie w stanie ON:
 - M429 = Sync countdown with PRACA,
 - M431 = Auto Start Program.
+
+
+## Limit kredytu
+
+D549: 1…999 jednostek po 0,10 EUR. M435 sygnalizuje osiągnięcie limitu i blokuje RM5 przez Y2/Y23.
