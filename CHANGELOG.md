@@ -1,5 +1,16 @@
 # Changelog
 
+## V1.5.5
+
+- zmieniono obsługę `M439 = PILOTAGGIO_DEFAULT`,
+- `M439` nie jest już kopiowane do `M410` przy rozpoczęciu programu,
+- gdy `M410=1`, zakończenie kolejki impulsów Y0 nie zmienia Pilotaggio,
+- gdy `M410=0`, po zakończeniu całej kolejki Y0 PLC pobiera aktualny stan `M439`,
+- `M439=1` ustawia wtedy `M410`, a `M439=0` pozostawia `M410` wyłączone,
+- przywrócenie jest blokowane, jeśli trwa zbieranie kolejnej paczki RM5 (`M321=1`),
+- `M447` pozostaje markerem diagnostycznym NEW_PROGRAM_START, ale nie steruje już `M410`,
+- wersja PLC V1.5.5.
+
 ## V1.5.4
 
 - Pilotaggio default jest stosowane tylko przy rozpoczęciu programu ze stanu bez aktywnego programu,
