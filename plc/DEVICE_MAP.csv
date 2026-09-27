@@ -27,7 +27,8 @@ D586,Data,HMI_CURRENT_SCREEN_INDEX,HMI writes active screen index; PLC does not 
 D587,Data,HMI_WAKE_REQUEST_WORD,RO 0/1 mirror of M419
 D588:D589,Data,Queued credit cents / temporary 32-bit product,Internal
 D590:D591,Data,Projected credit / DIV result,Internal
-D592,Data,Free Y0 pulse slots below max credit,Internal
+D592,Data,Free credit cents below D549,Internal
+D594,Data,Free Y0 pulse slots below D549,Internal
 D350,Data,Remaining time seconds for last selected program,RO
 D540,Data,Remaining minutes,RO
 D541,Data,Remaining seconds,RO
@@ -58,8 +59,10 @@ M431,Bit,AUTO_START_PROGRAM_ENABLE,HMI RW default ON
 M432,Bit,AUTO_START_TRIGGER,RO one-scan trigger after Y0 queue is fully idle
 M433,Bit,AUTO_START_DONE,RO latch prevents repeated automatic start in same session
 M434,Bit,AUTO_START_PROGRAM_OK,RO; D584 is 1..6
-M435,Bit,MAX_CREDIT_REACHED,RO; current credit plus queued Y0 credit >= D549 limit
+M435,Bit,RM5_INHIBIT_LIMIT,RO; another full RM5 input pulse cannot fit below D549 or pending packet filled free capacity
 M436,Bit,RM5_TOPUP_BUSY,RO; RM5 packet or Y0 queue is being processed
+M437,Bit,RM5_PENDING_AT_LIMIT,RO; pending RM5 packet reserved all remaining credit slots
+M438,Bit,STARTUP_RESET_ACTIVE,RO; active while T204 startup reset window is running
 M460-M465,Bit,AUTO_SELECT_P1_P6,Internal one-scan auto program select
 M470-M475,Bit,EFFECTIVE_SELECT_P1_P6,Internal manual/HMI OR auto select
 Y0,Output,PITSTART_CREDITS / Counter,One pulse = 0.10 EUR
@@ -77,3 +80,4 @@ T200,Timer,RM5 packet timeout,K100
 T201,Timer,CREDIT ON,K10
 T202,Timer,CREDIT OFF,K10
 T203,Timer,HMI wake hold,K300 approx 3 s
+T204,Timer,Startup reset window,K100
