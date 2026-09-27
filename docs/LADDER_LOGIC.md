@@ -1,4 +1,4 @@
-# Logika PLC — V1.5.1
+# Logika PLC — V1.5.2
 
 ## RM5 INHIBIT
 
@@ -265,13 +265,17 @@ Wake request pozostaje w `M419`, a jego word mirror został przeniesiony do `D58
 D566 = D549 * 10
 D588 = D330 * 10
 D590 = D560 + D588
-M435 = (D590 >= D566)
+D592 = max(D566 - D590, 0)
+D594 = D592 / 10
+D542 = D320 * D300
+M437 = M321 AND (D542 >= D594)
+M435 = (D594 < D300) OR M437
 
 Y2  = /X0 OR M435
 Y23 = /X0 OR M435
 ```
 
-D330 jest kolejką impulsów Y0; każdy oczekujący impuls odpowiada 10 centom kredytu. M435 uwzględnia więc także kredyt już przyjęty, ale jeszcze niewysłany przez Y0.
+D330 jest kolejką impulsów Y0. D594 określa, ile pełnych impulsów Y0 można jeszcze dopisać. M435 przechodzi w stan wysoki, zanim PLC zaakceptuje impuls RM5, którego pełnej wartości nie da się już zaliczyć.
 
 D549 ma zakres 1…999, czyli do 99,90 EUR.
 
@@ -317,4 +321,4 @@ Dla domyślnego `M429=1`:
 
 ## Restart PLC
 
-Pierwszy skan zeruje kredyt, czas, liczniki sesji, kolejkę Y0, D588…D592 oraz M436. Parametry taryfy i konfiguracja HMI nie są zerowane.
+Po wejściu PLC w RUN działa T204. Dopóki T204 nie upłynie, M438=1 i PLC zeruje kredyt, czas, liczniki sesji, kolejkę Y0, D588…D594 oraz stany M435…M437. Parametry taryfy i konfiguracja HMI nie są zerowane.
