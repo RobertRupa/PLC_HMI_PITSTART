@@ -2,28 +2,50 @@
 
 ## PLC
 
-`plc/PitStart.zip` — projekt PLC przekazany do repozytorium w postaci archiwum.
-
-SHA-256:
+Aktualny projekt PLC:
 
 ```text
-8dab90e6fe2b96c72f50b3541e0ed83ceacc31468505b4bb7ffe766363d7b9ab
+projects/plc/PitStart.zip
 ```
+
+Pliki tekstowe używane do kontroli zmian i importu:
+
+```text
+plc/MAIN_GXDEV_ENTRY.txt
+plc/MAIN.txt
+plc/main_v1.5.7.csv
+plc/DEVICE_MAP.csv
+```
+
+`main_v1.5.7.csv` jest aktualnym plikiem importowym GX Developer. `MAIN_GXDEV_ENTRY.txt` i `MAIN.txt` są czytelnymi źródłami logiki.
 
 ## HMI
 
-`hmi/pitstart_hmi.zip` — archiwum transportowe zawierające dostarczony plik projektu HMI `pitstart.hs`.
-
-SHA-256 archiwum:
+Aktualny edytowalny projekt HMI:
 
 ```text
-4e38f6930781aef7382f7822770e75d4a350c1520ec0117b8212afeba1635a56
+projects/hmi/pitstart.hs
 ```
 
-SHA-256 pliku źródłowego `pitstart.hs`:
+Plik jest obecny w repo. Bieżący Git blob:
 
 ```text
-72f56cddff476677780f15a067c4a7dfd8871d6bf5b4f14a0530fd2dc72a7144
+2fa650d6e956c4f8e480eb724d410f79400b2e97
 ```
 
-Pliki projektu są przechowywane jako materiały źródłowe. Dokumentacja konfiguracji znajduje się w [../docs/HMI.md](../docs/HMI.md), a konfiguracja RM5 w [../docs/RM5.md](../docs/RM5.md).
+SHA-256 pliku:
+
+```text
+18f415d87c903069cb58ad295e9d1d824015716edd6013c4ed2f6fd358e0438b
+```
+
+Poprzednie odniesienia do `pitstart_hmi.zip` zostały usunięte, ponieważ archiwum nie występuje już w aktualnym drzewie repo.
+
+Opis projektu HMI: [hmi/README.md](hmi/README.md).
+
+## Dokumentacja
+
+- [HMI](../docs/HMI.md)
+- [logika PLC](../docs/LADDER_LOGIC.md)
+- [RM5 Evolution](../docs/RM5.md)
+- [połączenia](../docs/WIRING.md)
