@@ -1,8 +1,8 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.4.8**.
+Aktualna wersja PLC: **V1.4.9**.
 
-Logika V1.4.8 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
+Sterowanie wykorzystuje model kredytowy zgodny z zachowaniem PitStart:
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
 - `D300` określa wartość RM5 CH1 w jednostkach 0,10 EUR,
 - wspólna cena bazowa jest w `D550`,
@@ -98,13 +98,13 @@ Wtedy kredyt jest zużywany tylko gdy jednocześnie:
 - 101 = 1,01x,
 - 99 = 0,99x.
 
-## HMI wake
+## HMI — zdarzenie RM5
 
 Po zaakceptowanym impulsie RM5:
-- `M419=1` przez około 3 s — żądanie wybudzenia ekranu,
-- `D565` zwiększa się o 1 — licznik zdarzeń monet.
+- `M419=1` przez około 3 s,
+- `D565` zwiększa się o 1.
 
-Jeżeli WSStudio potrafi wybudzać/przełączać ekran po bicie PLC, użyj M419. Jeżeli wymaga detekcji zmiany wartości, użyj D565.
+Przełączanie ekranów jest realizowane przez `D585` w funkcji PLC Control / Control Screen Switch. `D586` jest przeznaczony na zapis aktualnego indeksu ekranu przez HMI.
 
 ## HMI ekran Admin
 
@@ -114,7 +114,7 @@ Jeżeli WSStudio potrafi wybudzać/przełączać ekran po bicie PLC, użyj M419.
   - 1 = Admin,
   - 2 = Stanowisko nieczynne,
   - 3 = Stanowisko wolne.
-- D586 — HMI_WAKE_REQUEST_WORD = 0/1 mirror M419.
+- D586 — HMI_CURRENT_SCREEN_INDEX, zapisywany przez HMI.
 
 ## HMI sterowanie
 
@@ -133,7 +133,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.4.8.csv` — CSV w układzie eksportu GX,
+- `plc/main_v1.4.9.csv` — CSV w układzie eksportu GX,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
