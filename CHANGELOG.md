@@ -1,5 +1,14 @@
 # Changelog
 
+## V1.4.2
+
+- dodano `D559 = TIME_BAR_MAX` dla paska czasu HMI,
+- D559 jest zerowane przy nowej sesji i zmianie programu,
+- D559 rośnie, gdy doładowanie zwiększa dostępny czas,
+- D559 nie maleje podczas odliczania D350,
+- wersja PLC/HMI V1.4.2.
+
+
 ## V1.4.1
 
 - Y23/RM5_INHIBIT zależy wyłącznie od X0,
