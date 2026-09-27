@@ -1,28 +1,30 @@
-# Projekt HMI
+# Projekt HMI — pitstart.hs
 
-## Główny plik projektu
+## Plik źródłowy
 
-Aktualny edytowalny projekt HMI:
+Aktualny edytowalny projekt:
 
 ```text
-pitstart.hs
+projects/hmi/pitstart.hs
 ```
 
-Plik należy otwierać w **KinSealStudio** / oprogramowaniu zgodnym z formatem `.hs`.
+Plik jest obecny w repo i ma rozmiar 1 177 910 B.
 
-> Plik `pitstart.hs` jest dodawany do repo ręcznie. Dokumentacja w repo zakłada ścieżkę `projects/hmi/pitstart.hs`.
+```text
+Git blob: 2fa650d6e956c4f8e480eb724d410f79400b2e97
+SHA-256:  18f415d87c903069cb58ad295e9d1d824015716edd6013c4ed2f6fd358e0438b
+```
 
-## Parametry odczytane z projektu
+## Dane odczytane z projektu
 
-Z nagłówka aktualnego pliku `.hs`:
+Nagłówek i zasoby pliku zawierają:
 
 ```text
 Editor / format: KinSealStudio V1.0.2
 Panel profile:   SUP070
-Hardware:        wsb-070-16M
+Profile string:  wsb-070-16M
 Display:         7.0 inch
 Resolution:      800 x 480
-Display type:    1667M Colors 7 TFT LCD
 Supply:          DC24V (+/-15%)
 Ports:           COM1 / COM2
 Download:        USB device
@@ -30,39 +32,21 @@ Language:        English
 PLC driver:      Mitsubishi_Fx1n
 ```
 
-W projekcie występują również obiekty powiązane z urządzeniami Mitsubishi FX, m.in. adresy X/Y/M/D używane przez aktualną logikę PLC.
+W pliku występuje również ścieżka zasobów `WSZKHMI5.1En`. Manual producenta dla serii WSB używa nazwy HMI Studio / Weisheng 5.1. `KinSealStudio V1.0.2` jest identyfikatorem zapisanym w samym pliku projektu.
 
-## Powiązanie z PLC
+Ciąg opisujący ekran/kolory w nagłówku projektu jest metadanym profilu programu. Nie należy go traktować jako pewnej identyfikacji wariantu sprzętowego bez odczytu etykiety fizycznego panelu.
 
-Aktualna mapa HMI i PLC jest opisana w:
+## Wersja HMI i PLC
 
-- [../../docs/HMI.md](../../docs/HMI.md)
-- [../../docs/LADDER_LOGIC.md](../../docs/LADDER_LOGIC.md)
-- [../../plc/DEVICE_MAP.csv](../../plc/DEVICE_MAP.csv)
-
-Najważniejsze adresy HMI używane przez bieżący projekt:
+Na ekranie projektu znajduje się stały tekst:
 
 ```text
-M400        STOP
-M401..M406 P1..P6
-M410        PILOTAGGIO_ENABLE
-M414        WORK_LIGHTS_ENABLE
-M429        SYNC_WITH_PRACA / Sync time with RUN
-M431        AUTO_START_PROGRAM_ENABLE
-D300        Coin multiplier
-D528        Time correction
-D549        Max credits
-D550        Base price
-D551..D556 P1..P6 time
-D584        Auto Start Program number
-D585        PLC -> HMI screen index
-D586        HMI -> PLC current screen index
-D587        HMI wake request
+HMI: V1.0.0
 ```
 
-## Ekrany
+Jest to wersja interfejsu HMI. Wersja programu PLC jest osobna i aktualnie wynosi **V1.5.7**.
 
-Projekt korzysta z czterech ekranów operatorskich:
+## Ekrany
 
 ```text
 000 Home
@@ -71,8 +55,31 @@ Projekt korzysta z czterech ekranów operatorskich:
 003 Ready / Stanowisko wolne
 ```
 
-Opis działania ekranów i zrzuty konfiguracji znajdują się w [../../docs/HMI.md](../../docs/HMI.md).
+Sterowanie ekranami:
+- `D585` — PLC -> HMI, żądany indeks ekranu,
+- `D586` — HMI -> PLC, aktualny indeks ekranu.
 
-## Archiwum
+## Główne adresy PLC używane przez HMI
 
-`pitstart_hmi.zip` pozostaje w repo jako wcześniejsze archiwum transportowe. Przy dalszej edycji jako źródło należy traktować `pitstart.hs`.
+```text
+M400        STOP
+M401..M406 P1..P6
+M410        PILOTAGGIO_ENABLE
+M414        WORK_LIGHTS_ENABLE
+M429        SYNC_COUNTDOWN_WITH_PRACA
+M431        AUTO_START_PROGRAM_ENABLE
+M439        PILOTAGGIO_DEFAULT
+
+D300        Coin multiplier
+D528        Time correction
+D549        Max credits
+D550        Base price
+D551..D556 P1..P6 time
+D584        Auto Start Program
+D585        PLC -> HMI screen index
+D586        HMI -> PLC screen feedback
+```
+
+Dodatkowo w pliku projektu występują lokalne obiekty HMI, m.in. `LB555` przy funkcji Touch control oraz `LW4057` przy Touch Calibration. Nie są to urządzenia PLC.
+
+Pełna dokumentacja: [../../docs/HMI.md](../../docs/HMI.md).
