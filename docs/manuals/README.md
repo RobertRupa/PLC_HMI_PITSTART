@@ -1,6 +1,14 @@
 # Manuals
 
-Katalog na instrukcje i dokumentację źródłową urządzeń używanych w projekcie.
+Lokalne kopie dokumentacji źródłowej urządzeń używanych w projekcie.
 
-- `rm5/` — dokumentacja Comestero RM5 Evolution,
-- `hmi/` — dokumentacja HMI SEEKU / Winsun.
+## HMI
+
+- [WSB HMI&PLC All-in-one User Manual V1.79](hmi/WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf) — podstawowy manual dla WSB7020R,
+- [WSC HMI&PLC All-in-one User Manual V1.13](hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf) — dokumentacja porównawcza rodziny WSC/WSCH.
+
+## RM5
+
+- [RM5 Evolution manual](rm5/manual_rm5.pdf).
+
+Opisy projektowe znajdują się w [../HMI.md](../HMI.md) i [../RM5.md](../RM5.md).
