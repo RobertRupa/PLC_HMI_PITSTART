@@ -51,8 +51,7 @@ Przykład: D582=100 -> 1,00 EUR.
 - `D586` = HMI_WAKE_REQUEST_WORD, 0/1 mirror M419 — preferowane dla HMI bez obsługi M,
 - `D565` = HMI_WAKE_EVENT_COUNTER.
 
-Preferowane: wybudzenie/przejście na Home na zboczu M419.
-Alternatywa: reagowanie na zmianę D565.
+Na tym HMI używaj przede wszystkim `D586`: wartość 1 oznacza żądanie wybudzenia/przejścia na Home przez około 3 s. `D565` pozostaje alternatywnym licznikiem zdarzeń RM5.
 
 ## Ekran Admin
 
