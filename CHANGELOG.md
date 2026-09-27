@@ -1,5 +1,18 @@
 # Changelog
 
+## V1.5.1
+
+- D549 pozostaje w zakresie 1…999,
+- M435 uwzględnia kredyt w D560 oraz impulsy oczekujące w D330,
+- paczki RM5 są dopisywane do D330 zamiast zastępować istniejącą kolejkę,
+- liczba nowych impulsów Y0 jest ograniczana do wolnego miejsca poniżej D549,
+- dodano M436 RM5_TOPUP_BUSY,
+- podczas M436=1 zużycie kredytu jest wstrzymane do końca obsługi zaakceptowanego doładowania,
+- późniejsze doładowanie nie zmienia D558 ani aktywnego programu,
+- pierwszy skan zeruje D588…D592 oraz M436,
+- M430 pozostaje zgodne z: PRACA OR /SYNC OR /PILOTAGGIO.
+
+
 ## V1.5.0
 
 - zwiększono zakres D549 MAX CREDIT do 1…999 jednostek po 0,10 EUR,
