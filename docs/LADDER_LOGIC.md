@@ -1,4 +1,4 @@
-# Logika PLC — V1.5.2
+# Logika PLC — V1.5.3
 
 ## RM5 INHIBIT
 
@@ -322,3 +322,31 @@ Dla domyślnego `M429=1`:
 ## Restart PLC
 
 Po wejściu PLC w RUN działa T204. Dopóki T204 nie upłynie, M438=1 i PLC zeruje kredyt, czas, liczniki sesji, kolejkę Y0, D588…D594 oraz stany M435…M437. Parametry taryfy i konfiguracja HMI nie są zerowane.
+
+
+## Pilotaggio default
+
+```text
+M439 = PILOTAGGIO_DEFAULT
+```
+
+Po utworzeniu M470…M475:
+
+```text
+M470 OR M471 OR M472 OR M473 OR M474 OR M475
+AND /M410
+AND M439
+SET M410
+```
+
+Domyślnie M439=1.
+
+## Domyślna taryfa
+
+```text
+D300=10
+D550=10
+D551..D556=300
+```
+
+Jeden impuls RM5 generuje 10 impulsów Y0. Przy cenie bazowej 1,00 EUR i czasie 300 s daje to 5 minut.
