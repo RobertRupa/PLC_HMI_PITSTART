@@ -1,4 +1,4 @@
-; PLC_HMI_PITSTART V1.4.2
+; PLC_HMI_PITSTART V1.4.3
 ; PitStart-compatible monetary-credit/time model
 ;
 ; Counter/PITSTART_CREDITS Y0 represents 0.10 EUR units.
@@ -16,6 +16,13 @@
 ;
 ; Time/credit consumption occurs only during WORK_ACTIVE and, when M429=1,
 ; only while X1/M301 PRACA is active.
+;
+; Auto start timer:
+; M431 = AUTO_START_TIMER_ENABLE (HMI RW, default OFF).
+; M432 = AUTO_TIMER_ACTIVE. It is SET only after the full Y0 CREDIT queue is finished
+;        and a program is active. STOP / loss of X0 / no credit resets it.
+; M433 = COUNTDOWN_ENABLE. With M431=0 it follows WORK_ACTIVE; with M431=1 it
+;        waits for M432. M429/PRACA synchronization still applies through M430.
 ;
 ; HMI wake:
 ; M419 = 3 s wake request after accepted RM5 pulse.
@@ -164,7 +171,7 @@ MOV H3156 D500
 LD M8002
 MOV H342E D501
 LD M8002
-MOV H322E D502
+MOV H332E D502
 LD M8002
 MOV H0 D503
 LD M8002
@@ -172,7 +179,7 @@ MOV K1 D516
 LD M8002
 MOV K4 D517
 LD M8002
-MOV K2 D518
+MOV K3 D518
 LD M8002
 RST M320
 LD M8002
@@ -223,6 +230,12 @@ LD M8002
 SET M414
 LD M8002
 RST M429
+LD M8002
+RST M431
+LD M8002
+RST M432
+LD M8002
+RST M433
 LD X0
 OUT M300
 LD X1
@@ -321,6 +334,8 @@ LD M417
 MOV K0 D562
 LD M417
 MOV K0 D563
+LD M417
+RST M432
 LD M320
 AND< D320 K300
 INC D320
@@ -657,6 +672,25 @@ AND M300
 AND> D560 K0
 ANI M440
 OUT M412
+LD M431
+AND M412
+AND<= D330 K0
+ANI M321
+ANI M330
+ANI M331
+SET M432
+LDI M431
+RST M432
+LD M440
+ORI M300
+RST M432
+LD<= D560 K0
+RST M432
+LD M412
+ANI M431
+OR M432
+AND M430
+OUT M433
 LD> D558 K0
 AND> D557 K0
 AND> D560 K0
@@ -668,8 +702,7 @@ MUL D568 D528 D570
 LD M8000
 DDIV D570 K100 D574
 LDP M8013
-AND M412
-AND M430
+AND M433
 AND M426
 OUT M416
 LD M416
