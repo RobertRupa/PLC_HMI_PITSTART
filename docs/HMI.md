@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.4.7
+# HMI — WSStudio — V1.4.8
 
 ## Ekran Home
 
@@ -85,12 +85,13 @@ Jeżeli chcesz pokazywać D528 jako 1.00 zamiast 100, użyj na HMI dwóch miejsc
 |---|---|
 | M410 | Pilotaggio enable |
 | M414 | Work lights enable |
-| M429 | Sync countdown with PRACA |
-| M431 | Auto start program after CREDIT output |
+| M429 | Sync countdown with PRACA — default ON |
+| M431 | Auto start program after CREDIT output — default ON |
 
 M429:
-- OFF — odliczanie bazuje na WORK_ACTIVE; najlepsze do uruchomienia/testu,
-- ON — kredyt jest zużywany tylko gdy X1/M301 PRACA=1; docelowo najlepsza synchronizacja z automatyką, jeśli X1 jest poprawnym feedbackiem.
+- domyślnie ON po starcie PLC,
+- OFF — odliczanie bazuje tylko na WORK_ACTIVE,
+- ON — kredyt jest zużywany tylko gdy X1/M301 PRACA=1.
 
 ### Diagnostyka
 
@@ -118,10 +119,10 @@ M429:
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.4.7
+D500..D503 = V1.4.8
 D516 = 1
 D517 = 4
-D518 = 7
+D518 = 8
 ```
 
 
@@ -175,27 +176,51 @@ Status:
 Odliczanie czasu nie jest już opóźniane przez M431. Po uruchomieniu programu działa normalnie według `M412` i opcjonalnie `M429/PRACA`.
 
 
-### Przełącznik ADMIN X14
+### Sterowanie ekranem przez D585
 
-PLC kopiuje stan fizycznego wejścia:
+`D585 = HMI_SCREEN_INDEX` jest rejestrem tylko do odczytu dla HMI.
+
+Mapowanie:
 
 ```text
-X14 -> M303
+D585 = 0 -> ekran główny / praca
+D585 = 1 -> ekran Admin
+D585 = 2 -> ekran "Stanowisko nieczynne"
+D585 = 3 -> ekran "Stanowisko wolne"
 ```
 
-`M303 = ADMIN_SCREEN_REQUEST` jest bitem PLC. Dla HMI, które nie potrafi używać M jako triggera, użyj `D585 = ADMIN_SCREEN_REQUEST_WORD`:
+Warunki:
 
-- D585=1 — przełącz / utrzymuj ekran **Admin**,
-- D585=0 — wróć / utrzymuj ekran **Home**.
+- `D585=1` gdy `X14=1` / `M303=1`,
+- `D585=2` gdy Admin nie jest włączony i `X0=0`,
+- `D585=3` gdy Admin nie jest włączony, `X0=1` i `M427=0`,
+- `D585=0` w pozostałym przypadku, czyli typowo gdy automat jest dostępny i jest kredyt.
 
-M303 jest tylko odczytem stanu fizycznego przełącznika X14; HMI nie powinno zapisywać do M303.
+Priorytet:
 
-D585 jest tylko do odczytu i stale odzwierciedla M303/X14.
+```text
+ADMIN > STANOWISKO NIECZYNNE > STANOWISKO WOLNE > MAIN
+```
 
-Dla wybudzenia po monecie:
-- `D586=1` przez około 3 s po zaakceptowanym impulsie RM5,
-- `D586=0` poza tym oknem.
+Dzięki temu przy `X0=0` ekran "Stanowisko nieczynne" ma pierwszeństwo nad "Stanowisko wolne", nawet jeśli `M427=0`.
 
-Jeśli WSStudio pozwala używać tylko rejestrów D w akcjach systemowych, użyj:
-- `D585` do przełączania Admin/Home,
-- `D586` do Wake / przejścia na Home po monecie.
+W WSStudio użyj `D585` jako rejestru numeru/indeksu ekranu.
+
+### Wake po RM5
+
+`D586 = HMI_WAKE_REQUEST_WORD`:
+- 1 przez około 3 s po zaakceptowanym impulsie RM5,
+- 0 poza tym oknem.
+
+Jeżeli WSStudio pozwala na osobny rejestr "wake" lub zdarzenie systemowe, użyj D586.
+
+### Domyślne ustawienia
+
+Po uruchomieniu PLC:
+
+```text
+M429 = 1   Sync countdown with PRACA
+M431 = 1   Auto Start Program enabled
+```
+
+Oba bity nadal mogą być zmieniane z HMI podczas pracy.
