@@ -1,5 +1,21 @@
 # Changelog
 
+## V1.4.4
+
+- zastąpiono Auto Start Timer funkcją Auto Start Program,
+- `M431 = AUTO_START_PROGRAM_ENABLE`,
+- dodano `D584 = AUTO_START_PROGRAM_NO` z zakresem 1…6,
+- `M432` jest jednocyklowym AUTO_START_TRIGGER,
+- `M433` zapamiętuje wykonanie/anulowanie Auto Start w bieżącej sesji,
+- `M434` sygnalizuje poprawny numer programu,
+- dodano M460…M465 Auto Select i M470…M475 Effective Select,
+- Auto Start następuje dopiero po pełnym zakończeniu kolejki Y0/CREDIT,
+- ręcznie uruchomiony program nie jest później nadpisywany przez Auto Start,
+- STOP podczas oczekiwania anuluje Auto Start dla bieżącej sesji,
+- odliczanie czasu nie jest już opóźniane przez M431,
+- wersja PLC/HMI V1.4.4.
+
+
 ## V1.4.3
 
 - dodano `M431 = AUTO_START_TIMER_ENABLE`,
