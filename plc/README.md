@@ -1,4 +1,4 @@
-# PLC V1.4.3
+# PLC V1.4.4
 
 ## Import
 
@@ -43,10 +43,18 @@ See `IMPORT_CSV.md`. Column E of `main_v1.4.0.csv` is mapped as **Note** during 
 - nie maleje podczas normalnego odliczania.
 
 
-## Auto Start Timer
+## Auto Start Program
 
-- `M431` — HMI RW, Auto Start Timer enable.
+- `M431` — HMI RW, Auto Start Program enable.
 - `M432` — RO, Auto Timer active.
 - `M433` — RO, final countdown enable.
 
 When M431=ON, countdown waits until the whole Y0/CREDIT queue is finished. If the queue finished before a program was selected, countdown starts after the program is selected.
+
+
+## Auto Start Program
+
+- `M431` — enable,
+- `D584` — program 1…6,
+- start następuje po zakończeniu pełnej kolejki Y0/CREDIT,
+- ręczny wybór programu ma pierwszeństwo; Auto Start nie nadpisuje już pracującego programu.
