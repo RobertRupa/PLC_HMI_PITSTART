@@ -137,6 +137,8 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 - `plc/main_v1.5.7.csv` — aktualny CSV do importu w GX Developer,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
+- `docs/manuals/hmi/WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf` — główny manual WSB7020R, do ręcznego uploadu,
+- `docs/manuals/hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf` — manual WSC/WSCH jako dokumentacja porównawcza, do ręcznego uploadu,
 - `docs/LADDER_LOGIC.md` — opis logiki,
 - `CHANGELOG.md` — historia zmian.
 
