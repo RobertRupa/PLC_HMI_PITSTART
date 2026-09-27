@@ -1,6 +1,6 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.5.2**.
+Aktualna wersja PLC: **V1.5.3**.
 
 ## Model kredytu
 
@@ -50,8 +50,8 @@ Przykład:
 
 ```text
 D300 = 10  -> RM5 CH1 = 1,00 EUR
-D550 = 5   -> cena bazowa = 0,50 EUR
-D551 = 70  -> P1 daje 70 s za 0,50 EUR
+D550 = 10  -> cena bazowa = 1,00 EUR
+D551 = 300 -> P1 daje 300 s za 1,00 EUR
 ```
 
 Jeden impuls RM5 wygeneruje wtedy 10 impulsów Counter/Y0.
@@ -134,7 +134,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.5.2.csv` — CSV w układzie eksportu GX,
+- `plc/main_v1.5.3.csv` — CSV w układzie eksportu GX,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
@@ -199,3 +199,25 @@ Auto Start wymaga `D558=0`, więc późniejsze doładowanie nie wybiera ponownie
 ## Restart
 
 Po wejściu PLC w RUN timer T204 utrzymuje przez krótki czas `M438=STARTUP_RESET_ACTIVE`. W tym czasie zerowane są kredyt, czas, kolejki impulsów, liczniki sesji, D588…D594 oraz stany M435…M437. Parametry konfiguracyjne pozostają bez zmian.
+
+
+## Pilotaggio default
+
+`M439 = PILOTAGGIO_DEFAULT` jest ustawieniem HMI, domyślnie ON.
+
+Przy starcie programu:
+- jeśli `M410=1`, stan pozostaje bez zmian,
+- jeśli `M410=0` i `M439=1`, PLC ustawia `M410=1`,
+- jeśli `M410=0` i `M439=0`, Pilotaggio pozostaje wyłączone.
+
+Na ekranie Admin dodaj osobny przełącznik dla M439.
+
+## Domyślna taryfa
+
+```text
+D300 = 10
+D550 = 10
+D551..D556 = 300
+```
+
+Przy tych wartościach jeden impuls z RM5 daje 300 s, czyli 5 minut, dla każdego programu.
