@@ -1,16 +1,18 @@
-# HMI — WSStudio / KinSealStudio — V1.5.7
+# HMI — pitstart.hs / współpraca z PLC V1.5.7
 
 ## Plik źródłowy projektu HMI
 
-Głównym edytowalnym plikiem projektu jest:
+Główny edytowalny projekt jest obecny w repo:
+
+[projects/hmi/pitstart.hs](../projects/hmi/pitstart.hs)
 
 ```text
-projects/hmi/pitstart.hs
+rozmiar:  1 177 910 B
+Git blob: 2fa650d6e956c4f8e480eb724d410f79400b2e97
+SHA-256:  18f415d87c903069cb58ad295e9d1d824015716edd6013c4ed2f6fd358e0438b
 ```
 
-Plik należy dodać ręcznie do repo pod dokładnie tą nazwą.
-
-Z nagłówka aktualnego projektu `.hs` odczytano:
+Z pliku odczytano m.in.:
 
 ```text
 KinSealStudio V1.0.2
@@ -18,7 +20,6 @@ SUP070
 wsb-070-16M
 7.0 inch
 800 x 480
-1667M Colors 7 TFT LCD
 DC24V (+/-15%)
 COM1 / COM2
 USB device
@@ -26,9 +27,19 @@ Language: English
 PLC driver: Mitsubishi_Fx1n
 ```
 
-Szczegółowy opis pliku znajduje się w [projects/hmi/README.md](../projects/hmi/README.md).
+Są to metadane profilu zapisane w projekcie. Pełny model sprzętowy należy potwierdzać z etykiety panelu; w dokumentacji projektu używany jest WSB7020R, który jest wymieniony w manualu WSB V1.79.
 
-`projects/hmi/pitstart_hmi.zip` pozostaje starszym archiwum transportowym; przy dalszej edycji jako źródło należy traktować `pitstart.hs`.
+W zasobach projektu występuje także ścieżka `WSZKHMI5.1En`, zgodna z rodziną narzędzi HMI Studio 5.1 opisywaną przez producenta.
+
+Na ekranie znajduje się stały napis:
+
+```text
+HMI: V1.0.0
+```
+
+To wersja interfejsu HMI. **Nie jest to wersja programu PLC.** Aktualna wersja PLC to V1.5.7.
+
+Szczegółowy opis pliku: [projects/hmi/README.md](../projects/hmi/README.md).
 
 ## Ekrany
 
@@ -99,25 +110,27 @@ Ekran jest wybierany przy `D585=2`.
 
 Ekran jest wybierany przy `D585=3`.
 
-## Aktualne zrzuty HMI — V1.5.6
+## Zrzuty interfejsu HMI
+
+Nazwy plików zawierają `v1_5_6`, ponieważ wtedy wykonano zrzuty. Pliki są nadal używane jako dokumentacja layoutu pracującego z aktualnym PLC V1.5.7.
 
 Poniższe nazwy są przeznaczone dla aktualnych zrzutów projektu. Pliki należy ręcznie dodać do `docs/images/hmi/`.
 
 ### 000: Home — aktualny widok
 
-![Home V1.5.6](images/hmi/hmi_v1_5_6_screen_000_home.png)
+![Home](images/hmi/hmi_v1_5_6_screen_000_home.png)
 
 ### 001: Admin — aktualny widok
 
-![Admin V1.5.6](images/hmi/hmi_v1_5_6_screen_001_admin.png)
+![Admin](images/hmi/hmi_v1_5_6_screen_001_admin.png)
 
 ### 002: Error — Stanowisko nieczynne
 
-![Error V1.5.6](images/hmi/hmi_v1_5_6_screen_002_error.png)
+![Error](images/hmi/hmi_v1_5_6_screen_002_error.png)
 
 ### 003: Ready — Stanowisko wolne
 
-![Ready V1.5.6](images/hmi/hmi_v1_5_6_screen_003_ready.png)
+![Ready](images/hmi/hmi_v1_5_6_screen_003_ready.png)
 
 ### PLC Control / Control Screen Switch
 
@@ -191,8 +204,7 @@ Manual WSC V1.13 dotyczy modeli WSC/WSCH, dlatego nie należy traktować jego pa
 
 Projekt HMI z tego repo:
 - [projects/hmi/pitstart.hs](../projects/hmi/pitstart.hs) — główny plik źródłowy,
-- [projects/hmi/README.md](../projects/hmi/README.md) — opis projektu,
-- [projects/hmi/pitstart_hmi.zip](../projects/hmi/pitstart_hmi.zip) — starsze archiwum transportowe.
+- [projects/hmi/README.md](../projects/hmi/README.md) — opis projektu.
 
 Dokumentacja PLC:
 - [opis logiki PLC](LADDER_LOGIC.md),
@@ -201,9 +213,23 @@ Dokumentacja PLC:
 
 ### Komunikacja HMI <-> PLC
 
-Dla protokołu Mitsubishi FX1N dokumentacja rodziny podaje konfigurację po stronie HMI z prędkością 38400 bps i komunikacją RS232. W projekcie należy zachować ustawienia zgodne z faktycznie używanym portem i sterownikiem.
+Dla używanej rodziny **WSB** manual V1.79 podaje:
 
-Po pobraniu projektu do panelu przewód użyty wyłącznie do downloadu nie powinien pozostawać podłączony, jeżeli blokuje wewnętrzną komunikację HMI z PLC.
+```text
+Protocol: Mitsubishi FX1N
+Baud:     38400
+Mode:     232
+```
+
+Jest to zgodne z nazwą sterownika zapisaną w `pitstart.hs`: `Mitsubishi_Fx1n`.
+
+Manual WSB podaje również, że po zakończeniu downloadu programu HMI kabel programujący należy odłączyć; przy podłączonym kablu HMI i PLC nie komunikują się.
+
+Nie należy kopiować parametrów z manuala WSC V1.13. Dla rodziny WSC dokument podaje Mitsubishi FX3U, 19200 bps i 232 — to inna rodzina sprzętu.
+
+Lokalne źródła:
+- [WSB V1.79](manuals/hmi/WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf),
+- [WSC V1.13](manuals/hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf).
 
 ## Home
 
@@ -257,6 +283,17 @@ D559 nie maleje podczas normalnego odliczania, więc pasek pokazuje proporcję c
 | M431 | Auto start program | toggle, default ON |
 
 D584: 1=P1, 2=P2, 3=P3, 4=P4, 5=P5, 6=P6.
+
+## Lokalne adresy HMI
+
+Z aktualnego `pitstart.hs` można potwierdzić również lokalne urządzenia panelu:
+
+```text
+LB555  Touch control
+LW4057 Touch Calibration
+```
+
+Adresy `LB/LW` są lokalne dla HMI i nie należą do pamięci PLC Mitsubishi.
 
 ## RM5 / sygnał HMI
 
