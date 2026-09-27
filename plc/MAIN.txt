@@ -1,7 +1,11 @@
-; PLC_HMI_PITSTART V1.4.6
+; PLC_HMI_PITSTART V1.4.7
 ; PitStart-compatible monetary-credit/time model
 ;
 ; Counter/PITSTART_CREDITS Y0 represents 0.10 EUR units.
+; Y2 = primary physical RM5 INHIBIT.
+; Y23 = compatibility mirror of RM5 INHIBIT for a future PLC with more physical outputs.
+; Program outputs: P1=Y3, P2=Y4, P3=Y5, P4=Y6, P5=Y7, P6=Y10.
+; FX I/O numbering is octal: after Y7 comes Y10; there is no Y8.
 ; D300 = RM5 CH1 value in 0.10 EUR units. Example D300=10 => 1.00 EUR.
 ; D549 = maximum admitted credit in 0.10 EUR units. Default 50 => 5.00 EUR.
 ; D550 = common base price in 0.10 EUR units. Default 5 => 0.50 EUR.
@@ -189,7 +193,7 @@ MOV H3156 D500
 LD M8002
 MOV H342E D501
 LD M8002
-MOV H362E D502
+MOV H372E D502
 LD M8002
 MOV H0 D503
 LD M8002
@@ -197,7 +201,7 @@ MOV K1 D516
 LD M8002
 MOV K4 D517
 LD M8002
-MOV K6 D518
+MOV K7 D518
 LD M8002
 RST M320
 LD M8002
@@ -296,6 +300,8 @@ OUT M434
 LD M301
 ORI M429
 OUT M430
+LDI X0
+OUT Y2
 LDI X0
 OUT Y23
 LDP X27
@@ -727,27 +733,27 @@ RST M425
 LD M420
 AND M300
 AND> D560 K0
-OUT Y2
+OUT Y3
 LD M421
 AND M300
 AND> D560 K0
-OUT Y3
+OUT Y4
 LD M422
 AND M300
 AND> D560 K0
-OUT Y4
+OUT Y5
 LD M423
 AND M300
 AND> D560 K0
-OUT Y5
+OUT Y6
 LD M424
 AND M300
 AND> D560 K0
-OUT Y6
+OUT Y7
 LD M425
 AND M300
 AND> D560 K0
-OUT Y7
+OUT Y10
 LD M420
 OR M421
 OR M422
