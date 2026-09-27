@@ -1,31 +1,25 @@
 # Podglądy HMI
 
-Katalog zawiera zrzuty konfiguracji WSStudio/HMI_Setup oraz ekranów operatorskich projektu.
+Katalog zawiera zrzuty konfiguracji HMI i ekranów operatorskich. Wszystkie wymienione poniżej pliki są już obecne w repo.
 
-## Aktualne zrzuty V1.5.6 — pliki do ręcznego uploadu
+## Główne zrzuty interfejsu
 
-Wgraj sześć nowych obrazów pod dokładnymi nazwami:
+Nazwy plików zawierają `v1_5_6`, ponieważ wtedy wykonano zrzuty. Układ pozostaje używany z aktualnym PLC V1.5.7.
 
-1. `hmi_v1_5_6_screen_000_home.png`
-2. `hmi_v1_5_6_screen_001_admin.png`
-3. `hmi_v1_5_6_screen_002_error.png`
-4. `hmi_v1_5_6_screen_003_ready.png`
-5. `hmi_v1_5_6_system_plc_control.png`
-6. `hmi_v1_5_6_system_hmi_status.png`
+- `hmi_v1_5_6_screen_000_home.png` — 000 Home,
+- `hmi_v1_5_6_screen_001_admin.png` — 001 Admin,
+- `hmi_v1_5_6_screen_002_error.png` — 002 Error,
+- `hmi_v1_5_6_screen_003_ready.png` — 003 Ready,
+- `hmi_v1_5_6_system_plc_control.png` — PLC Control / D585,
+- `hmi_v1_5_6_system_hmi_status.png` — HMI Status / D586.
 
-Ścieżka docelowa dla wszystkich plików:
+## Starsze/uzupełniające podglądy
 
-```text
-docs/images/hmi/
-```
+- `home.webp`,
+- `station_inactive.webp`,
+- `station_free.webp`,
+- `system_parameters.webp`,
+- `plc_control_screen_switch.webp`,
+- `hmi_state_screen_index.webp`.
 
-## Starsze podglądy
-
-- `home.webp` — 000: Home,
-- `station_inactive.webp` — 002: Error / Stanowisko nieczynne,
-- `station_free.webp` — 003: Ready / Stanowisko wolne,
-- `system_parameters.webp` — lista ekranów w System Parameters,
-- `plc_control_screen_switch.webp` — PLC Control / Control Screen Switch na D585,
-- `hmi_state_screen_index.webp` — HMI Status / Screen Index na D586.
-
-Pełny opis adresów, ekranów i dokumentacji producenta: [../../HMI.md](../../HMI.md).
+Pełny opis: [../../HMI.md](../../HMI.md).
