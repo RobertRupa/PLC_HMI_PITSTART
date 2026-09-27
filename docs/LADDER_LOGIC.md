@@ -1,88 +1,219 @@
 # Logika PLC — V1.5.7
 
+Aktualne źródła:
+
+- `plc/MAIN_GXDEV_ENTRY.txt` — lista instrukcji,
+- `plc/MAIN.txt` — wersja komentowana,
+- `plc/main_v1.5.7.csv` — plik importowy GX Developer,
+- `plc/DEVICE_MAP.csv` — mapa urządzeń.
+
+## Start i reset sesji
+
+Po wejściu PLC w RUN:
+
+```text
+M8000 -> T204 K100
+/T204 -> M438 STARTUP_RESET_ACTIVE
+```
+
+W oknie M438 zerowane są dane bieżącej sesji: kredyt, czas, kolejki RM5/Y0, liczniki i stany robocze. Parametry konfiguracyjne nie są bezwarunkowo kasowane.
+
+Na pierwszym skanie domyślnie ustawiane są:
+
+```text
+M410 PILOTAGGIO_ENABLE
+M414 WORK_LIGHTS_ENABLE
+M429 SYNC_COUNTDOWN_WITH_PRACA
+M431 AUTO_START_PROGRAM_ENABLE
+M439 PILOTAGGIO_DEFAULT
+```
+
 ## RM5 INHIBIT
 
-Y2 jest głównym fizycznym wyjściem RM5 INHIBIT. Y23 pozostaje kompatybilnym mirrorem dla przyszłego PLC:
+Aktualna logika obu wyjść INHIBIT:
 
 ```text
 LDI X0
+OR M435
 OUT Y2
 
 LDI X0
+OR M435
 OUT Y23
 ```
 
-- X0=0 -> Y2=1 i Y23=1 -> RM5 zablokowany,
-- X0=1 -> Y2=0 i Y23=0 -> RM5 odblokowany.
+Znaczenie:
+- `X0=0` -> RM5 zablokowany,
+- `M435=1` -> RM5 zablokowany przez limit kredytu,
+- `X0=1 AND M435=0` -> RM5 odblokowany.
 
-M413/M415 nadal warunkują programowe przyjęcie impulsu X27, ale nie sterują INHIBIT.
+**Y2** jest głównym fizycznym wyjściem używanym z RM5. Y23 jest kompatybilnym mirrorem.
 
-## Założenie PitStart
+## Model impulsów RM5 i Counter
 
-`Y0 / Counter` jest traktowane jako wyjście jednostek 0,10 EUR.
-
-Po paczce RM5:
+`X27` odbiera tylko CH1 z RM5.
 
 ```text
-COUNTER_PULSES = RM5_PULSES × D300
+D300 = wartość 1 impulsu CH1 w jednostkach 0,10 EUR
+Y0   = Counter / PITSTART_CREDITS
+1 impuls Y0 = 0,10 EUR
 ```
 
-gdzie D300 jest wartością RM5 CH1 w jednostkach 0,10 EUR.
-
-## Cena bazowa i czasy programów
+Po zakończeniu paczki:
 
 ```text
-D550 = cena bazowa w jednostkach 0,10 EUR
-D551 = P1 sekundy za D550
-D552 = P2 sekundy za D550
+packet_y0 = RM5_CH1_pulses * D300
+```
+
+Wartość jest ograniczana do wolnego miejsca wynikającego z D549 i dodawana do kolejki D330.
+
+## Odbiór paczki RM5
+
+Zbocze X27 tworzy impuls M320. PLC:
+- zwiększa D320 — liczbę impulsów aktualnej paczki,
+- zwiększa D524 — liczbę impulsów RM5 w sesji,
+- ustawia M321,
+- restartuje T200.
+
+Po zakończeniu T200:
+
+```text
+D521 = D320
+D542 = D320 * D300
+D542 = min(D542, D594)
+D522 = D542
+D330 = D330 + D542
+D320 = 0
+M321 = 0
+```
+
+## Generator Y0
+
+Jeżeli D330>0 i generator jest wolny, ustawiane jest M330.
+
+```text
+M330 -> Y0
+M330 -> T201 K10
+```
+
+Po T201:
+- D330 jest zmniejszane,
+- D533 jest zwiększane,
+- do D560 dopisywane jest 10 centów,
+- D560 jest ograniczane do D566 = D549*10,
+- M330 jest kasowane,
+- M331 uruchamia przerwę T202.
+
+M436 pozostaje aktywne, dopóki trwa paczka RM5 albo kolejka Y0:
+
+```text
+M436 = (D330>0) OR M321 OR M330 OR M331
+```
+
+Podczas M436 tick zużycia kredytu jest wstrzymany.
+
+## Limit kredytu
+
+```text
+D566 = D549 * 10
+D588 = D330 * 10
+D590 = D560 + D588
+D592 = max(D566 - D590, 0)
+D594 = D592 / 10
+```
+
+D594 oznacza liczbę pełnych impulsów Y0, które można jeszcze dopisać.
+
+Dla aktualnej paczki:
+
+```text
+D542 = D320 * D300
+M437 = M321 AND (D542 >= D594)
+M435 = (D594 < D300) OR M437
+```
+
+Dzięki temu RM5 jest blokowany zanim kolejny pełny impuls CH1 przekroczy limit.
+
+## Wybór programu
+
+Źródła ręczne:
+
+```text
+P1: X5  OR M401
+P2: X6  OR M402
+P3: X7  OR M403
+P4: X10 OR M404
+P5: X11 OR M405
+P6: X12 OR M406
+STOP: X4 OR M400
+```
+
+Impulsy wyboru trafiają do M451…M456. Auto Start używa M460…M465.
+
+```text
+M470 = M451 OR M460
 ...
-D556 = P6 sekundy za D550
+M475 = M456 OR M465
 ```
 
-## Pozostały kredyt
+M470…M475 są wspólnymi impulsami wyboru programu.
 
-PLC utrzymuje kredyt w `D560` w centach:
+Po wyborze programu:
+- ustawiany jest dokładnie jeden M420…M425,
+- D557 otrzymuje D551…D556,
+- D558 otrzymuje numer 1…6,
+- D561…D563 są zerowane,
+- D559 jest zerowane, aby wyznaczyć nowe maksimum paska czasu.
+
+## WORK_ACTIVE
 
 ```text
-10  = 0,10 EUR
-100 = 1,00 EUR
+M412 =
+  (M420 OR M421 OR M422 OR M423 OR M424 OR M425)
+  AND M300
+  AND D560>0
+  AND NOT M440
 ```
 
-Kredyt jest dodawany dopiero po rzeczywiście wysłanym impulsie Y0/T201.
+M412 steruje wyjściami programu, Pilotaggio i Work Lights. Nie jest już jedynym źródłem bramki odliczania.
 
-## Zużycie kredytu
+## Sync time with RUN — M429
 
-Dla wybranego programu:
+V1.5.7 używa selektora:
 
 ```text
-base_cents = D550 × 10
-rate = base_cents × D528 / 100
+LDI M429
+AND M412
+OUT M448
+
+LD M429
+AND M301
+OR M448
+OUT M449
+
+LD M449
+OUT M430
 ```
 
-Co sekundę podczas aktywnej pracy:
+Czyli:
 
 ```text
-D561 += rate
-consume = D561 / D557
-remainder = D561 % D557
-D560 -= consume
-D561 = remainder
-```
-
-Przy zmianie programu D561…D563 są zerowane. Błąd spowodowany zmianą taryfy jest mniejszy niż 1 wewnętrzna podjednostka kredytu.
-
-## Synchronizacja z PRACA
-
-`M429 = Sync time with RUN` wybiera źródło odliczania.
-
-```text
-M429=0 -> M448 = M412 / WORK_ACTIVE
+M429=0 -> M449 = M412 / WORK_ACTIVE
 M429=1 -> M449 = M301 / PRACA-RUN
-M449 = (NOT M429 AND M412) OR (M429 AND M301)
 M430 = M449
 ```
 
-Tick zużycia kredytu:
+M448 nie jest latchem. Jest bieżącą gałęzią `NOT M429 AND M412`.
+
+## Tick zużycia kredytu
+
+Warunek poprawnego czasu:
+
+```text
+M426 = D558>0 AND D557>0 AND D560>0
+```
+
+Tick:
 
 ```text
 LDP M8013
@@ -92,296 +223,159 @@ ANI M436
 OUT M416
 ```
 
-Przy `M429=1` naciśnięcie STOP zeruje aktywny program i wyjścia, ale nie zatrzymuje odliczania, jeżeli `M301/RUN=1`. Czas zatrzymuje się po zaniku RUN.
+Przy `M429=1` aktywny RUN jest więc wystarczającym źródłem czasu po wcześniejszym wybraniu programu i przy dostępnym kredycie.
 
-Przy `M429=0` odliczanie działa tylko wtedy, gdy `M412=WORK_ACTIVE`.
-
-## Obliczenie czasu
-
-Dla ostatnio wybranego programu:
+## Zużycie kredytu
 
 ```text
-D350 = D560 × D557 / (D550 × 10)
+D568 = D550 * 10
+D570:D571 = D568 * D528
+D574:D575 = (D570:D571) / 100
 ```
 
-Obliczenie używa MUL + DDIV.
+D574 jest skorygowaną stawką wewnętrzną.
+
+Co tick:
+
+```text
+D561 += D574
+D562 = D561 / D557
+D563 = D561 MOD D557
+D561 = D563
+D560 -= D562
+```
+
+D528 działa więc jako korekcja szybkości zużycia:
+- 100 = 1,00x,
+- 101 = 1,01x,
+- 99 = 0,99x.
+
+## Obliczanie pozostałego czasu
+
+```text
+D568 = D550 * 10
+D570:D571 = D560 * D557
+D574:D575 = (D570:D571) / D568
+D350 = D574
+```
+
+Następnie:
 
 ```text
 DIV D350 K60 D540
 ```
 
-- D540 = minuty,
-- D541 = sekundy.
+Wynik:
+- D540 — minuty,
+- D541 — reszta sekund.
 
-## HMI wake
-
-```text
-M320 -> SET M419
-M419 -> T203 K300
-T203 -> RST M419
-M320 -> INC D565
-```
-
-M419 pozostaje aktywne około 3 s.
-
-## Maksymalny kredyt
-
-D549 jest parametrem maksymalnego kredytu w jednostkach 0,10 EUR, domyślnie 50 = 5,00 EUR.
-
-Wewnętrzny limit:
-
-```text
-MAX_CREDIT_CENTS = D549 × 10
-```
-
-Zakres D549 i maksymalny czas programu zostały ograniczone tak, aby D350 pozostało bezpiecznie w dodatnim zakresie 16-bit dla najgorszej kombinacji ustawień.
+D528 nie zmienia czasu początkowego; zmienia tempo zużywania D560, przez co D350 może maleć szybciej lub wolniej niż jedna jednostka na sekundę.
 
 ## STOP
 
-STOP nadal:
-- kasuje aktywny program M420…M425,
-- wyłącza Y1/Y3…Y7/Y10/Y27,
-- nie kasuje D560,
-- nie kasuje D558 ani D557,
-- nie kasuje pozostałego czasu.
+STOP kasuje M420…M425. W efekcie natychmiast wyłączają się:
+- Y1 Pilotaggio,
+- Y3…Y7/Y10 programy,
+- Y27 Work Lights.
 
-Od V1.5.6 naciśnięcie STOP nie zatrzymuje odliczania, jeżeli w chwili naciśnięcia:
-- M301 / PRACA / RUN = 1,
-- M412 / WORK_ACTIVE = 1.
+STOP nie kasuje D560, D557 ani D558.
 
-Na zboczu STOP ustawiany jest latch:
+Zachowanie odliczania:
 
 ```text
-LDP M440
-AND M301
-AND M412
-SET M448
+M429=0 -> STOP zeruje M412, więc czas staje
+M429=1 -> M449 śledzi M301/RUN; jeśli RUN=1, czas dalej schodzi
 ```
 
-M448 jest kasowany gdy:
-- M301/RUN spadnie do 0,
-- M300/AUTOMATE_PRESENT spadnie do 0,
-- kredyt D560 spadnie do 0,
-- zostanie wybrany nowy program.
-
-`M449 = M412 OR M448` steruje wyłącznie odliczaniem. Wyjścia programu, Pilotaggio i Work Lights nadal korzystają z M412, dlatego po STOP pozostają wyłączone.
-
-W efekcie: jeśli operator naciśnie STOP podczas aktywnego RUN, wyjścia programu wyłączą się od razu, ale kredyt/czas będzie zużywany aż do zaniku sygnału RUN. Późniejsze ponowne pojawienie się RUN nie uruchamia odliczania ponownie bez nowego zdarzenia STOP podczas aktywnej pracy.
-
-Po ponownym wyborze programu pozostały kredyt jest przeliczany według wybranej taryfy.
-
-
-## TIME_BAR_MAX
-
-`D559` przechowuje maksimum paska czasu.
-
-Po obliczeniu D350:
-
-```text
-LD> D350 D559
-MOV D350 D559
-```
-
-Na początku nowej sesji oraz przy zmianie programu D559 jest zerowane, więc nowe maksimum jest wyznaczane z aktualnego D350. Podczas odliczania D559 nie maleje.
-
+Nie ma już latcha „STOP_RUN_COUNTDOWN” z V1.5.6.
 
 ## Auto Start Program
 
-Adresy:
-
 ```text
 M431 = AUTO_START_PROGRAM_ENABLE
-D584 = AUTO_START_PROGRAM_NO (1..6)
+D584 = AUTO_START_PROGRAM_NO 1..6
 M432 = AUTO_START_TRIGGER
 M433 = AUTO_START_DONE
 M434 = AUTO_START_PROGRAM_OK
-
-M460..M465 = AUTO_SELECT_P1..P6
-M470..M475 = EFFECTIVE_SELECT_P1..P6
 ```
 
-Warunek automatycznego startu:
+Warunek M432 obejmuje:
+- M431=1,
+- D584 w zakresie 1…6,
+- M300=1,
+- STOP nieaktywny,
+- D560>0,
+- `D558=0`,
+- D330<=0,
+- brak M321/M330/M331,
+- brak M412,
+- brak M433.
 
-```text
-M431
-AND M434
-AND M300
-AND /M440
-AND D560>0
-AND D330<=0
-AND /M321
-AND /M330
-AND /M331
-AND /M412
-AND /M433
--> M432
-```
-
-M432 wybiera jeden z M460…M465 według D584. Następnie:
-
-```text
-M470 = M451 OR M460
-M471 = M452 OR M461
-...
-M475 = M456 OR M465
-```
-
-Dalsza logika programu korzysta z M470…M475, dlatego start automatyczny i ręczny przechodzą przez ten sam latch programu, ustawienie D557/D558 oraz D559.
-
-M433 jest ustawiane po Auto Start i blokuje kolejne automatyczne uruchomienia w tej samej sesji. Nowa sesja zeruje M433. STOP podczas oczekiwania ustawia M433 i anuluje automatyczne uruchomienie.
-
-Odliczanie czasu wróciło do standardowej bramki:
-
-```text
-LDP M8013
-AND M412
-AND M430
-AND M426
-OUT M416
-```
-
-
-## HMI screen index
-
-```text
-X14 -> M303
-D585 = HMI_SCREEN_INDEX
-```
-
-Logika:
-
-```text
-default                         -> D585=0
-/M303 AND /M300                 -> D585=2
-/M303 AND M300 AND /M427        -> D585=3
-M303                            -> D585=1
-```
-
-Znaczenie:
-- 0 = Main/Work,
-- 1 = Admin,
-- 2 = Stanowisko nieczynne,
-- 3 = Stanowisko wolne.
-
-Zapis Admin wykonywany jest jako ostatni, więc ma najwyższy priorytet.
-
-## Default settings
-
-Na pierwszym skanie:
-
-```text
-SET M429   ; Sync countdown with PRACA
-SET M431   ; Auto Start Program
-```
-
-Oba ustawienia domyślnie startują w stanie ON.
-
-
-## HMI current screen feedback
-
-`D585` steruje ekranem HMI (PLC -> HMI).
-
-`D586` jest odwrotnym kanałem statusowym (HMI -> PLC): WSStudio zapisuje tam indeks aktualnie wyświetlanego ekranu przez **HMI Status -> Screen Index**.
-
-PLC nie wykonuje instrukcji MOV do D586.
-
-Wake request pozostaje w `M419`, a jego word mirror został przeniesiony do `D587`.
-
-
-## Max credit / RM5 inhibit
-
-```text
-D566 = D549 * 10
-D588 = D330 * 10
-D590 = D560 + D588
-D592 = max(D566 - D590, 0)
-D594 = D592 / 10
-D542 = D320 * D300
-M437 = M321 AND (D542 >= D594)
-M435 = (D594 < D300) OR M437
-
-Y2  = /X0 OR M435
-Y23 = /X0 OR M435
-```
-
-D330 jest kolejką impulsów Y0. D594 określa, ile pełnych impulsów Y0 można jeszcze dopisać. M435 przechodzi w stan wysoki, zanim PLC zaakceptuje impuls RM5, którego pełnej wartości nie da się już zaliczyć.
-
-D549 ma zakres 1…999, czyli do 99,90 EUR.
-
-## Doładowanie bez zmiany programu
-
-Auto Start wymaga:
-
-```text
-D558 = 0
-```
-
-Po wybraniu programu D558 ma wartość 1…6. Kolejne paczki RM5 nie generują Auto Select.
-
-Przy zamknięciu paczki T200 nowa liczba impulsów jest ograniczana do wolnego miejsca wynikającego z D549 i dodawana do bieżącej kolejki:
-
-```text
-free_cents  = max_credit_cents - D560
-free_pulses = free_cents / 10
-free_slots  = max(free_pulses - D330, 0)
-packet_y0   = min(packet_y0, free_slots)
-
-D330 = D330 + packet_y0
-```
-
-`M436 = RM5_TOPUP_BUSY`:
-
-```text
-M436 = (D330>0) OR M321 OR M330 OR M331
-```
-
-Tick zużycia kredytu ma dodatkowy warunek `/M436`. Jeżeli moneta została zaakceptowana podczas aktywnej sesji, odliczanie czeka do zakończenia paczki i kolejki Y0.
-
-## Countdown / PRACA / Pilotaggio
-
-```text
-M430 = M301 OR /M429 OR /M410
-```
-
-Dla domyślnego `M429=1`:
-- M410=1 -> odliczanie wymaga X1/M301,
-- M410=0 -> odliczanie trwa niezależnie od X1/M301.
-
-
-## Restart PLC
-
-Po wejściu PLC w RUN działa T204. Dopóki T204 nie upłynie, M438=1 i PLC zeruje kredyt, czas, liczniki sesji, kolejkę Y0, D588…D594 oraz stany M435…M437. Parametry taryfy i konfiguracja HMI nie są zerowane.
-
+M433 blokuje wielokrotny Auto Start w tej samej sesji. Nowa sesja zeruje M433. STOP podczas oczekiwania ustawia M433 i anuluje Auto Start dla tej sesji.
 
 ## Pilotaggio default
 
 ```text
 M439 = PILOTAGGIO_DEFAULT
-M447 = NEW_PROGRAM_START
 ```
 
-Od V1.5.5 `M447` nie ustawia ani nie zeruje `M410`. Pozostaje jednocyklowym markerem diagnostycznym rozpoczęcia programu ze stanu bez aktywnego programu.
-
-Stan domyślny Pilotaggio jest stosowany po zakończeniu całej kolejki impulsów `Y0`. Logika wykonywana jest na końcu ostatniego `T202`:
+Po zakończeniu całej kolejki Y0 i T202:
 
 ```text
-LD T202
-AND<= D330 K0
-ANI M321
-ANI M330
-ANI M331
-ANI M410
-AND M439
-SET M410
+jeśli M410=0 i M439=1 -> SET M410
+jeśli M410=1          -> bez zmiany
+jeśli M439=0          -> M410 pozostaje OFF
 ```
 
-Znaczenie:
-- `M410=1` -> brak zmiany; sterowanie Pilotaggio działa jak dotychczas,
-- `M410=0, M439=1` -> po zakończeniu impulsów PLC ustawia `M410=1`,
-- `M410=0, M439=0` -> `M410` pozostaje wyłączone,
-- `M321=1` -> trwa zbieranie kolejnej paczki RM5, więc przywrócenie jest odłożone do końca całej obsługi.
+Przywrócenie jest blokowane, jeżeli trwa już następna paczka RM5.
 
-Zmiana `M439` na HMI w czasie wysyłania impulsów jest uwzględniana jako aktualna wartość w chwili zakończenia kolejki.
+M447 = NEW_PROGRAM_START pozostaje wyłącznie markerem diagnostycznym.
+
+## Wyjścia
+
+```text
+Y1  = M410 AND M412
+Y3  = M420 AND M300 AND D560>0
+Y4  = M421 AND M300 AND D560>0
+Y5  = M422 AND M300 AND D560>0
+Y6  = M423 AND M300 AND D560>0
+Y7  = M424 AND M300 AND D560>0
+Y10 = M425 AND M300 AND D560>0
+Y27 = M414 AND M412
+```
+
+## HMI screen index
+
+```text
+D585=1  Admin                  gdy M303=1
+D585=2  Stanowisko nieczynne   gdy M303=0 i M300=0
+D585=3  Stanowisko wolne       gdy M303=0, M300=1 i M427=0
+D585=0  Home                   w pozostałym przypadku
+```
+
+D586 jest zapisywany przez HMI i nie jest nadpisywany przez PLC.
+
+## TIME_BAR_MAX
+
+D559 jest zerowane przy wyborze programu. Później rośnie tylko wtedy, gdy nowe D350 jest większe od dotychczasowego D559. Nie maleje podczas odliczania.
+
+## Znane ograniczenie D350
+
+D350 jest 16-bitowym rejestrem czasu. Bieżące M415 sprawdza osobne zakresy D549, D550 i D551…D556, ale nie sprawdza ich kombinacji pod kątem przepełnienia wynikowego czasu.
+
+Konserwatywnie utrzymuj:
+
+```text
+D549 * D557 / D550 <= 32767 s
+```
+
+Dla domyślnych wartości:
+
+```text
+50 * 300 / 10 = 1500 s
+```
+
+czyli 25 minut — bezpiecznie.
 
 ## Domyślna taryfa
 
@@ -391,4 +385,4 @@ D550=10
 D551..D556=300
 ```
 
-Jeden impuls RM5 generuje 10 impulsów Y0. Przy cenie bazowej 1,00 EUR i czasie 300 s daje to 5 minut.
+Jeden impuls RM5 CH1 daje wtedy 10 impulsów Y0 i 300 s dla każdego programu.
