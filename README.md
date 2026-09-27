@@ -2,7 +2,8 @@
 
 Aktualna wersja PLC: **V1.5.1**.
 
-Sterowanie wykorzystuje model kredytowy zgodny z zachowaniem PitStart:
+## Model kredytu
+
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
 - `D300` określa wartość RM5 CH1 w jednostkach 0,10 EUR,
 - wspólna cena bazowa jest w `D550`,
@@ -169,12 +170,13 @@ Priorytet: Admin > Nieczynne > Wolne > Main.
 
 ## Pliki projektów
 
-- `projects/plc/PitStart.zip` — projekt PLC GX Developer,
-- `projects/hmi/pitstart_hmi.zip` — projekt HMI; archiwum zawiera `pitstart.hs`.
+- `projects/plc/PitStart.zip` — projekt PLC,
+- `projects/hmi/pitstart_hmi.zip` — projekt HMI w archiwum transportowym.
 
 Dokumentacja ekranów i konfiguracji:
-- `docs/HMI.md`,
-- `docs/RM5.md`.
+- `docs/HMI.md` — mapowanie ekranów, D585/D586, ustawienia Home/Admin i WSStudio,
+- `docs/images/hmi/` — podglądy ekranów i ustawień systemowych,
+- `docs/RM5.md` — konfiguracja RM5.
 
 
 ## Limit kredytu RM5
