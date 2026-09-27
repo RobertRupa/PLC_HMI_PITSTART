@@ -1,5 +1,15 @@
 # Changelog
 
+## V1.5.2
+
+- RM5 INHIBIT przechodzi w stan wysoki, gdy kolejny pełny impuls RM5 nie mieści się już poniżej D549,
+- bieżąca paczka RM5 rezerwuje wolne miejsce przez M437,
+- dodano D594 z liczbą wolnych impulsów Y0,
+- dodano T204/M438 jako niezależne okno resetu stanu sesji po wejściu PLC w RUN,
+- podczas resetu startowego zerowane są kredyt, czas, kolejki, liczniki sesji i stany M435…M437,
+- wersja PLC V1.5.2.
+
+
 ## V1.5.1
 
 - D549 pozostaje w zakresie 1…999,
