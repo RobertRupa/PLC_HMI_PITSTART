@@ -1,4 +1,4 @@
-# Comestero RM5 Evolution — V1.5.1
+# Comestero RM5 Evolution — V1.5.2
 
 ## Założenie projektu
 
@@ -91,7 +91,7 @@ Impuls X27 jest przyjmowany tylko przy:
 - M413=1,
 - M415=1.
 
-Y2/Y23 INHIBIT zależą od X0 oraz M435. M435 uwzględnia kredyt bieżący i impulsy Y0 oczekujące w kolejce D330.
+Y2/Y23 INHIBIT zależą od X0 oraz M435. M435 jest ustawiane także wtedy, gdy kolejny pełny impuls RM5 nie mieści się już w wolnym limicie lub bieżąca paczka RM5 wypełniła pozostałe miejsce.
 
 ## Diagnostyka
 
