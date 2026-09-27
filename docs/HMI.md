@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.4.2
+# HMI — WSStudio — V1.4.3
 
 ## Ekran Home
 
@@ -85,6 +85,7 @@ Jeżeli chcesz pokazywać D528 jako 1.00 zamiast 100, użyj na HMI dwóch miejsc
 | M410 | Pilotaggio enable |
 | M414 | Work lights enable |
 | M429 | Sync countdown with PRACA |
+| M431 | Auto start timer after CREDIT output |
 
 M429:
 - OFF — odliczanie bazuje na WORK_ACTIVE; najlepsze do uruchomienia/testu,
@@ -116,10 +117,10 @@ M429:
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.4.2
+D500..D503 = V1.4.3
 D516 = 1
 D517 = 4
-D518 = 2
+D518 = 3
 ```
 
 
@@ -137,3 +138,28 @@ Do paska postępu użyj:
 - nie maleje podczas normalnego odliczania.
 
 Dzięki temu pasek pokazuje procent pozostałego czasu aktualnej sesji/programu.
+
+
+### Auto start timer
+
+`M431 = AUTO_START_TIMER_ENABLE` — przełącznik HMI.
+
+Gdy M431=OFF:
+- licznik czasu działa jak dotąd podczas aktywnego programu,
+- M429 może dodatkowo synchronizować odliczanie z X1/M301 PRACA.
+
+Gdy M431=ON:
+- wybór programu może nastąpić przed lub po zakończeniu wysyłania CREDIT,
+- PLC czeka aż cała kolejka `Y0/PITSTART_CREDITS` zostanie wysłana,
+- warunek końca transmisji: `D330=0`, `M321=0`, `M330=0`, `M331=0`,
+- jeżeli program jest aktywny, PLC ustawia `M432=AUTO_TIMER_ACTIVE`,
+- od tego momentu odliczanie jest zezwolone przez `M433=COUNTDOWN_ENABLE`.
+
+Jeśli CREDIT skończyły się wcześniej niż użytkownik wybrał program, timer wystartuje natychmiast po późniejszym wyborze programu.
+
+STOP, utrata X0 lub wyczerpanie kredytu resetują M432.
+
+Do diagnostyki:
+- `M431` — Auto Start włączony,
+- `M432` — Auto Timer faktycznie wystartował,
+- `M433` — końcowe zezwolenie na odliczanie.
