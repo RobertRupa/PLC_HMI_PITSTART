@@ -1,4 +1,4 @@
-# Opis projektu — V1.5.0
+# Opis projektu — V1.5.1
 
 Projekt zastępuje funkcje Comestero PitStart w sterowniku myjni i współpracuje z HMI oraz akceptorem monet RM5 Evolution.
 
@@ -85,7 +85,9 @@ Zmiana programu zachowuje kredyt i przelicza pozostały czas według taryfy wybr
 - M433 = wykonano/anulowano Auto Start,
 - M434 = poprawny numer programu.
 
-Auto Start czeka na całkowite zakończenie kolejki Y0/CREDIT i wymaga D558=0. Jeżeli program został wcześniej wybrany, kolejne doładowanie tylko zwiększa kredyt/czas i nie zmienia programu.
+Auto Start czeka na całkowite zakończenie kolejki Y0/CREDIT i wymaga D558=0. Jeżeli program jest już wybrany, kolejne doładowanie zwiększa kredyt i czas bez zmiany programu.
+
+Paczki RM5 są dopisywane do D330. M436 pozostaje aktywne do zakończenia obsługi pakietu i kolejki Y0. Podczas M436=1 zużycie kredytu jest wstrzymane.
 
 ## Synchronizacja czasu
 
@@ -118,4 +120,9 @@ M429 i M431 startują domyślnie w stanie ON:
 
 ## Limit kredytu
 
-D549: 1…999 jednostek po 0,10 EUR. M435 sygnalizuje osiągnięcie limitu i blokuje RM5 przez Y2/Y23.
+D549: 1…999 jednostek po 0,10 EUR. M435 uwzględnia bieżący kredyt i kredyt zarezerwowany w kolejce Y0. Y2/Y23 blokują RM5 po wypełnieniu limitu.
+
+
+## Restart
+
+Pierwszy skan zeruje stan sesji, kredyt, czas, kolejkę Y0, liczniki diagnostyczne i rejestry tymczasowe D588…D592.
