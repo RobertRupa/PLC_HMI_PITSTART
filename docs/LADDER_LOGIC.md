@@ -1,18 +1,21 @@
-# Logika PLC — V1.4.6
+# Logika PLC — V1.4.7
 
 ## RM5 INHIBIT
 
-Y23 jest sterowane wyłącznie wejściem X0:
+Y2 jest głównym fizycznym wyjściem RM5 INHIBIT. Y23 pozostaje kompatybilnym mirrorem dla przyszłego PLC:
 
 ```text
+LDI X0
+OUT Y2
+
 LDI X0
 OUT Y23
 ```
 
-- X0=0 -> Y23=1 -> RM5 zablokowany,
-- X0=1 -> Y23=0 -> RM5 odblokowany.
+- X0=0 -> Y2=1 i Y23=1 -> RM5 zablokowany,
+- X0=1 -> Y2=0 i Y23=0 -> RM5 odblokowany.
 
-M413/M415 nadal warunkują programowe przyjęcie impulsu X27, ale nie sterują Y23.
+M413/M415 nadal warunkują programowe przyjęcie impulsu X27, ale nie sterują INHIBIT.
 
 ## Założenie PitStart
 
@@ -129,7 +132,7 @@ Zakres D549 i maksymalny czas programu zostały ograniczone tak, aby D350 pozost
 
 STOP:
 - kasuje aktywny program,
-- wyłącza Y1/Y2…Y7/Y27,
+- wyłącza Y1/Y3…Y7/Y10/Y27,
 - nie kasuje D560,
 - nie kasuje D558,
 - nie kasuje pozostałego czasu.
@@ -233,3 +236,17 @@ D586 = HMI_WAKE_REQUEST_WORD
 
 D585=1 oznacza ekran Admin, D585=0 ekran Home.
 D586=1 jest aktywne około 3 s po zaakceptowanym impulsie RM5.
+
+
+## Wyjścia programów V1.4.7
+
+```text
+P1 -> Y3
+P2 -> Y4
+P3 -> Y5
+P4 -> Y6
+P5 -> Y7
+P6 -> Y10
+```
+
+FX używa ósemkowej numeracji X/Y, dlatego po Y7 występuje Y10; Y8 nie istnieje.
