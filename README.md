@@ -84,6 +84,8 @@ Po pobraniu projektu do HMI kabel download należy odłączyć; manual WSB podaj
 
 Szczegóły: [docs/HMI.md](docs/HMI.md).
 
+Schemat elektryczny i zasady COM/RM5: [docs/WIRING.md](docs/WIRING.md).
+
 ## I/O
 
 ### Wejścia
@@ -222,6 +224,8 @@ Przygotowany katalog dokumentacji: [docs/manuals/pitstart/README.md](docs/manual
 - `plc/main_v1.5.7.csv` — aktualny CSV do importu w GX Developer,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
+- `docs/WIRING.md` — techniczny schemat połączeń HMI/PLC, RM5 i automatyki myjni,
+- `docs/wiring.svg` — graficzny schemat połączeń,
 - `docs/manuals/hmi/WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf` — główny manual WSB7020R,
 - `docs/manuals/hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf` — manual WSC/WSCH jako dokumentacja porównawcza,
 - `docs/manuals/rm5/manual_rm5.pdf` — lokalny manual RM5 Evolution,
