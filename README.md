@@ -1,8 +1,8 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.4.2**.
+Aktualna wersja PLC: **V1.4.3**.
 
-Logika V1.4.2 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
+Logika V1.4.3 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
 - `D300` określa wartość RM5 CH1 w jednostkach 0,10 EUR,
 - wspólna cena bazowa jest w `D550`,
@@ -105,6 +105,7 @@ Jeżeli WSStudio potrafi wybudzać/przełączać ekran po bicie PLC, użyj M419.
 - M411 — reset liczników diagnostycznych sesji
 - M414 — WORK_LIGHTS_ENABLE
 - M429 — synchronizacja odliczania z PRACA
+- M431 — AUTO_START_TIMER_ENABLE; czeka z odliczaniem do końca wysyłania Y0
 
 Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
