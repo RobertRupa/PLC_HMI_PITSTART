@@ -1,4 +1,4 @@
-# Opis projektu — V1.4.8
+# Opis projektu — V1.4.9
 
 Projekt zastępuje funkcje Comestero PitStart w sterowniku myjni i współpracuje z HMI oraz akceptorem monet RM5 Evolution.
 
@@ -98,7 +98,8 @@ M429 wybiera sposób zużycia kredytu:
 - D559 = TIME_BAR_MAX,
 - D582 = pozostały kredyt w centach,
 - D585 = HMI_SCREEN_INDEX: 0 Main, 1 Admin, 2 Nieczynne, 3 Wolne,
-- D586 = HMI_WAKE_REQUEST_WORD, mirror M419,
+- D586 = aktualny indeks ekranu zapisywany przez HMI,
+- D587 = HMI_WAKE_REQUEST_WORD, mirror M419,
 - D565 = licznik zaakceptowanych zdarzeń RM5.
 
 X14 steruje M303. D585 wybiera ekran według priorytetu:
