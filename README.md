@@ -49,7 +49,7 @@ Priorytet PLC: **Admin > Nieczynne > Wolne > Home**.
 | Element HMI | Adres | Typ | Zakres / domyślne | Działanie |
 |---|---|---|---|---|
 | Touch control* | `LB555` | toggle lokalny HMI | ON/OFF | Lokalna funkcja panelu; nie zapisuje bitu PLC. |
-| Work lights* | `M414` | toggle | default ON | Zezwolenie na Y27. Fizyczne światła działają jako `M414 AND M412`. |
+| Work lights | `M414` | toggle | default ON | Zezwolenie na Y27. Fizyczne światła działają jako `M414 AND M412`. |
 | Auto start program | `M431` | toggle | default ON | Po zaksięgowaniu kredytu może automatycznie wybrać program wskazany przez D584. |
 | Auto Start Program | `D584` | liczba | 1…6, default 1 | `1=P1 ... 6=P6`. Pozwala również uruchomić P6 mimo braku bezpośredniego przycisku P6 na aktualnym Home. |
 | Sync time with RUN | `M429` | toggle | default ON | OFF: odliczanie wg M412/WORK_ACTIVE. ON: odliczanie wg M301/PRACA-RUN; STOP nie zatrzyma czasu, jeśli RUN pozostaje 1. |
@@ -63,7 +63,7 @@ Priorytet PLC: **Admin > Nieczynne > Wolne > Home**.
 | Program 3 time | `D553` | liczba | 1…600 s, default 300 | Czas P3 przypisany do ceny bazowej D550. |
 | Program 4 time | `D554` | liczba | 1…600 s, default 300 | Czas P4 przypisany do ceny bazowej D550. |
 | Program 5 time | `D555` | liczba | 1…600 s, default 300 | Czas P5 przypisany do ceny bazowej D550. |
-| Program 6 time* | `D556` | liczba | 1…600 s, default 300 | Czas P6. P6 jest obsługiwany przez PLC i Auto Start, chociaż aktualny Home nie pokazuje przycisku Program 6. |
+| Program 6 time | `D556` | liczba | 1…600 s, default 300 | Czas P6. P6 jest obsługiwany przez PLC i Auto Start, chociaż aktualny Home nie pokazuje przycisku Program 6. |
 | Touch Calibration | `LW4057` | funkcja lokalna HMI | — | Otwiera kalibrację dotyku panelu. |
 
 `* Touch control` i `Touch Calibration` używają lokalnych urządzeń HMI `LB/LW`, nie pamięci PLC.
@@ -181,28 +181,15 @@ Po zaakceptowanym impulsie RM5:
 
 Przełączanie ekranów jest realizowane przez `D585` w funkcji PLC Control / Control Screen Switch. `D586` jest przeznaczony na zapis aktualnego indeksu ekranu przez HMI.
 
-## HMI ekran Admin
+## Sterowanie operatorskie HMI
 
-- M303 — ADMIN_SCREEN_REQUEST, bezpośrednie odwzorowanie X14.
-- D585 — HMI_SCREEN_INDEX:
-  - 0 = Main/Work,
-  - 1 = Admin,
-  - 2 = Stanowisko nieczynne,
-  - 3 = Stanowisko wolne.
-- D586 — HMI_CURRENT_SCREEN_INDEX, zapisywany przez HMI.
+Na aktualnym ekranie Home dostępne są:
+- `M400` — STOP, momentary,
+- `M401…M405` — Program 1…5, momentary.
 
-## HMI sterowanie
+PLC ma również `M406` dla P6, ale aktualny Home nie zawiera bezpośredniego przycisku P6.
 
-- M400 — STOP, momentary
-- M401…M406 — P1…P6, momentary
-- M410 — PILOTAGGIO_ENABLE
-- M411 — reset liczników diagnostycznych sesji
-- M414 — WORK_LIGHTS_ENABLE
-- M429 — synchronizacja odliczania z PRACA, default ON
-- M431 — AUTO_START_PROGRAM_ENABLE; default ON; automatycznie uruchamia wybrany program po zakończeniu wysyłania Y0
-- D584 — numer programu Auto Start 1…6
-
-Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
+Ekran Admin i wszystkie dostępne na nim nastawy są rozpisane w tabeli **Konfiguracja dostępna z ekranu Admin** powyżej. `M411` oraz `M439` istnieją w PLC, lecz nie są pokazane jako kontrolki na aktualnym ekranie Admin.
 
 ## Dokumentacja oryginalnego Comestero PitStart
 
