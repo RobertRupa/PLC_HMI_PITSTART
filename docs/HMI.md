@@ -76,7 +76,7 @@ Priorytet: **Admin > Stanowisko nieczynne > Stanowisko wolne > Home**.
 
 ![Home](images/hmi/home.webp)
 
-Home zawiera przyciski P1…P6, pozostały czas, pasek pozostałego czasu i STOP.
+Aktualny ekran Home zawiera bezpośrednie przyciski **Program 1…5**, pozostały czas, pasek czasu i STOP. PLC obsługuje również P6, ale bieżący layout Home nie ma osobnego przycisku Program 6.
 
 ### 001: Admin
 
@@ -113,8 +113,6 @@ Ekran jest wybierany przy `D585=3`.
 ## Zrzuty interfejsu HMI
 
 Nazwy plików zawierają `v1_5_6`, ponieważ wtedy wykonano zrzuty. Pliki są nadal używane jako dokumentacja layoutu pracującego z aktualnym PLC V1.5.7.
-
-Poniższe nazwy są przeznaczone dla aktualnych zrzutów projektu. Pliki należy ręcznie dodać do `docs/images/hmi/`.
 
 ### 000: Home — aktualny widok
 
@@ -185,7 +183,7 @@ Producent podaje dla serii WSB oprogramowanie **HMI_Setup / HMI Studio 5.1**. St
 
 ### Lokalne manuale w repo
 
-Po ręcznym uploadzie dokumentacja ma być dostępna w:
+Dokumentacja lokalna jest już dostępna w repo:
 
 - [WSB HMI&PLC All-in-one User Manual V1.79](manuals/hmi/WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf) — **podstawowy manual dla WSB7020R**,
 - [WSC HMI&PLC All-in-one User Manual V1.13](manuals/hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf) — dokumentacja rodziny WSC/WSCH, materiał porównawczy,
@@ -243,7 +241,6 @@ Lokalne źródła:
 | P3 | M403 momentary | M422 |
 | P4 | M404 momentary | M423 |
 | P5 | M405 momentary | M424 |
-| P6 | M406 momentary | M425 |
 
 ### Czas MM:SS
 
@@ -277,12 +274,19 @@ D559 nie maleje podczas normalnego odliczania, więc pasek pokazuje proporcję c
 | D551…D556 | P1…P6 time [s] | 1…600 |
 | D584 | Auto Start Program | 1…6 |
 | M410 | Pilotaggio pompa | toggle, bieżący stan sterowania |
-| M439 | Pilotaggio default | toggle, default ON; używane po zakończeniu impulsów Y0 gdy M410=OFF |
 | M414 | Work lights | toggle |
 | M429 | Sync time with RUN | toggle, default ON |
 | M431 | Auto start program | toggle, default ON |
 
 D584: 1=P1, 2=P2, 3=P3, 4=P4, 5=P5, 6=P6.
+
+### Program 6 w aktualnym HMI
+
+PLC ma pełną obsługę P6: `X12`, `M406`, `M425`, `Y10`, czas `D556` oraz Auto Start `D584=6`.
+
+W aktualnym pliku `pitstart.hs` występuje konfiguracja `Program 6 time`, ale na ekranie Home nie ma osobnego przycisku `Program 6`. P6 może zostać uruchomiony przez fizyczne X12 lub przez Auto Start.
+
+`M439=PILOTAGGIO_DEFAULT` istnieje w PLC, ale aktualny ekran Admin nie pokazuje osobnego obiektu sterującego M439. Jest to parametr PLC, a nie obecnie dostępna nastawa operatora HMI.
 
 ## Lokalne adresy HMI
 
