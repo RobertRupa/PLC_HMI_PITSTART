@@ -1,6 +1,6 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.5.1**.
+Aktualna wersja PLC: **V1.5.2**.
 
 ## Model kredytu
 
@@ -134,7 +134,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.5.1.csv` — CSV w układzie eksportu GX,
+- `plc/main_v1.5.2.csv` — CSV w układzie eksportu GX,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
@@ -181,7 +181,7 @@ Dokumentacja ekranów i konfiguracji:
 
 ## Limit kredytu RM5
 
-`D549` ma zakres 1…999 w jednostkach 0,10 EUR. `M435` uwzględnia kredyt już zapisany w `D560` oraz impulsy oczekujące w kolejce `D330`. Po wykorzystaniu całego dostępnego limitu Y2/Y23 aktywują INHIBIT RM5.
+`D549` ma zakres 1…999 w jednostkach 0,10 EUR. PLC oblicza liczbę pełnych impulsów Y0, które jeszcze mieszczą się poniżej limitu. `M435` przechodzi w stan wysoki, gdy kolejny pełny impuls RM5 nie może już zostać zaliczony albo bieżąca paczka RM5 wypełniła całe wolne miejsce. Y2/Y23 wtedy aktywują INHIBIT.
 
 ```text
 D549=50  -> 5,00 EUR
@@ -198,4 +198,4 @@ Auto Start wymaga `D558=0`, więc późniejsze doładowanie nie wybiera ponownie
 
 ## Restart
 
-Pierwszy skan PLC zeruje pozostały kredyt, czas, kolejki impulsów, liczniki sesji, rejestry obliczeniowe D588…D592 oraz stan M436. Parametry konfiguracyjne pozostają bez zmian.
+Po wejściu PLC w RUN timer T204 utrzymuje przez krótki czas `M438=STARTUP_RESET_ACTIVE`. W tym czasie zerowane są kredyt, czas, kolejki impulsów, liczniki sesji, D588…D594 oraz stany M435…M437. Parametry konfiguracyjne pozostają bez zmian.
