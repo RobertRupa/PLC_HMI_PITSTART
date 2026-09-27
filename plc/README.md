@@ -1,4 +1,4 @@
-# PLC V1.4.5
+# PLC V1.4.6
 
 ## Import
 
@@ -67,3 +67,19 @@ X14 -> M303 = ADMIN_SCREEN_REQUEST
 ```
 
 M303 jest statusem tylko do odczytu dla HMI. Stan 1 oznacza żądanie ekranu Admin, stan 0 oznacza Home.
+
+
+## HMI word triggers
+
+Dla HMI bez obsługi bitów M jako triggerów ekranów:
+
+```text
+D585 = ADMIN_SCREEN_REQUEST_WORD
+       0/1 mirror X14 -> M303
+
+D586 = HMI_WAKE_REQUEST_WORD
+       0/1 mirror M419
+```
+
+D585=1 oznacza ekran Admin, D585=0 ekran Home.
+D586=1 jest aktywne około 3 s po zaakceptowanym impulsie RM5.
