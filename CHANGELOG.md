@@ -1,5 +1,18 @@
 # Changelog
 
+## V1.5.0
+
+- zwiększono zakres D549 MAX CREDIT do 1…999 jednostek po 0,10 EUR,
+- zmieniono wewnętrzną reprezentację D560 na centy, co pozwala obsłużyć D549=999 bez przepełnienia rejestru 16-bit,
+- dodano M435 MAX_CREDIT_REACHED,
+- po osiągnięciu limitu kredytu Y2/Y23 aktywują RM5 INHIBIT, a X27 nie jest dalej przyjmowane,
+- doładowanie aktywnej sesji nie zmienia wybranego programu,
+- Auto Start wymaga D558=0 i nie może przełączyć programu po późniejszym doładowaniu,
+- zmieniono bramkę odliczania: przy M429=1 PRACA/X1 zatrzymuje czas tylko gdy M410/Pilotaggio jest włączone,
+- potwierdzono zerowanie kredytu, czasu i liczników bieżącej sesji na pierwszym skanie PLC,
+- zaktualizowano dokumentację oraz ekran Admin.
+
+
 ## V1.4.9
 
 - rozdzielono rejestry sterowania ekranem i statusu HMI,
