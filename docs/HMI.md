@@ -168,10 +168,24 @@ D586 jest zapisywany przez HMI i podaje PLC indeks aktualnie wyświetlanego ekra
 
 Model używany w projekcie: **SEEKU / Winsun WSB7020R**, 7", wersja z wyjściami przekaźnikowymi.
 
-Producent podaje dla serii WSB oprogramowanie **HMI_Setup V5.1**. Strona modelu zawiera parametry urządzenia oraz sekcję pobierania programu i instrukcji.
+Producent podaje dla serii WSB oprogramowanie **HMI_Setup / HMI Studio 5.1**. Strona modelu zawiera parametry urządzenia oraz sekcję pobierania programu i instrukcji.
+
+### Lokalne manuale w repo
+
+Po ręcznym uploadzie dokumentacja ma być dostępna w:
+
+- [WSB HMI&PLC All-in-one User Manual V1.79](manuals/hmi/WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf) — **podstawowy manual dla WSB7020R**,
+- [WSC HMI&PLC All-in-one User Manual V1.13](manuals/hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf) — dokumentacja rodziny WSC/WSCH, materiał porównawczy,
+- [opis lokalnych manuali](manuals/hmi/README.md).
+
+Manual WSB V1.79 obejmuje wprost model WSB7020R i opisuje m.in. HMI Studio 5.1, download HMI przez USB oraz programowanie części PLC przez GX Developer / GX Works2.
+
+Manual WSC V1.13 dotyczy modeli WSC/WSCH, dlatego nie należy traktować jego parametrów komunikacyjnych jako automatycznie obowiązujących dla WSB7020R.
+
+### Źródła producenta
 
 - [WSB7020R — strona producenta](https://www.winsunzk.cn/pdetail/672317c74fbc8440b904f66a)
-- [WS/WSB HMI&PLC All-in-one User Manual v1.79 — PDF](https://www.winsunzk.cn/upload/application/upload_645b146784a24ab5f250e183416890b1.pdf)
+- [WS/WSB HMI&PLC All-in-one User Manual v1.79 — producent](https://www.winsunzk.cn/upload/application/upload_645b146784a24ab5f250e183416890b1.pdf)
 - [HMI_Setup V5.1 — pakiet producenta](https://www.winsunzk.cn/upload/application/upload_594f4ede25a16934f8723e5d2ff08091.zip)
 - [Angielski opis WS7020R / WSB7020R — Manuals+](https://manuals.plus/ae/1005009073971796)
 
