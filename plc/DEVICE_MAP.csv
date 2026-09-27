@@ -33,6 +33,7 @@ D533,Data,Counter/CREDIT pulses actually sent on Y0,RO
 M300,Bit,AUTOMATE_PRESENT / INVERTER_OK,X0
 M301,Bit,PRACA / machine actually running,X1
 M302,Bit,MANUAL_FREE status,X13
+M303,Bit,ADMIN_SCREEN_REQUEST,X14; follows physical admin switch
 M410,Bit,PILOTAGGIO_ENABLE,HMI RW default ON
 M411,Bit,RESET_DIAGNOSTIC_SESSION_COUNTERS,HMI momentary
 M412,Bit,WORK_ACTIVE,RO
