@@ -1,6 +1,7 @@
 # Changelog
 
 ## V1.5.6
+- dodano `docs/SOFTWARE.md` z linkami do Clone5 Professional, Clone5, Unio i dokumentacji Unio,
 
 - STOP naciśnięty podczas aktywnego RUN nie zatrzymuje odliczania kredytu,
 - dodano `M448 = STOP_RUN_COUNTDOWN`,
