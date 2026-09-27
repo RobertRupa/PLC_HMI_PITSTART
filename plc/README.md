@@ -1,4 +1,4 @@
-# PLC V1.4.1
+# PLC V1.4.2
 
 ## Import
 
@@ -31,3 +31,13 @@ Po potwierdzeniu sygnału X1/PRACA można ustawić M429=1.
 ## CSV column mapping
 
 See `IMPORT_CSV.md`. Column E of `main_v1.4.0.csv` is mapped as **Note** during import.
+
+
+## TIME_BAR_MAX
+
+`D559` = maksymalny czas paska HMI dla aktualnej sesji/programu.
+
+- reset przy nowej sesji,
+- reset przy zmianie programu,
+- aktualizacja w górę gdy D350 wzrośnie po doładowaniu,
+- nie maleje podczas normalnego odliczania.
