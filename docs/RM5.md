@@ -54,6 +54,12 @@ OUT Y23
 
 Na obecnym sterowniku do pinu 6 RM5 należy używać **Y2**. Y23 jest zachowane wyłącznie jako zgodny logicznie zapas pod przyszły PLC.
 
+## Oprogramowanie Clone5
+
+- [Clone5 Professional — pobieranie](https://drive.google.com/file/d/1hJBpGC8fXR5bTwJC6GsIhJDk0oNyu0VW/view?usp=drive_link)
+- [Clone5 — pobieranie](https://drive.google.com/file/d/1Y16ktjU0Uoaz9X2j15VbVoOdI_D4C2Ow/view?usp=drive_link)
+- [Pozostałe oprogramowanie serwisowe](SOFTWARE.md)
+
 ## Połączenie serwisowe TTL z Clone5 Professional
 
 RM5 ma osobne 6-pinowe złącze programowania i wyjścia szeregowego. Z dokumentacji:
