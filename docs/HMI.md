@@ -45,13 +45,13 @@ Jeżeli WSStudio umożliwia skalowanie/decimal point:
 
 Przykład: D582=100 -> 1,00 EUR.
 
-### Wybudzenie HMI
+### Zdarzenie RM5 / wake
 
 - `M419` = HMI_WAKE_REQUEST, około 3 s,
-- `D586` = HMI_WAKE_REQUEST_WORD, 0/1 mirror M419 — preferowane dla HMI bez obsługi M,
+- `D587` = HMI_WAKE_REQUEST_WORD, 0/1 mirror M419,
 - `D565` = HMI_WAKE_EVENT_COUNTER.
 
-Na tym HMI używaj przede wszystkim `D586`: wartość 1 oznacza żądanie wybudzenia/przejścia na Home przez około 3 s. `D565` pozostaje alternatywnym licznikiem zdarzeń RM5.
+Przełączanie ekranów jest realizowane przez `D585` w funkcji **PLC Control / Control Screen Switch**. `D586` jest zapisywany przez HMI i zawiera indeks aktualnie wyświetlanego ekranu.
 
 ## Ekran Admin
 
@@ -255,3 +255,76 @@ HMI zapisuje do D586 numer aktualnie wyświetlanego ekranu. D586 jest więc kana
 - `D565` — licznik zaakceptowanych zdarzeń RM5.
 
 Aktualna konfiguracja WSStudio nie ma osobnego, potwierdzonego pola „wake by PLC word”, dlatego D587 pozostaje dostępny do diagnostyki lub przyszłej konfiguracji.
+
+
+## Podgląd ekranów
+
+### 000: Home
+
+![Home](images/hmi/home.png)
+
+Ekran pracy zawiera wybór programu, pozostały czas, pasek czasu i STOP.
+
+### 001: Admin
+
+![Admin](images/hmi/admin.png)
+
+Ekran administracyjny zawiera:
+- Touch control,
+- Work lights,
+- Pilotaggio pompa,
+- Sync time with RUN,
+- Auto start program,
+- D300, D549, D550, D528,
+- D551…D556,
+- D584,
+- Touch Calibration.
+
+### 002: Error — Stanowisko nieczynne
+
+![Stanowisko nieczynne](images/hmi/station_inactive.png)
+
+Wyświetlany przy `D585=2`, czyli gdy Admin jest wyłączony i `X0=0`.
+
+### 003: Ready — Stanowisko wolne
+
+![Stanowisko wolne](images/hmi/station_free.png)
+
+Wyświetlany przy `D585=3`, czyli gdy Admin jest wyłączony, `X0=1` i `M427=0`.
+
+## Konfiguracja System Settings
+
+Widok konfiguracji:
+
+![System Parameters](images/hmi/system_parameters.png)
+
+### PLC Control / Control Screen Switch
+
+![PLC Control](images/hmi/plc_control_screen_switch.png)
+
+Ustaw:
+- **Control Screen Switch**: ON,
+- adres: `[Mitsubishi_Fx1n]D585`.
+
+D585 jest indeksem ekranu zadawanym przez PLC:
+
+| D585 | Ekran |
+|---:|---|
+| 0 | 000: Home |
+| 1 | 001: Admin |
+| 2 | 002: Error / Stanowisko nieczynne |
+| 3 | 003: Ready / Stanowisko wolne |
+
+### HMI Status / Screen Index
+
+![HMI State](images/hmi/hmi_state_screen_index.png)
+
+Ustaw:
+- **Screen Index**: ON,
+- adres: `[Mitsubishi_Fx1n]D586`.
+
+Kierunek tego rejestru jest przeciwny do D585:
+- `D585`: PLC -> HMI, żądany ekran,
+- `D586`: HMI -> PLC, aktualnie wyświetlany ekran.
+
+PLC nie zapisuje D586.
