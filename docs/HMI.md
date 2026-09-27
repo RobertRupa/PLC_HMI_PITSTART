@@ -140,7 +140,7 @@ Poniższe nazwy są przeznaczone dla aktualnych zrzutów projektu. Pliki należy
 
 ![HMI Status V1.5.6](images/hmi/hmi_v1_5_6_system_hmi_status.png)
 
-## Konfiguracja WSStudio
+## Konfiguracja projektu HMI
 
 ### Lista ekranów
 
@@ -272,7 +272,7 @@ D559 nie maleje podczas normalnego odliczania, więc pasek pokazuje proporcję c
 |---|---|---|
 | D300 | Coin multiplier / wartość impulsu CH1 [x0,10 EUR] | 1…100 |
 | D549 | Max credits [x0,10 EUR] | 1…999 |
-| D550 | Base price [x0,10 EUR] | 1…D549 |
+| D550 | Base price [x0,10 EUR] | HMI 1…50; M415 dodatkowo wymaga D550<=D549 |
 | D528 | Time correction x100 | 50…200 |
 | D551…D556 | P1…P6 time [s] | 1…600 |
 | D584 | Auto Start Program | 1…6 |
