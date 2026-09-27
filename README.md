@@ -1,8 +1,8 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.4.6**.
+Aktualna wersja PLC: **V1.4.7**.
 
-Logika V1.4.6 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
+Logika V1.4.7 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
 - `D300` określa wartość RM5 CH1 w jednostkach 0,10 EUR,
 - wspólna cena bazowa jest w `D550`,
@@ -21,10 +21,18 @@ Logika V1.4.6 została przebudowana na model kredytowy zgodny z zachowaniem PitS
 - X27 — RM5 CH1
 
 ### Wyjścia
+
+> **Adresacja FX jest ósemkowa:** po `Y7` występuje `Y10`. Nie ma adresu `Y8`. Dlatego sześć kolejnych wyjść programów od Y3 to Y3, Y4, Y5, Y6, Y7, Y10.
 - Y0 — PITSTART_CREDITS / Counter
 - Y1 — PILOTAGGIO
-- Y2…Y7 — P1…P6
-- Y23 — RM5 INHIBIT; aktywne wyłącznie gdy X0=0
+- Y2 — RM5 INHIBIT, główne fizyczne wyjście
+- Y3 — Program 1
+- Y4 — Program 2
+- Y5 — Program 3
+- Y6 — Program 4
+- Y7 — Program 5
+- Y10 — Program 6
+- Y23 — RM5 INHIBIT, kompatybilny mirror Y2 dla przyszłego PLC z większą liczbą wyjść
 - Y27 — WORK LIGHTS
 
 ## Model kredytu
@@ -123,8 +131,21 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.4.6.csv` — CSV w układzie eksportu GX,
+- `plc/main_v1.4.7.csv` — CSV w układzie eksportu GX,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
 - `CHANGELOG.md` — historia zmian.
+
+
+## Wymagana konfiguracja RM5 Evolution
+
+PLC odczytuje tylko `X27 = RM5 CH1` (pin 7 RM5). Wszystkie używane nominały/kanały walidatora muszą być skonfigurowane tak, aby ich impulsy były wysyłane na wyjście **CH1**.
+
+W praktyce:
+- fizycznie do PLC podłączony jest tylko CH1,
+- CH2…CH6 nie są odczytywane przez PLC,
+- jeżeli różne nominały mają różną wartość, RM5 musi zakodować wartość liczbą impulsów CH1 zgodnie z przyjętą jednostką,
+- PLC traktuje każdy impuls na X27 jednakowo i mnoży liczbę impulsów przez `D300`.
+
+Jeżeli RM5 wyśle po jednym impulsie niezależnie od nominału, PLC potraktuje wszystkie takie monety jako tę samą wartość.
