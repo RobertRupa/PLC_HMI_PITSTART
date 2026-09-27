@@ -1,4 +1,4 @@
-; PLC_HMI_PITSTART V1.4.7
+; PLC_HMI_PITSTART V1.4.8
 ; PitStart-compatible monetary-credit/time model
 ;
 ; Counter/PITSTART_CREDITS Y0 represents 0.10 EUR units.
@@ -18,11 +18,11 @@
 ; D540/D541 = MM/SS for HMI.
 ; D528 = global clock correction x100 (100=1.00x).
 ;
-; Time/credit consumption occurs only during WORK_ACTIVE and, when M429=1,
+; Time/credit consumption occurs only during WORK_ACTIVE. M429 defaults ON; when M429=1,
 ; only while X1/M301 PRACA is active.
 ;
 ; Auto start program:
-; M431 = AUTO_START_PROGRAM_ENABLE (HMI RW, default OFF).
+; M431 = AUTO_START_PROGRAM_ENABLE (HMI RW, default ON).
 ; D584 = AUTO_START_PROGRAM_NO (HMI RW, 1..6; default 1).
 ; M432 = one-scan AUTO_START_TRIGGER after the complete Y0 CREDIT queue is idle.
 ; M433 = AUTO_START_DONE latch, prevents repeated automatic starts in the same session.
@@ -30,10 +30,14 @@
 ; M460..M465 = auto-select pulses P1..P6.
 ; M470..M475 = effective select pulses (manual/HMI OR auto).
 ;
-; Admin key:
+; HMI screen selection:
 ; X14 -> M303 = ADMIN_SCREEN_REQUEST.
-; D585 = ADMIN_SCREEN_REQUEST_WORD (0/1 mirror for HMI word-only events).
-; HMI can use M303=1 to switch to Admin and M303=0 to return to Home.
+; D585 = HMI_SCREEN_INDEX:
+;   0 = main/work screen (credit available),
+;   1 = Admin (X14/M303=1),
+;   2 = STANOWISKO NIECZYNNE (Admin OFF and X0/M300=0),
+;   3 = STANOWISKO WOLNE (Admin OFF, X0/M300=1 and M427=0).
+; Priority: Admin > inactive > free > main.
 ;
 ; HMI wake:
 ; M419 = 3 s wake request after accepted RM5 pulse.
@@ -193,7 +197,7 @@ MOV H3156 D500
 LD M8002
 MOV H342E D501
 LD M8002
-MOV H372E D502
+MOV H382E D502
 LD M8002
 MOV H0 D503
 LD M8002
@@ -201,7 +205,7 @@ MOV K1 D516
 LD M8002
 MOV K4 D517
 LD M8002
-MOV K7 D518
+MOV K8 D518
 LD M8002
 RST M320
 LD M8002
@@ -251,9 +255,9 @@ SET M410
 LD M8002
 SET M414
 LD M8002
-RST M429
+SET M429
 LD M8002
-RST M431
+SET M431
 LD M8002
 RST M432
 LD M8002
@@ -266,10 +270,6 @@ LD X13
 OUT M302
 LD X14
 OUT M303
-LD M303
-MOV K1 D585
-LDI M303
-MOV K0 D585
 LD> D300 K0
 AND<= D300 K100
 OUT M413
@@ -294,6 +294,17 @@ AND<= D528 K200
 OUT M415
 LD> D560 K0
 OUT M427
+LD M8000
+MOV K0 D585
+LDI M303
+ANI M300
+MOV K2 D585
+LDI M303
+AND M300
+ANI M427
+MOV K3 D585
+LD M303
+MOV K1 D585
 LD>= D584 K1
 AND<= D584 K6
 OUT M434
