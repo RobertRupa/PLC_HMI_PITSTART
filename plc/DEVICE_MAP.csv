@@ -58,7 +58,14 @@ M460-M465,Bit,AUTO_SELECT_P1_P6,Internal one-scan auto program select
 M470-M475,Bit,EFFECTIVE_SELECT_P1_P6,Internal manual/HMI OR auto select
 Y0,Output,PITSTART_CREDITS / Counter,One pulse = 0.10 EUR
 Y1,Output,PILOTAGGIO,M410 AND M412
-Y23,Output,RM5 INHIBIT,ON only when X0=0
+Y2,Output,RM5 INHIBIT PRIMARY,ON only when X0=0; current physical output
+Y3,Output,PROGRAM 1,M420 AND M300 AND credit
+Y4,Output,PROGRAM 2,M421 AND M300 AND credit
+Y5,Output,PROGRAM 3,M422 AND M300 AND credit
+Y6,Output,PROGRAM 4,M423 AND M300 AND credit
+Y7,Output,PROGRAM 5,M424 AND M300 AND credit
+Y10,Output,PROGRAM 6,M425 AND M300 AND credit; FX octal address after Y7
+Y23,Output,RM5 INHIBIT COMPATIBILITY MIRROR,Same logic as Y2; retained for future PLC with more outputs
 Y27,Output,WORK LIGHTS,M414 AND M412
 T200,Timer,RM5 packet timeout,K100
 T201,Timer,CREDIT ON,K10
