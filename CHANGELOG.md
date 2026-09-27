@@ -1,5 +1,17 @@
 # Changelog
 
+## V1.4.9
+
+- rozdzielono rejestry sterowania ekranem i statusu HMI,
+- `D585` pozostaje indeksem ekranu zadawanym przez PLC,
+- `D586` jest indeksem aktualnego ekranu zapisywanym przez HMI,
+- `D587` jest 0/1 mirrorem `M419` dla sygnału RM5/wake,
+- dodano pliki projektów PLC i HMI,
+- dodano zrzuty ekranów HMI oraz konfiguracji WSStudio,
+- dodano zrzuty konfiguracji RM5 z Clone5 Professional,
+- uzupełniono dokumentację konfiguracji HMI i RM5.
+
+
 ## V1.4.8
 
 - ustawiono domyślnie `M429=1` — Sync countdown with PRACA,
