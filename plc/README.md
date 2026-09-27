@@ -1,10 +1,10 @@
-# PLC V1.5.1
+# PLC V1.5.2
 
 ## Pliki
 
 - `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
 - `MAIN.txt` — wersja komentowana,
-- `main_v1.5.1.csv` — czysty CSV do importu GX,
+- `main_v1.5.2.csv` — czysty CSV do importu GX,
 - `DEVICE_MAP.csv` — mapa urządzeń,
 - `DEVICE_COMMENTS.csv` / `DEVICE_COMMENTS.txt` — komentarze urządzeń,
 - `IMPORT_CSV.md` — mapowanie kolumn importu.
@@ -75,7 +75,7 @@ D587 = HMI_WAKE_REQUEST_WORD
 
 ## Import CSV
 
-Kolumny pliku `main_v1.5.1.csv`:
+Kolumny pliku `main_v1.5.2.csv`:
 
 - A = Step number
 - B = Skip
@@ -86,7 +86,7 @@ Kolumny pliku `main_v1.5.1.csv`:
 Komentarze urządzeń importuj osobno, jeśli używana wersja GX Developer na to pozwala.
 
 
-## Defaults V1.5.1
+## Defaults V1.5.2
 
 ```text
 M429 = 1 default  ; Sync countdown with PRACA
@@ -104,3 +104,23 @@ M436 = RM5_TOPUP_BUSY
 Nowa paczka RM5 jest dopisywana do istniejącej kolejki D330. Liczba nowych impulsów Y0 jest ograniczana do wolnego miejsca wynikającego z D549.
 
 Przy M436=1 tick zużycia kredytu jest wstrzymany do końca obsługi zaakceptowanego doładowania. Aktywny program i D558 nie są zmieniane przez samo doładowanie.
+
+
+## Startup reset
+
+```text
+T204 = startup reset window
+M438 = STARTUP_RESET_ACTIVE
+```
+
+Przez początkowe okno po wejściu PLC w RUN zerowane są rejestry i bity bieżącej sesji. Reset nie zależy wyłącznie od M8002.
+
+## RM5 inhibit threshold
+
+`D594` zawiera liczbę pełnych impulsów Y0, które jeszcze mieszczą się poniżej D549.
+
+`M435` jest ustawiane, gdy:
+- D594 jest mniejsze od D300,
+- albo bieżąca paczka RM5 osiągnęła dostępne D594.
+
+Wtedy Y2 i Y23 przechodzą w stan INHIBIT.
