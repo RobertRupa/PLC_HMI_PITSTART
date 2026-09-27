@@ -95,7 +95,7 @@ OUT M416
 Dla ostatnio wybranego programu:
 
 ```text
-D350 = D560 × D557 / (D550 × 100)
+D350 = D560 × D557 / (D550 × 10)
 ```
 
 Obliczenie używa MUL + DDIV.
@@ -125,7 +125,7 @@ D549 jest parametrem maksymalnego kredytu w jednostkach 0,10 EUR, domyślnie 50 
 Wewnętrzny limit:
 
 ```text
-MAX_SCALED = D549 × 100
+MAX_CREDIT_CENTS = D549 × 10
 ```
 
 Zakres D549 i maksymalny czas programu zostały ograniczone tak, aby D350 pozostało bezpiecznie w dodatnim zakresie 16-bit dla najgorszej kombinacji ustawień.
