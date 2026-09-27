@@ -2,7 +2,7 @@ LD M8000
 OUT T204 K100
 LDI T204
 OUT M438
-; PLC_HMI_PITSTART V1.5.6
+; PLC_HMI_PITSTART V1.5.7
 ; PitStart-compatible monetary-credit/time model
 ;
 ; Counter/PITSTART_CREDITS Y0 represents 0.10 EUR units.
@@ -49,9 +49,9 @@ OUT M438
 ; M436 = RM5_TOPUP_BUSY; active while an accepted RM5 packet / Y0 queue is being processed.
 ; M437 = RM5_PENDING_AT_LIMIT; pending packet has reserved all remaining Y0 pulse slots.
 ; M438 = STARTUP_RESET_ACTIVE; held during T204 startup window to clear runtime/session state.
-; M448 = STOP_RUN_COUNTDOWN; latched only when STOP rises while M301 RUN and M412 WORK_ACTIVE are both true.
-;        It keeps credit/time consumption running after STOP until RUN drops or a new program is selected.
-; M449 = COUNTDOWN_ACTIVE; M412 OR M448. Used only by the consumption tick; outputs still depend on M412.
+; M448 = COUNTDOWN_LOCAL_ACTIVE; internal branch used when Sync time with RUN (M429) is OFF.
+; M449 = COUNTDOWN_ACTIVE; selects M412 when M429=0, or M301/RUN when M429=1.
+; M430 = RUN_TIME_ENABLE; mirror of M449 for diagnostics.
 ; M460..M465 = auto-select pulses P1..P6.
 ; M470..M475 = effective select pulses (manual/HMI OR auto).
 ;
@@ -234,7 +234,7 @@ MOV H3156 D500
 LD M8002
 MOV H352E D501
 LD M8002
-MOV H362E D502
+MOV H372E D502
 LD M8002
 MOV H0 D503
 LD M8002
@@ -242,7 +242,7 @@ MOV K1 D516
 LD M8002
 MOV K5 D517
 LD M8002
-MOV K6 D518
+MOV K7 D518
 LD M8002
 RST M320
 LD M8002
@@ -507,10 +507,6 @@ MOV K1 D585
 LD>= D584 K1
 AND<= D584 K6
 OUT M434
-LD M301
-ORI M429
-ORI M410
-OUT M430
 LD M8000
 MUL D549 K10 D566
 LD M8000
@@ -717,19 +713,6 @@ OUT M445
 LD X12
 OR M406
 OUT M446
-; STOP during an already running cycle must not freeze paid time.
-; Latch only on STOP rising edge while RUN and WORK_ACTIVE were present.
-LDP M440
-AND M301
-AND M412
-SET M448
-; Continue only while the same RUN signal remains present.
-LDI M301
-RST M448
-LDI M300
-RST M448
-LD<= D560 K0
-RST M448
 LDP M441
 AND M300
 ANI M440
@@ -837,14 +820,6 @@ ANI M423
 ANI M424
 ANI M425
 OUT M447
-; A new program selection returns countdown control to normal WORK_ACTIVE.
-LD M470
-OR M471
-OR M472
-OR M473
-OR M474
-OR M475
-RST M448
 LD M440
 ORI M300
 RST M420
@@ -1053,10 +1028,18 @@ AND M300
 AND> D560 K0
 ANI M440
 OUT M412
-; Countdown may remain active after STOP only while M448 is latched.
-LD M412
+; Countdown source selector:
+; M429=0 -> M449 follows M412/WORK_ACTIVE.
+; M429=1 -> M449 follows M301/PRACA-RUN, independently of STOP/M412.
+LDI M429
+AND M412
+OUT M448
+LD M429
+AND M301
 OR M448
 OUT M449
+LD M449
+OUT M430
 LD> D558 K0
 AND> D557 K0
 AND> D560 K0
@@ -1069,7 +1052,6 @@ LD M8000
 DDIV D570 K100 D574
 LDP M8013
 AND M449
-AND M430
 AND M426
 ANI M436
 OUT M416
