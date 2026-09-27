@@ -1,7 +1,7 @@
 Device,Type,Function,Startup/Notes
 D300,Data,RM5 CH1 value in 0.10 EUR units,HMI RW 1..100 default 10
 D528,Data,Global clock correction x100,HMI RW 50..200 default 100
-D549,Data,Maximum credit in 0.10 EUR units,HMI RW 1..50 default 50
+D549,Data,Maximum credit in 0.10 EUR units,HMI RW 1..999 default 50
 D550,Data,Common base price in 0.10 EUR units,HMI RW 1..D549 default 5
 D551,Data,Program 1 seconds at base price,HMI RW 1..600 default 70
 D552,Data,Program 2 seconds at base price,HMI RW 1..600 default 70
@@ -12,15 +12,15 @@ D556,Data,Program 6 seconds at base price,HMI RW 1..600 default 70
 D557,Data,Last selected program service time,RO
 D558,Data,Last selected program number 1..6,RO
 D559,Data,TIME_BAR_MAX seconds,RO; max available time for current program/session
-D560,Data,Remaining credit x100 of one 0.10 EUR unit,RO; 100=0.10 EUR
+D560,Data,Remaining credit cents,RO; 10=0.10 EUR and 100=1.00 EUR
 D561,Data,Fractional consumption accumulator,Internal
 D562,Data,Credit subunits consumed on current tick,Internal
 D563,Data,Consumption division remainder,Internal
 D565,Data,HMI wake/coin event counter,RO increments on accepted X27
 D580,Data,Whole remaining 0.10 EUR credit units,RO
-D581,Data,Fractional credit remainder 0..99,RO
+D581,Data,Reserved,RO/internal
 D582,Data,Remaining credit cents,RO
-D583,Data,Remaining 0.1-cent remainder,RO
+D583,Data,Reserved,RO/internal
 D584,Data,Auto start program number,HMI RW 1..6 default 1
 D585,Data,HMI_SCREEN_INDEX,RO; 0 main 1 admin 2 inactive 3 free
 D586,Data,HMI_CURRENT_SCREEN_INDEX,HMI writes active screen index; PLC does not write
@@ -50,16 +50,17 @@ M420-M425,Bit,Program 1..6 active,RO
 M426,Bit,TIME_DISPLAY_VALID,RO
 M427,Bit,CREDIT_AVAILABLE,RO
 M429,Bit,SYNC_COUNTDOWN_WITH_PRACA,HMI RW default ON
-M430,Bit,RUN_TIME_ENABLE,PRACA OR not M429
+M430,Bit,RUN_TIME_ENABLE,M301 OR not M429 OR not M410
 M431,Bit,AUTO_START_PROGRAM_ENABLE,HMI RW default ON
 M432,Bit,AUTO_START_TRIGGER,RO one-scan trigger after Y0 queue is fully idle
 M433,Bit,AUTO_START_DONE,RO latch prevents repeated automatic start in same session
 M434,Bit,AUTO_START_PROGRAM_OK,RO; D584 is 1..6
+M435,Bit,MAX_CREDIT_REACHED,RO; D560 >= D566
 M460-M465,Bit,AUTO_SELECT_P1_P6,Internal one-scan auto program select
 M470-M475,Bit,EFFECTIVE_SELECT_P1_P6,Internal manual/HMI OR auto select
 Y0,Output,PITSTART_CREDITS / Counter,One pulse = 0.10 EUR
 Y1,Output,PILOTAGGIO,M410 AND M412
-Y2,Output,RM5 INHIBIT PRIMARY,ON only when X0=0; current physical output
+Y2,Output,RM5 INHIBIT PRIMARY,ON when X0=0 or M435=1; current physical output
 Y3,Output,PROGRAM 1,M420 AND M300 AND credit
 Y4,Output,PROGRAM 2,M421 AND M300 AND credit
 Y5,Output,PROGRAM 3,M422 AND M300 AND credit
