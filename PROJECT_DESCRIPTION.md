@@ -108,7 +108,7 @@ X14 steruje M303. D585 wybiera ekran według priorytetu:
 - 3 Stanowisko wolne, gdy X14=0, X0=1 i M427=0,
 - 0 Main/Work w pozostałym przypadku.
 
-Po zaakceptowanym impulsie RM5 M419/D586 są aktywne około 3 s.
+Po zaakceptowanym impulsie RM5 M419 jest aktywne około 3 s, a D565 zwiększa licznik zdarzeń.
 
 
 ## Domyślne przełączniki
