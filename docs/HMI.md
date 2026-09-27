@@ -1,4 +1,4 @@
-# HMI — WSStudio / KinSealStudio — V1.5.3
+# HMI — WSStudio / KinSealStudio — V1.5.4
 
 ## Ekrany
 
@@ -194,28 +194,34 @@ W dostępnej konfiguracji WSStudio nie ma potwierdzonej osobnej funkcji „wake 
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.5.3
+D500..D503 = V1.5.4
 D516 = 1
 D517 = 5
-D518 = 3
+D518 = 4
 ```
 
 
 ### Pilotaggio default
 
-Dodaj na ekranie Admin przełącznik:
+Na ekranie Admin:
 
 ```text
-Write address: M439
-Opis: Pilotaggio default
-Typ: Toggle
-Default PLC: ON
+M410 = Pilotaggio pompa        ; bieżący stan
+M439 = Pilotaggio default      ; stan używany przy nowym starcie
 ```
 
-Przy starcie programu:
-- M410=1 -> bez zmian,
-- M410=0 i M439=1 -> M410 zostaje ustawione,
-- M410=0 i M439=0 -> pozostaje OFF.
+M439 jest kopiowane do M410 tylko przy rozpoczęciu programu ze stanu bez aktywnego programu.
+
+```text
+M447 = NEW_PROGRAM_START
+M447 AND M439  -> SET M410
+M447 AND /M439 -> RST M410
+```
+
+Zmiana programu P1…P6 w trakcie pracy nie uruchamia ponownie M410.
+
+Zmiana M439 podczas aktywnego programu nie zmienia bieżącego Pilotaggio. Jeżeli trzeba zmienić Pilotaggio od razu, użyj przełącznika M410.
+
 
 ### Domyślna taryfa
 
