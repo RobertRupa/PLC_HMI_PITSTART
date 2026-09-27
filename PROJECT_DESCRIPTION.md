@@ -1,8 +1,8 @@
-# Opis projektu — V1.4.2
+# Opis projektu — V1.4.3
 
 Projekt emuluje funkcje PitStart dla sterownika myjni.
 
-Najważniejsza zmiana V1.4.2: źródłem prawdy nie jest już sztuczny licznik sekund przypisywany do monety. Źródłem prawdy jest pozostały **kredyt pieniężny**, a czas jest wyliczany z taryfy programu.
+Najważniejsza zmiana V1.4.3: źródłem prawdy nie jest już sztuczny licznik sekund przypisywany do monety. Źródłem prawdy jest pozostały **kredyt pieniężny**, a czas jest wyliczany z taryfy programu.
 
 ## Taryfa
 
@@ -31,3 +31,10 @@ M429 pozwala wybrać:
 ## HMI wake
 
 M419 jest 3-sekundowym żądaniem wybudzenia po monecie. D565 jest licznikiem zdarzeń monet.
+
+
+## Auto Start Timer
+
+`M431` enables delayed start of the countdown. With this option enabled, the PLC waits until the full `Y0/PITSTART_CREDITS` queue has been transmitted. The actual active state is `M432`, and `M433` is the final countdown gate.
+
+STOP, loss of X0 and exhausted credit reset the auto timer.
