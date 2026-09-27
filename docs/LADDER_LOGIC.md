@@ -1,4 +1,4 @@
-# Logika PLC — V1.4.1
+# Logika PLC — V1.4.2
 
 ## RM5 INHIBIT
 
@@ -135,3 +135,17 @@ STOP:
 - nie kasuje pozostałego czasu.
 
 Po ponownym wyborze programu pozostały kredyt jest przeliczany według wybranej taryfy.
+
+
+## TIME_BAR_MAX
+
+`D559` przechowuje maksimum paska czasu.
+
+Po obliczeniu D350:
+
+```text
+LD> D350 D559
+MOV D350 D559
+```
+
+Na początku nowej sesji oraz przy zmianie programu D559 jest zerowane, więc nowe maksimum jest wyznaczane z aktualnego D350. Podczas odliczania D559 nie maleje.
