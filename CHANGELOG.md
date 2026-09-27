@@ -1,5 +1,17 @@
 # Changelog
 
+## V1.4.3
+
+- dodano `M431 = AUTO_START_TIMER_ENABLE`,
+- dodano `M432 = AUTO_TIMER_ACTIVE`,
+- dodano `M433 = COUNTDOWN_ENABLE`,
+- przy M431=ON odliczanie rozpoczyna się dopiero po całkowitym zakończeniu kolejki Y0/CREDIT,
+- jeśli CREDIT zakończą się przed wyborem programu, Auto Timer wystartuje po późniejszym wyborze programu,
+- STOP, utrata X0 i brak kredytu resetują Auto Timer,
+- synchronizacja M429/PRACA nadal obowiązuje,
+- wersja PLC/HMI V1.4.3.
+
+
 ## V1.4.2
 
 - dodano `D559 = TIME_BAR_MAX` dla paska czasu HMI,
