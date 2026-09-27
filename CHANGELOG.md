@@ -1,5 +1,17 @@
 # Changelog
 
+## V1.4.7
+
+- przeniesiono główne fizyczne RM5 INHIBIT z Y23 na Y2,
+- Y23 pozostaje aktywnym mirrorem INHIBIT dla przyszłego PLC z większą liczbą wyjść,
+- przesunięto wyjścia programów: P1=Y3, P2=Y4, P3=Y5, P4=Y6, P5=Y7, P6=Y10,
+- udokumentowano ósemkową adresację FX: po Y7 występuje Y10, adres Y8 nie istnieje,
+- dodano wymaganie konfiguracji RM5: wszystkie używane kanały/nominały mają wysyłać impulsy przez CH1 podłączony do X27,
+- rozszerzono opis kodowania wartości monet liczbą impulsów CH1 i zależności od D300,
+- zaktualizowano README, opis funkcjonalności, mapę I/O, komentarze urządzeń i dokumentację RM5,
+- wersja PLC/HMI V1.4.7.
+
+
 ## V1.4.6
 
 - dodano `D585 = ADMIN_SCREEN_REQUEST_WORD`, 0/1 mirror X14/M303,
