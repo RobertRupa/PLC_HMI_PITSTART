@@ -1,5 +1,35 @@
 # HMI — WSStudio / KinSealStudio — V1.5.7
 
+## Plik źródłowy projektu HMI
+
+Głównym edytowalnym plikiem projektu jest:
+
+```text
+projects/hmi/pitstart.hs
+```
+
+Plik należy dodać ręcznie do repo pod dokładnie tą nazwą.
+
+Z nagłówka aktualnego projektu `.hs` odczytano:
+
+```text
+KinSealStudio V1.0.2
+SUP070
+wsb-070-16M
+7.0 inch
+800 x 480
+1667M Colors 7 TFT LCD
+DC24V (+/-15%)
+COM1 / COM2
+USB device
+Language: English
+PLC driver: Mitsubishi_Fx1n
+```
+
+Szczegółowy opis pliku znajduje się w [projects/hmi/README.md](../projects/hmi/README.md).
+
+`projects/hmi/pitstart_hmi.zip` pozostaje starszym archiwum transportowym; przy dalszej edycji jako źródło należy traktować `pitstart.hs`.
+
 ## Ekrany
 
 Projekt używa czterech ekranów:
@@ -146,7 +176,9 @@ Producent podaje dla serii WSB oprogramowanie **HMI_Setup V5.1**. Strona modelu 
 - [Angielski opis WS7020R / WSB7020R — Manuals+](https://manuals.plus/ae/1005009073971796)
 
 Projekt HMI z tego repo:
-- [projects/hmi/pitstart_hmi.zip](../projects/hmi/pitstart_hmi.zip)
+- [projects/hmi/pitstart.hs](../projects/hmi/pitstart.hs) — główny plik źródłowy,
+- [projects/hmi/README.md](../projects/hmi/README.md) — opis projektu,
+- [projects/hmi/pitstart_hmi.zip](../projects/hmi/pitstart_hmi.zip) — starsze archiwum transportowe.
 
 Dokumentacja PLC:
 - [opis logiki PLC](LADDER_LOGIC.md),
@@ -236,8 +268,8 @@ W dostępnej konfiguracji WSStudio nie ma potwierdzonej osobnej funkcji „wake 
 | M427 | kredyt dostępny |
 | M435 | limit kredytu osiągnięty / zarezerwowany |
 | M436 | obsługa doładowania RM5 w toku |
-| M448 | STOP podczas RUN — podtrzymanie odliczania do zaniku RUN |
-| M449 | bramka odliczania = M412 OR M448 |
+| M448 | COUNTDOWN_LOCAL_ACTIVE — gałąź odliczania dla M429=0 |
+| M449 | COUNTDOWN_ACTIVE — M412 przy M429=0 lub M301/RUN przy M429=1 |
 | D521 | ostatnia paczka RM5 |
 | D522 | impulsy Y0 z ostatniej paczki |
 | D524 | impulsy RM5 sesji |
@@ -249,17 +281,21 @@ W dostępnej konfiguracji WSStudio nie ma potwierdzonej osobnej funkcji „wake 
 
 ## STOP podczas RUN
 
-Jeżeli STOP zostanie naciśnięty podczas aktywnego `M301 = RUN/PRACA`, wyjścia programu zostaną wyłączone, ale czas i kredyt nadal są odliczane do chwili zaniku RUN.
+Przy `M429 = Sync time with RUN = ON` odliczanie śledzi bezpośrednio `M301 = RUN/PRACA`.
 
-`M448` jest wewnętrznym latchem tego stanu, a `M449` jest wewnętrzną bramką odliczania. HMI nie musi nimi sterować.
+STOP wyłącza aktywny program i jego wyjścia, ale nie zatrzymuje czasu, jeśli `M301/RUN` nadal ma stan 1. Po zaniku RUN odliczanie zatrzymuje się.
+
+Przy `M429=0` odliczanie zależy od `M412=WORK_ACTIVE`.
+
+`M448` jest wewnętrzną gałęzią dla trybu lokalnego, a `M449` końcową bramką odliczania. HMI nie steruje nimi bezpośrednio.
 
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.5.6
+D500..D503 = V1.5.7
 D516 = 1
 D517 = 5
-D518 = 6
+D518 = 7
 ```
 
 
