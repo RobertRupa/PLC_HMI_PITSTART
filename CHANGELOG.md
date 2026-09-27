@@ -1,5 +1,14 @@
 # Changelog
 
+## V1.4.1
+
+- Y23/RM5_INHIBIT zależy wyłącznie od X0,
+- X0=0 -> Y23=1,
+- X0=1 -> Y23=0,
+- M413/M415 nadal filtrują programowe przyjęcie impulsu X27, ale nie sterują INHIBIT,
+- wersja PLC/HMI V1.4.1.
+
+
 ## V1.4.0
 
 - przebudowano model na kredyt pieniężny zgodny z PitStart,
