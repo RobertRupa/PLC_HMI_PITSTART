@@ -182,7 +182,7 @@ Priorytet: Admin > Nieczynne > Wolne > Main.
 - `projects/hmi/README.md` — parametry i opis pliku HMI,
 
 Dokumentacja ekranów i konfiguracji:
-- `docs/HMI.md` — mapowanie ekranów, D585/D586, ustawienia Home/Admin i WSStudio,
+- `docs/HMI.md` — mapowanie ekranów, D585/D586 oraz konfiguracja projektu KinSealStudio/HMI Studio,
 - lokalne manuale WSB/WSC oraz HMI_Setup/HMI Studio 5.1 są opisane w `docs/HMI.md` i `docs/SOFTWARE.md`,
 - `docs/images/hmi/` — podglądy ekranów i ustawień systemowych,
 - `docs/RM5.md` — konfiguracja RM5, pinout CN5 i złącza programującego TTL, wymóg COM1 dla Clone5 Professional oraz dokumentacja ustawień i danych referencyjnych konkretnego egzemplarza.
