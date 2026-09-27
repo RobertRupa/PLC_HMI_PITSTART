@@ -1,4 +1,4 @@
-# Logika PLC — V1.4.8
+# Logika PLC — V1.4.9
 
 ## RM5 INHIBIT
 
@@ -246,3 +246,14 @@ SET M431   ; Auto Start Program
 ```
 
 Oba ustawienia domyślnie startują w stanie ON.
+
+
+## HMI current screen feedback
+
+`D585` steruje ekranem HMI (PLC -> HMI).
+
+`D586` jest odwrotnym kanałem statusowym (HMI -> PLC): WSStudio zapisuje tam indeks aktualnie wyświetlanego ekranu przez **HMI Status -> Screen Index**.
+
+PLC nie wykonuje instrukcji MOV do D586.
+
+Wake request pozostaje w `M419`, a jego word mirror został przeniesiony do `D587`.
