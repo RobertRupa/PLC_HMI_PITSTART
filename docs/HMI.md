@@ -1,5 +1,11 @@
 # HMI — WSStudio — V1.5.0
 
+## Podgląd ekranu Admin
+
+![Ekran Admin](images/hmi/admin.webp)
+
+Na ekranie Admin pole `D549 / Max credits` powinno mieć zakres wejściowy **1…999**. Wartość widoczna na zrzucie jest wartością bieżącą, nie limitem pola.
+
 ## Ekran Home
 
 ### Przyciski
