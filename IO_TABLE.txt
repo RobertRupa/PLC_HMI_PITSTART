@@ -1,4 +1,4 @@
-PLC_HMI_PITSTART - V1.5.2
+PLC_HMI_PITSTART - V1.5.3
 =====================================
 
 I/O
@@ -39,6 +39,7 @@ M411  RESET_DIAGNOSTIC_COUNTERS
 M414  WORK_LIGHTS_ENABLE
 M429  SYNC_COUNTDOWN_WITH_PRACA (default ON)
 M431  AUTO_START_PROGRAM_ENABLE (default ON)
+M439  PILOTAGGIO_DEFAULT (default ON)
 M432  AUTO_START_TRIGGER
 M433  AUTO_START_DONE
 M434  AUTO_START_PROGRAM_OK
@@ -67,13 +68,13 @@ PARAMETRY
 D300  RM5 CH1 VALUE [x0,10 EUR], 1..100, default 10
 D528  CLOCK CORRECTION x100, 50..200, default 100
 D549  MAX CREDIT [x0,10 EUR], 1..999, default 50
-D550  BASE PRICE [x0,10 EUR], 1..D549, default 5
-D551  P1 TIME [s] at base price, 1..600, default 70
-D552  P2 TIME [s] at base price, 1..600, default 70
-D553  P3 TIME [s] at base price, 1..600, default 70
-D554  P4 TIME [s] at base price, 1..600, default 70
-D555  P5 TIME [s] at base price, 1..600, default 70
-D556  P6 TIME [s] at base price, 1..600, default 70
+D550  BASE PRICE [x0,10 EUR], 1..D549, default 10
+D551  P1 TIME [s] at base price, 1..600, default 300
+D552  P2 TIME [s] at base price, 1..600, default 300
+D553  P3 TIME [s] at base price, 1..600, default 300
+D554  P4 TIME [s] at base price, 1..600, default 300
+D555  P5 TIME [s] at base price, 1..600, default 300
+D556  P6 TIME [s] at base price, 1..600, default 300
 D584  AUTO START PROGRAM NUMBER, 1..6, default 1
 D585  HMI SCREEN INDEX, RO
       0 = MAIN/WORK (credit available)
@@ -113,10 +114,10 @@ T204 K100  startup reset window
 
 WERSJA
 ------
-D500..D503 = V1.5.2
+D500..D503 = V1.5.3
 D516=1
 D517=5
-D518=2
+D518=3
 
 
 DOŁADOWANIE
@@ -125,3 +126,18 @@ Doładowanie aktywnego programu nie zmienia D558 ani aktywnego programu.
 Nowe impulsy są dopisywane do kolejki Y0.
 M436 zatrzymuje zużycie kredytu na czas obsługi zaakceptowanego doładowania,
 żeby program nie zgasł przed dopisaniem nowego kredytu.
+
+
+DOMYŚLNA TARYFA
+---------------
+D300=10
+D550=10
+D551..D556=300
+
+1 impuls RM5 -> 10 impulsów Y0 -> 1,00 EUR kredytu -> 300 s dla każdego programu.
+
+PILOTAGGIO DEFAULT
+------------------
+M439 ustawia domyślny stan Pilotaggio przy starcie programu.
+Jeżeli M410=0 w chwili wyboru programu i M439=1, PLC ustawia M410=1.
+Jeżeli M439=0, M410 pozostaje wyłączone.
