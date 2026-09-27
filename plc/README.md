@@ -1,10 +1,10 @@
-# PLC V1.5.6
+# PLC V1.5.7
 
 ## Pliki
 
 - `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
 - `MAIN.txt` — wersja komentowana,
-- `main_v1.5.5.csv` — ostatni zapisany CSV do importu GX; źródła V1.5.6 są w `MAIN_GXDEV_ENTRY.txt` i `MAIN.txt`,
+- `main_v1.5.7.csv` — aktualny CSV do importu GX Developer,
 - `DEVICE_MAP.csv` — mapa urządzeń,
 - `DEVICE_COMMENTS.csv` / `DEVICE_COMMENTS.txt` — komentarze urządzeń,
 - `IMPORT_CSV.md` — mapowanie kolumn importu.
@@ -86,7 +86,7 @@ Kolumny pliku CSV importowanego do GX Developer:
 Komentarze urządzeń importuj osobno, jeśli używana wersja GX Developer na to pozwala.
 
 
-## Defaults V1.5.6
+## Defaults V1.5.7
 
 ```text
 M429 = 1 default  ; Sync countdown with PRACA
@@ -126,14 +126,24 @@ Przez początkowe okno po wejściu PLC w RUN zerowane są rejestry i bity bież�
 Wtedy Y2 i Y23 przechodzą w stan INHIBIT.
 
 
-## STOP during RUN
+## Sync time with RUN
 
 ```text
-M448 = STOP_RUN_COUNTDOWN
+M429 = SYNC_WITH_PRACA
+M448 = COUNTDOWN_LOCAL_ACTIVE
 M449 = COUNTDOWN_ACTIVE
+M430 = RUN_TIME_ENABLE
 ```
 
-Jeżeli STOP zostanie naciśnięty przy aktywnym M301/RUN i M412/WORK_ACTIVE, M448 podtrzymuje zużycie kredytu do zaniku RUN. Wyjścia programu pozostają wyłączone, ponieważ nadal zależą od M412.
+Logika V1.5.7:
+
+```text
+M429=0 -> M449 = M412 / WORK_ACTIVE
+M429=1 -> M449 = M301 / PRACA-RUN
+M430 = M449
+```
+
+STOP nadal wyłącza program i jego wyjścia. Przy włączonym `M429` odliczanie trwa jednak dalej, jeżeli wejście `M301/RUN` pozostaje aktywne.
 
 ## Pilotaggio default
 
