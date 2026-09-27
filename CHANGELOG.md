@@ -2,6 +2,13 @@
 
 ## V1.5.7
 
+- główny README rozszerzono o podglądy ekranów Home/Admin/Error/Ready oraz konfigurację D585/D586,
+- rozpisano w README wszystkie nastawy dostępne na aktualnym ekranie Admin wraz z adresami, zakresami i skutkiem działania,
+- udokumentowano, że aktualny Home ma bezpośrednie przyciski P1…P5; P6 pozostaje obsługiwany przez PLC, X12 i Auto Start D584=6,
+- zaznaczono, że M439 istnieje w PLC, ale nie jest obecnie wystawione jako osobna kontrolka na pokazanym ekranie Admin,
+- przygotowano katalog `docs/manuals/pitstart/` i nazwę `Gamma_Pit_PitStart_F_c27-M-PIT-EK_2009-10-13.pdf`,
+- dodano opis rozbieżności rewizji instrukcji PitStart: strona 2 Rev.01, dalsze nagłówki Rev.00,
+- rozszerzono `docs/PITSTART.md` o informacje wynikające bezpośrednio z oryginalnej instrukcji Comestero,
 - poprawiono działanie `M429 = Sync time with RUN`: przy M429=1 odliczanie śledzi bezpośrednio `M301=PRACA/RUN`,
 - STOP wyłącza program i wyjścia, ale przy M429=1 nie zatrzymuje czasu dopóki RUN pozostaje aktywny,
 - przy M429=0 odliczanie zależy od `M412=WORK_ACTIVE`,
