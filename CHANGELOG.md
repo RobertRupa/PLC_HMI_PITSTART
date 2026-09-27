@@ -1,5 +1,13 @@
 # Changelog
 
+## V1.4.6
+
+- dodano `D585 = ADMIN_SCREEN_REQUEST_WORD`, 0/1 mirror X14/M303,
+- dodano `D586 = HMI_WAKE_REQUEST_WORD`, 0/1 mirror M419,
+- rejestry są przeznaczone dla HMI, które nie może używać bitów M jako triggerów ekranów,
+- wersja PLC/HMI V1.4.6.
+
+
 ## V1.4.5
 
 - dodano fizyczny przełącznik ADMIN na X14,
