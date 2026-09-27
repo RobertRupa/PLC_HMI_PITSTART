@@ -1,5 +1,19 @@
 # Changelog
 
+## V1.4.8
+
+- ustawiono domyślnie `M429=1` — Sync countdown with PRACA,
+- ustawiono domyślnie `M431=1` — Auto Start Program,
+- zmieniono `D585` z prostego mirroru Admin na `HMI_SCREEN_INDEX`,
+- `D585=0` — Main/Work,
+- `D585=1` — Admin, gdy X14=1,
+- `D585=2` — Stanowisko nieczynne, gdy Admin OFF i X0=0,
+- `D585=3` — Stanowisko wolne, gdy Admin OFF, X0=1 i M427=0,
+- priorytet ekranów: Admin > Nieczynne > Wolne > Main,
+- zaktualizowano dokumentację HMI, I/O i pliki importu,
+- wersja PLC/HMI V1.4.8.
+
+
 ## V1.4.7
 
 - przeniesiono główne fizyczne RM5 INHIBIT z Y23 na Y2,
