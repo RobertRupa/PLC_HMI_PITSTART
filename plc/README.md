@@ -1,10 +1,10 @@
-# PLC V1.5.2
+# PLC V1.5.3
 
 ## Pliki
 
 - `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
 - `MAIN.txt` — wersja komentowana,
-- `main_v1.5.2.csv` — czysty CSV do importu GX,
+- `main_v1.5.3.csv` — czysty CSV do importu GX,
 - `DEVICE_MAP.csv` — mapa urządzeń,
 - `DEVICE_COMMENTS.csv` / `DEVICE_COMMENTS.txt` — komentarze urządzeń,
 - `IMPORT_CSV.md` — mapowanie kolumn importu.
@@ -75,7 +75,7 @@ D587 = HMI_WAKE_REQUEST_WORD
 
 ## Import CSV
 
-Kolumny pliku `main_v1.5.2.csv`:
+Kolumny pliku `main_v1.5.3.csv`:
 
 - A = Step number
 - B = Skip
@@ -86,7 +86,7 @@ Kolumny pliku `main_v1.5.2.csv`:
 Komentarze urządzeń importuj osobno, jeśli używana wersja GX Developer na to pozwala.
 
 
-## Defaults V1.5.2
+## Defaults V1.5.3
 
 ```text
 M429 = 1 default  ; Sync countdown with PRACA
@@ -124,3 +124,22 @@ Przez początkowe okno po wejściu PLC w RUN zerowane są rejestry i bity bież�
 - albo bieżąca paczka RM5 osiągnęła dostępne D594.
 
 Wtedy Y2 i Y23 przechodzą w stan INHIBIT.
+
+
+## Pilotaggio default
+
+```text
+M439 = PILOTAGGIO_DEFAULT
+```
+
+M439 jest HMI RW i domyślnie ON. Przy impulsie wyboru programu, jeśli M410 jest OFF i M439 jest ON, PLC ustawia M410.
+
+## Default tariff
+
+```text
+D300 = 10
+D550 = 10
+D551..D556 = 300
+```
+
+1 raw RM5 pulse = 10 Y0 pulses = 300 s.
