@@ -2,6 +2,8 @@
 
 ## Pliki
 
+- `../projects/plc/PitStart.zip` — archiwum projektu PLC,
+
 - `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
 - `MAIN.txt` — wersja komentowana,
 - `main_v1.5.7.csv` — aktualny CSV do importu GX Developer,
@@ -162,3 +164,15 @@ D551..D556 = 300
 ```
 
 1 raw RM5 pulse = 10 Y0 pulses = 300 s.
+
+## Znane ograniczenie czasu
+
+`D350` jest pojedynczym rejestrem 16-bit. M415 sprawdza zakresy poszczególnych parametrów, ale nie ogranicza ich kombinacji pod kątem maksymalnego czasu.
+
+Konserwatywnie utrzymuj:
+
+```text
+D549 * D557 / D550 <= 32767 s
+```
+
+Domyślna taryfa daje 1500 s przy maksymalnym domyślnym kredycie 5,00 EUR.
