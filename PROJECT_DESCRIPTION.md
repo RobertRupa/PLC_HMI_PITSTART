@@ -1,4 +1,4 @@
-# Opis projektu — V1.5.1
+# Opis projektu — V1.5.2
 
 Projekt zastępuje funkcje Comestero PitStart w sterowniku myjni i współpracuje z HMI oraz akceptorem monet RM5 Evolution.
 
@@ -120,9 +120,9 @@ M429 i M431 startują domyślnie w stanie ON:
 
 ## Limit kredytu
 
-D549: 1…999 jednostek po 0,10 EUR. M435 uwzględnia bieżący kredyt i kredyt zarezerwowany w kolejce Y0. Y2/Y23 blokują RM5 po wypełnieniu limitu.
+D549: 1…999 jednostek po 0,10 EUR. M435 blokuje RM5, gdy kolejny pełny impuls RM5 nie mieści się już w wolnym limicie albo bieżąca paczka zarezerwowała całe dostępne miejsce.
 
 
 ## Restart
 
-Pierwszy skan zeruje stan sesji, kredyt, czas, kolejkę Y0, liczniki diagnostyczne i rejestry tymczasowe D588…D592.
+Po wejściu PLC w RUN T204 tworzy okno resetu startowego. Gdy M438=1 zerowane są stan sesji, kredyt, czas, kolejka Y0, liczniki diagnostyczne i rejestry robocze D588…D594.
