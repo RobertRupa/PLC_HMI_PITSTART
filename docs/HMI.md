@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.4.0
+# HMI — WSStudio — V1.4.1
 
 ## Ekran Home
 
@@ -116,8 +116,8 @@ M429:
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.4.0
+D500..D503 = V1.4.1
 D516 = 1
 D517 = 4
-D518 = 0
+D518 = 1
 ```
