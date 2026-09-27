@@ -1,6 +1,6 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.5.5**.
+Aktualna wersja PLC: **V1.5.6**.
 
 ## Model kredytu
 
@@ -134,7 +134,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.5.5.csv` — aktualny CSV w układzie eksportu GX,
+- `plc/main_v1.5.5.csv` — ostatni zapisany CSV importowy; źródła V1.5.6 są w `MAIN_GXDEV_ENTRY.txt` i `MAIN.txt`,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
@@ -175,6 +175,7 @@ Priorytet: Admin > Nieczynne > Wolne > Main.
 
 Dokumentacja ekranów i konfiguracji:
 - `docs/HMI.md` — mapowanie ekranów, D585/D586, ustawienia Home/Admin i WSStudio,
+- dokumentacja producenta WSB7020R i HMI_Setup V5.1 jest podlinkowana bezpośrednio w `docs/HMI.md`,
 - `docs/images/hmi/` — podglądy ekranów i ustawień systemowych,
 - `docs/RM5.md` — konfiguracja RM5, pinout CN5 i złącza programującego TTL, wymóg COM1 dla Clone5 Professional oraz dokumentacja ustawień i danych referencyjnych konkretnego egzemplarza.
 
@@ -200,6 +201,10 @@ Auto Start wymaga `D558=0`, więc późniejsze doładowanie nie wybiera ponownie
 
 Po wejściu PLC w RUN timer T204 utrzymuje przez krótki czas `M438=STARTUP_RESET_ACTIVE`. W tym czasie zerowane są kredyt, czas, kolejki impulsów, liczniki sesji, D588…D594 oraz stany M435…M437. Parametry konfiguracyjne pozostają bez zmian.
 
+
+## STOP podczas aktywnego RUN
+
+Jeżeli STOP zostanie naciśnięty podczas aktywnego `M301/RUN` i `M412/WORK_ACTIVE`, wyjścia programu są wyłączane, ale odliczanie kredytu pozostaje aktywne do zaniku RUN. Stan ten jest przechowywany w `M448`; `M449 = M412 OR M448` jest bramką zużycia kredytu.
 
 ## Pilotaggio default
 
