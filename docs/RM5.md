@@ -1,4 +1,4 @@
-# Comestero RM5 Evolution — V1.4.0
+# Comestero RM5 Evolution — V1.4.1
 
 ## Połączenie
 
@@ -17,14 +17,28 @@ Przykład:
 
 ## Akceptacja
 
-Impuls X27 jest przyjmowany tylko przy:
+Impuls X27 jest przyjmowany programowo tylko przy:
 - M300=1,
 - M413=1 (D300 poprawne),
 - M415=1 (taryfa poprawna).
 
+Natomiast fizyczne/logiczne wyjście INHIBIT Y23 zależy wyłącznie od X0.
+
 ## INHIBIT
 
-/M300 OR /M413 OR /M415 -> Y23.
+```text
+X0 = 0 -> Y23 = 1  (RM5 INHIBIT aktywny)
+X0 = 1 -> Y23 = 0  (RM5 odblokowany)
+```
+
+W Instruction List:
+
+```text
+LDI X0
+OUT Y23
+```
+
+Y23 nie jest już uzależnione od M413/M415.
 
 ## Paczka RM5
 
