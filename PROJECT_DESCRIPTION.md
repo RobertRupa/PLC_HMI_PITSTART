@@ -1,4 +1,4 @@
-# Opis projektu — V1.5.3
+# Opis projektu — V1.5.6
 
 Projekt zastępuje funkcje Comestero PitStart w sterowniku myjni i współpracuje z HMI oraz akceptorem monet RM5 Evolution.
 
@@ -93,6 +93,17 @@ Paczki RM5 są dopisywane do D330. M436 pozostaje aktywne do zakończenia obsłu
 
 M429 wybiera synchronizację z PRACA. Przy M429=1 X1/M301 jest wymagane tylko gdy M410/Pilotaggio jest włączone. Przy M410=0 odliczanie trwa niezależnie od X1.
 
+## STOP podczas RUN
+
+Jeżeli STOP zostanie naciśnięty podczas aktywnego `M301=RUN` i `M412=WORK_ACTIVE`, wyjścia programu są wyłączane od razu, ale odliczanie kredytu trwa do zaniku RUN.
+
+```text
+M448 = STOP_RUN_COUNTDOWN
+M449 = M412 OR M448
+```
+
+M448 jest kasowany po zaniku RUN, utracie M300, wyzerowaniu kredytu lub wyborze nowego programu.
+
 ## HMI
 
 - D559 = TIME_BAR_MAX,
@@ -132,7 +143,7 @@ Po wejściu PLC w RUN T204 tworzy okno resetu startowego. Gdy M438=1 zerowane s�
 
 `M439` przechowuje domyślny stan Pilotaggio i jest dostępne z HMI.
 
-Przy starcie programu PLC sprawdza M410. Jeżeli M410=0, a M439=1, ustawia M410=1. M439 domyślnie startuje w stanie ON.
+Od V1.5.5 wartość M439 jest stosowana po zakończeniu kolejki Y0, gdy M410 jest wyłączone. M439=1 ustawia wtedy M410; M439=0 pozostawia M410 wyłączone.
 
 ## Domyślna taryfa
 
