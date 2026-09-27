@@ -1,6 +1,6 @@
-# GX CSV import mapping — V1.5.1
+# GX CSV import mapping — V1.5.2
 
-The canonical import file is `main_v1.5.1.csv`. It contains no Note/P-I/Line statement data.
+The canonical import file is `main_v1.5.2.csv`. It contains no Note/P-I/Line statement data.
 
 Assign columns in the GX import dialog:
 
