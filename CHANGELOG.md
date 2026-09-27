@@ -1,5 +1,17 @@
 # Changelog
 
+## V1.5.6
+
+- STOP naciśnięty podczas aktywnego RUN nie zatrzymuje odliczania kredytu,
+- dodano `M448 = STOP_RUN_COUNTDOWN`,
+- dodano `M449 = COUNTDOWN_ACTIVE = M412 OR M448`,
+- wyjścia programu nadal wyłączają się natychmiast po STOP,
+- podtrzymanie odliczania kończy się po zaniku RUN, utracie M300, wyzerowaniu kredytu albo wyborze nowego programu,
+- zaktualizowano dokumentację HMI,
+- dodano linki do strony producenta WSB7020R, instrukcji WS/WSB v1.79 oraz pakietu HMI_Setup V5.1,
+- przygotowano nazwy sześciu aktualnych screenów HMI do ręcznego uploadu,
+- wersja PLC V1.5.6.
+
 ## V1.5.5
 
 - zmieniono obsługę `M439 = PILOTAGGIO_DEFAULT`,
