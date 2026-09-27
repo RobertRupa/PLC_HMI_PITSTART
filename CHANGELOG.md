@@ -1,5 +1,16 @@
 # Changelog
 
+## V1.5.4
+
+- Pilotaggio default jest stosowane tylko przy rozpoczęciu programu ze stanu bez aktywnego programu,
+- dodano M447 NEW_PROGRAM_START,
+- zmiana programu P1…P6 podczas pracy nie zmienia M410,
+- M439=1 ustawia M410 przy nowym starcie,
+- M439=0 zeruje M410 przy nowym starcie,
+- zmiana M439 podczas aktywnego programu nie zmienia bieżącego M410,
+- wersja PLC V1.5.4.
+
+
 ## V1.5.3
 
 - dodano M439 PILOTAGGIO_DEFAULT, domyślnie ON,
