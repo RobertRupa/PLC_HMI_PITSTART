@@ -33,3 +33,13 @@ Program używany do konfiguracji urządzeń EuroKey.
 ## Uwaga
 
 Linki powyżej wskazują na zewnętrzne pliki Google Drive. Repozytorium nie zawiera tych instalatorów. Przed użyciem na innym stanowisku warto zachować lokalną kopię wersji, która została sprawdzona z konkretnym urządzeniem.
+
+## HMI SEEKU / Winsun
+
+Producent dla rodziny WSB opisuje oprogramowanie **HMI Studio / HMI_Setup 5.1**.
+
+- [HMI_Setup V5.1 — pakiet producenta](https://www.winsunzk.cn/upload/application/upload_594f4ede25a16934f8723e5d2ff08091.zip)
+- [lokalny manual WSB V1.79](manuals/hmi/WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf)
+- [lokalny manual WSC V1.13](manuals/hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf)
+
+Aktualny plik `projects/hmi/pitstart.hs` ma w nagłówku identyfikator **KinSealStudio V1.0.2** i odwołania do zasobów `WSZKHMI5.1En`. Te nazwy dotyczą środowiska/profilu projektu; manual WSB pozostaje podstawowym źródłem konfiguracji komunikacji dla WSB7020R.
