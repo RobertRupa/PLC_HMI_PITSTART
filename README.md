@@ -1,8 +1,8 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.4.7**.
+Aktualna wersja PLC: **V1.4.8**.
 
-Logika V1.4.7 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
+Logika V1.4.8 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
 - `D300` określa wartość RM5 CH1 w jednostkach 0,10 EUR,
 - wspólna cena bazowa jest w `D550`,
@@ -81,7 +81,7 @@ Rejestry HMI:
 
 ## Synchronizacja z automatyką
 
-Domyślnie `M429=0`: czas/kredyt jest zużywany podczas `WORK_ACTIVE`.
+Domyślnie `M429=1`: czas/kredyt jest zużywany tylko przy rzeczywistym `X1/M301 = PRACA`.
 
 Po potwierdzeniu, że `X1/M301 = PRACA` jest wiarygodnym sygnałem rzeczywistej pracy automatyki, ustaw na HMI:
 
@@ -109,10 +109,12 @@ Jeżeli WSStudio potrafi wybudzać/przełączać ekran po bicie PLC, użyj M419.
 ## HMI ekran Admin
 
 - M303 — ADMIN_SCREEN_REQUEST, bezpośrednie odwzorowanie X14.
-- D585 — ADMIN_SCREEN_REQUEST_WORD = 0/1 mirror M303 dla HMI.
-- D586 — HMI_WAKE_REQUEST_WORD = 0/1 mirror M419 dla HMI.
-- M303=1 -> Admin.
-- M303=0 -> Home.
+- D585 — HMI_SCREEN_INDEX:
+  - 0 = Main/Work,
+  - 1 = Admin,
+  - 2 = Stanowisko nieczynne,
+  - 3 = Stanowisko wolne.
+- D586 — HMI_WAKE_REQUEST_WORD = 0/1 mirror M419.
 
 ## HMI sterowanie
 
@@ -121,8 +123,8 @@ Jeżeli WSStudio potrafi wybudzać/przełączać ekran po bicie PLC, użyj M419.
 - M410 — PILOTAGGIO_ENABLE
 - M411 — reset liczników diagnostycznych sesji
 - M414 — WORK_LIGHTS_ENABLE
-- M429 — synchronizacja odliczania z PRACA
-- M431 — AUTO_START_PROGRAM_ENABLE; automatycznie uruchamia wybrany program po zakończeniu wysyłania Y0
+- M429 — synchronizacja odliczania z PRACA, default ON
+- M431 — AUTO_START_PROGRAM_ENABLE; default ON; automatycznie uruchamia wybrany program po zakończeniu wysyłania Y0
 - D584 — numer programu Auto Start 1…6
 
 Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
@@ -131,7 +133,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.4.7.csv` — CSV w układzie eksportu GX,
+- `plc/main_v1.4.8.csv` — CSV w układzie eksportu GX,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
@@ -149,3 +151,17 @@ W praktyce:
 - PLC traktuje każdy impuls na X27 jednakowo i mnoży liczbę impulsów przez `D300`.
 
 Jeżeli RM5 wyśle po jednym impulsie niezależnie od nominału, PLC potraktuje wszystkie takie monety jako tę samą wartość.
+
+
+## Priorytet ekranów HMI
+
+`D585` jest aktualnym indeksem ekranu:
+
+```text
+1 Admin                 jeśli X14=1
+2 Stanowisko nieczynne  jeśli X14=0 i X0=0
+3 Stanowisko wolne      jeśli X14=0, X0=1 i M427=0
+0 Main/Work             w pozostałym przypadku
+```
+
+Priorytet: Admin > Nieczynne > Wolne > Main.
