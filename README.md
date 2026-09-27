@@ -1,6 +1,6 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.5.0**.
+Aktualna wersja PLC: **V1.5.1**.
 
 Sterowanie wykorzystuje model kredytowy zgodny z zachowaniem PitStart:
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
@@ -67,7 +67,7 @@ D560 = 100  -> 1,00 EUR
 Czas dla ostatnio wybranego programu:
 
 ```text
-time_left = D560 * PROGRAM_TIME / (D550 * 100)
+time_left = D560 * PROGRAM_TIME / (D550 * 10)
 ```
 
 Rejestry HMI:
@@ -133,7 +133,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.5.0.csv` — CSV w układzie eksportu GX,
+- `plc/main_v1.5.1.csv` — CSV w układzie eksportu GX,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
@@ -179,7 +179,7 @@ Dokumentacja ekranów i konfiguracji:
 
 ## Limit kredytu RM5
 
-`D549` ma zakres 1…999 w jednostkach 0,10 EUR. Po osiągnięciu limitu ustawiane jest `M435=MAX_CREDIT_REACHED`, a Y2/Y23 aktywują INHIBIT RM5.
+`D549` ma zakres 1…999 w jednostkach 0,10 EUR. `M435` uwzględnia kredyt już zapisany w `D560` oraz impulsy oczekujące w kolejce `D330`. Po wykorzystaniu całego dostępnego limitu Y2/Y23 aktywują INHIBIT RM5.
 
 ```text
 D549=50  -> 5,00 EUR
@@ -188,8 +188,12 @@ D549=999 -> 99,90 EUR
 
 ## Doładowanie aktywnej sesji
 
-Dodanie impulsów RM5 do aktywnego programu nie zmienia programu. Kredyt i czas są dopisywane do aktualnej taryfy. Auto Start może wybrać program tylko przy `D558=0`, czyli zanim w sesji wybrano jakikolwiek program.
+Dodanie impulsów RM5 nie zmienia aktywnego programu. Kolejna paczka jest dodawana do istniejącej kolejki Y0 zamiast ją zastępować.
+
+`M436 = RM5_TOPUP_BUSY` jest aktywne podczas odbioru paczki RM5 i wysyłania oczekujących impulsów Y0. W tym czasie zużycie kredytu jest wstrzymane. Zapobiega to wyzerowaniu sesji w czasie, gdy zaakceptowane doładowanie nie zostało jeszcze dopisane do D560.
+
+Auto Start wymaga `D558=0`, więc późniejsze doładowanie nie wybiera ponownie programu.
 
 ## Restart
 
-Pierwszy skan PLC zeruje pozostały kredyt, czas, kolejki impulsów i liczniki sesji. Parametry konfiguracyjne HMI pozostają parametrami, natomiast bieżąca sesja nie jest zachowywana.
+Pierwszy skan PLC zeruje pozostały kredyt, czas, kolejki impulsów, liczniki sesji, rejestry obliczeniowe D588…D592 oraz stan M436. Parametry konfiguracyjne pozostają bez zmian.
