@@ -1,5 +1,16 @@
 # Changelog
 
+## V1.5.7
+
+- poprawiono działanie `M429 = Sync time with RUN`,
+- przy `M429=1` odliczanie jest sterowane bezpośrednio przez `M301=PRACA/RUN`,
+- STOP wyłącza program i wyjścia, ale nie zatrzymuje czasu dopóki RUN pozostaje aktywny,
+- przy `M429=0` odliczanie nadal zależy od `M412=WORK_ACTIVE`,
+- `M448` pełni funkcję `COUNTDOWN_LOCAL_ACTIVE`,
+- `M449` jest właściwą bramką `COUNTDOWN_ACTIVE`,
+- dodano `plc/main_v1.5.7.csv` do bezpośredniego importu w GX Developer,
+- CSV zweryfikowano względem `MAIN_GXDEV_ENTRY.txt`: 1017 instrukcji, pełna zgodność.
+
 ## V1.5.6
 - dodano `docs/SOFTWARE.md` z linkami do Clone5 Professional, Clone5, Unio i dokumentacji Unio,
 
