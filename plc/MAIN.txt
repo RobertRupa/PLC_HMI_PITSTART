@@ -2,7 +2,7 @@ LD M8000
 OUT T204 K100
 LDI T204
 OUT M438
-; PLC_HMI_PITSTART V1.5.3
+; PLC_HMI_PITSTART V1.5.4
 ; PitStart-compatible monetary-credit/time model
 ;
 ; Counter/PITSTART_CREDITS Y0 represents 0.10 EUR units.
@@ -36,7 +36,9 @@ OUT M438
 ; Auto start program:
 ; M431 = AUTO_START_PROGRAM_ENABLE (HMI RW, default ON).
 ; M439 = PILOTAGGIO_DEFAULT (HMI RW, default ON).
-;        When a program starts and M410 is OFF, M439=1 restores M410.
+; M447 = NEW_PROGRAM_START.
+;        Pilotaggio default is copied to M410 only when a program starts
+;        from an idle state. Program-to-program changes do not touch M410.
 ; D584 = AUTO_START_PROGRAM_NO (HMI RW, 1..6; default 1).
 ; M432 = one-scan AUTO_START_TRIGGER after the complete Y0 CREDIT queue is idle and only if no program has been selected (D558=0).
 ; M433 = AUTO_START_DONE latch, prevents repeated automatic starts in the same session.
@@ -228,7 +230,7 @@ MOV H3156 D500
 LD M8002
 MOV H352E D501
 LD M8002
-MOV H332E D502
+MOV H342E D502
 LD M8002
 MOV H0 D503
 LD M8002
@@ -236,7 +238,7 @@ MOV K1 D516
 LD M8002
 MOV K5 D517
 LD M8002
-MOV K3 D518
+MOV K4 D518
 LD M8002
 RST M320
 LD M8002
@@ -791,9 +793,19 @@ OR M472
 OR M473
 OR M474
 OR M475
-ANI M410
+ANI M420
+ANI M421
+ANI M422
+ANI M423
+ANI M424
+ANI M425
+OUT M447
+LD M447
 AND M439
 SET M410
+LD M447
+ANI M439
+RST M410
 LD M440
 ORI M300
 RST M420
