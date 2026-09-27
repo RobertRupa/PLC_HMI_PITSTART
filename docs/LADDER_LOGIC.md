@@ -1,4 +1,4 @@
-# Logika PLC — V1.4.9
+# Logika PLC — V1.5.0
 
 ## RM5 INHIBIT
 
@@ -78,7 +78,7 @@ Przy zmianie programu D561…D563 są zerowane. Błąd spowodowany zmianą taryf
 Domyślnie po pierwszym skanie `M429=1`.
 
 - M429=0: M430 jest zawsze aktywne, więc czas jest zużywany zgodnie z WORK_ACTIVE.
-- M429=1: M430=M301, więc czas jest zużywany tylko podczas rzeczywistego PRACA z automatyki.
+- M429=1: M430 = M301 OR /M429 OR /M410. Przy M429=1 sygnał PRACA zatrzymuje odliczanie tylko wtedy, gdy M410/Pilotaggio jest włączone.
 
 Tick:
 
@@ -257,3 +257,37 @@ Oba ustawienia domyślnie startują w stanie ON.
 PLC nie wykonuje instrukcji MOV do D586.
 
 Wake request pozostaje w `M419`, a jego word mirror został przeniesiony do `D587`.
+
+
+## Max credit / RM5 inhibit
+
+```text
+D566 = D549 * 10
+M435 = (D560 >= D566)
+Y2   = /X0 OR M435
+Y23  = /X0 OR M435
+```
+
+D560 jest przechowywany w centach, dlatego maksymalne D549=999 daje D566=9990.
+
+Wejście RM5 jest dodatkowo blokowane przez `ANI M435`.
+
+## Doładowanie bez zmiany programu
+
+Auto Start wymaga teraz również:
+
+```text
+D558 = 0
+```
+
+Po wybraniu programu D558 ma wartość 1…6, więc kolejne paczki RM5 tylko zwiększają D560 i czas. Nie generują Auto Select dla innego programu.
+
+## Countdown / PRACA / Pilotaggio
+
+```text
+M430 = M301 OR /M429 OR /M410
+```
+
+Dla domyślnego `M429=1`:
+- M410=1 -> odliczanie wymaga X1/M301,
+- M410=0 -> odliczanie trwa niezależnie od X1/M301.
