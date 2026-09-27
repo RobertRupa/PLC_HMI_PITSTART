@@ -1,4 +1,4 @@
-# Logika PLC — V1.4.4
+# Logika PLC — V1.4.5
 
 ## RM5 INHIBIT
 
@@ -205,3 +205,15 @@ AND M430
 AND M426
 OUT M416
 ```
+
+
+## Admin screen request
+
+```text
+LD X14
+OUT M303
+```
+
+`M303 = ADMIN_SCREEN_REQUEST` jest statusem RO dla HMI:
+- 1 = ekran Admin,
+- 0 = ekran Home.
