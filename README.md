@@ -1,6 +1,6 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.4.9**.
+Aktualna wersja PLC: **V1.5.0**.
 
 Sterowanie wykorzystuje model kredytowy zgodny z zachowaniem PitStart:
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
@@ -57,11 +57,11 @@ Jeden impuls RM5 wygeneruje wtedy 10 impulsów Counter/Y0.
 
 ## Pozostały kredyt i czas
 
-`D560` jest wewnętrznym pozostałym kredytem o rozdzielczości 1/100 impulsu 0,10 EUR:
+`D560` przechowuje pozostały kredyt w centach:
 
 ```text
-D560 = 100   -> 0,10 EUR
-D560 = 1000  -> 1,00 EUR
+D560 = 10   -> 0,10 EUR
+D560 = 100  -> 1,00 EUR
 ```
 
 Czas dla ostatnio wybranego programu:
@@ -81,7 +81,7 @@ Rejestry HMI:
 
 ## Synchronizacja z automatyką
 
-Domyślnie `M429=1`: czas/kredyt jest zużywany tylko przy rzeczywistym `X1/M301 = PRACA`.
+Domyślnie `M429=1`. Synchronizacja z `X1/M301 = PRACA` zatrzymuje odliczanie tylko wtedy, gdy `M410/PILOTAGGIO_ENABLE=1`. Przy `M410=0` czas jest odliczany dalej mimo zaniku PRACA.
 
 Po potwierdzeniu, że `X1/M301 = PRACA` jest wiarygodnym sygnałem rzeczywistej pracy automatyki, ustaw na HMI:
 
@@ -133,7 +133,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.4.9.csv` — CSV w układzie eksportu GX,
+- `plc/main_v1.5.0.csv` — CSV w układzie eksportu GX,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
@@ -175,3 +175,21 @@ Priorytet: Admin > Nieczynne > Wolne > Main.
 Dokumentacja ekranów i konfiguracji:
 - `docs/HMI.md`,
 - `docs/RM5.md`.
+
+
+## Limit kredytu RM5
+
+`D549` ma zakres 1…999 w jednostkach 0,10 EUR. Po osiągnięciu limitu ustawiane jest `M435=MAX_CREDIT_REACHED`, a Y2/Y23 aktywują INHIBIT RM5.
+
+```text
+D549=50  -> 5,00 EUR
+D549=999 -> 99,90 EUR
+```
+
+## Doładowanie aktywnej sesji
+
+Dodanie impulsów RM5 do aktywnego programu nie zmienia programu. Kredyt i czas są dopisywane do aktualnej taryfy. Auto Start może wybrać program tylko przy `D558=0`, czyli zanim w sesji wybrano jakikolwiek program.
+
+## Restart
+
+Pierwszy skan PLC zeruje pozostały kredyt, czas, kolejki impulsów i liczniki sesji. Parametry konfiguracyjne HMI pozostają parametrami, natomiast bieżąca sesja nie jest zachowywana.
