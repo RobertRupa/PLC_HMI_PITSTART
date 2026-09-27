@@ -1,4 +1,4 @@
-# HMI — WSStudio / KinSealStudio — V1.5.4
+# HMI — WSStudio / KinSealStudio — V1.5.5
 
 ## Ekrany
 
@@ -151,7 +151,8 @@ D559 nie maleje podczas normalnego odliczania, więc pasek pokazuje proporcję c
 | D528 | Time correction x100 | 50…200 |
 | D551…D556 | P1…P6 time [s] | 1…600 |
 | D584 | Auto Start Program | 1…6 |
-| M410 | Pilotaggio pompa | toggle |
+| M410 | Pilotaggio pompa | toggle, bieżący stan sterowania |
+| M439 | Pilotaggio default | toggle, default ON; używane po zakończeniu impulsów Y0 gdy M410=OFF |
 | M414 | Work lights | toggle |
 | M429 | Sync time with RUN | toggle, default ON |
 | M431 | Auto start program | toggle, default ON |
@@ -194,10 +195,10 @@ W dostępnej konfiguracji WSStudio nie ma potwierdzonej osobnej funkcji „wake 
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.5.4
+D500..D503 = V1.5.5
 D516 = 1
 D517 = 5
-D518 = 4
+D518 = 5
 ```
 
 
@@ -207,21 +208,19 @@ Na ekranie Admin:
 
 ```text
 M410 = Pilotaggio pompa        ; bieżący stan
-M439 = Pilotaggio default      ; stan używany przy nowym starcie
+M439 = Pilotaggio default      ; wartość domyślna po zakończeniu impulsów Y0
 ```
 
-M439 jest kopiowane do M410 tylko przy rozpoczęciu programu ze stanu bez aktywnego programu.
+Od V1.5.5 `M439` nie jest kopiowane przy rozpoczęciu programu.
 
-```text
-M447 = NEW_PROGRAM_START
-M447 AND M439  -> SET M410
-M447 AND /M439 -> RST M410
-```
+Po zakończeniu całej kolejki impulsów `Y0`:
+- gdy `M410=1`, PLC pozostawia sterowanie bez zmian,
+- gdy `M410=0` i `M439=1`, PLC ustawia `M410=1`,
+- gdy `M410=0` i `M439=0`, sterowanie pozostaje wyłączone.
 
-Zmiana programu P1…P6 w trakcie pracy nie uruchamia ponownie M410.
+PLC pobiera aktualną wartość `M439` z HMI w chwili zakończenia kolejki. Jeśli w tym momencie trwa już zbieranie kolejnej paczki RM5, zastosowanie wartości domyślnej jest odłożone do zakończenia jej obsługi.
 
-Zmiana M439 podczas aktywnego programu nie zmienia bieżącego Pilotaggio. Jeżeli trzeba zmienić Pilotaggio od razu, użyj przełącznika M410.
-
+`M447 = NEW_PROGRAM_START` pozostaje markerem diagnostycznym i nie steruje już `M410`.
 
 ### Domyślna taryfa
 
