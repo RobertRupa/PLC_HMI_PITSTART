@@ -1,6 +1,6 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.5.4**.
+Aktualna wersja PLC: **V1.5.5**.
 
 ## Model kredytu
 
@@ -134,7 +134,7 @@ Touch control pozostaje lokalną funkcją HMI i nie ma bitu PLC.
 
 - `plc/MAIN_GXDEV_ENTRY.txt` — aktualny program Instruction List,
 - `plc/MAIN.txt` — wersja komentowana,
-- `plc/main_v1.5.4.csv` — CSV w układzie eksportu GX,
+- `plc/main_v1.5.5.csv` — aktualny CSV w układzie eksportu GX,
 - `plc/DEVICE_MAP.csv` — mapa urządzeń,
 - `docs/HMI.md` — konfiguracja HMI,
 - `docs/LADDER_LOGIC.md` — opis logiki,
@@ -203,20 +203,16 @@ Po wejściu PLC w RUN timer T204 utrzymuje przez krótki czas `M438=STARTUP_RESE
 
 ## Pilotaggio default
 
-`M439 = PILOTAGGIO_DEFAULT` określa stan M410 przy rozpoczęciu programu ze stanu bez aktywnego programu.
+`M439 = PILOTAGGIO_DEFAULT` określa stan, do którego ma wrócić sterowanie Pilotaggio po zakończeniu wysyłania całej kolejki impulsów `Y0`, ale tylko wtedy, gdy bieżące sterowanie `M410` jest wyłączone.
 
-```text
-M447 = NEW_PROGRAM_START
-```
+Po ostatnim impulsie `Y0` i zakończeniu `T202`:
+- jeśli `M410=1` -> PLC niczego nie zmienia,
+- jeśli `M410=0` i `M439=1` -> PLC wykonuje `SET M410`,
+- jeśli `M410=0` i `M439=0` -> `M410` pozostaje wyłączone.
 
-Przy M447=1:
-- M439=1 -> SET M410,
-- M439=0 -> RST M410.
+PLC czeka także, aż nie będzie zbierana nowa paczka RM5 (`M321=0`). Dzięki temu wartość domyślna jest stosowana dopiero po rzeczywistym zakończeniu obsługi kredytu.
 
-Zmiana programu P1…P6 podczas trwającej sesji nie zmienia M410.
-
-Zmiana M439 podczas działającego programu również nie zmienia bieżącego M410. Do bieżącego włączania/wyłączania Pilotaggio służy przełącznik M410.
-
+`M439` nie jest już kopiowane do `M410` przy wyborze programu. `M447 = NEW_PROGRAM_START` pozostaje tylko sygnałem diagnostycznym.
 
 ## Domyślna taryfa
 
