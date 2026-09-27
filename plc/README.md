@@ -1,10 +1,10 @@
-# PLC V1.5.3
+# PLC V1.5.4
 
 ## Pliki
 
 - `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
 - `MAIN.txt` — wersja komentowana,
-- `main_v1.5.3.csv` — czysty CSV do importu GX,
+- `main_v1.5.4.csv` — czysty CSV do importu GX,
 - `DEVICE_MAP.csv` — mapa urządzeń,
 - `DEVICE_COMMENTS.csv` / `DEVICE_COMMENTS.txt` — komentarze urządzeń,
 - `IMPORT_CSV.md` — mapowanie kolumn importu.
@@ -75,7 +75,7 @@ D587 = HMI_WAKE_REQUEST_WORD
 
 ## Import CSV
 
-Kolumny pliku `main_v1.5.3.csv`:
+Kolumny pliku `main_v1.5.4.csv`:
 
 - A = Step number
 - B = Skip
@@ -86,7 +86,7 @@ Kolumny pliku `main_v1.5.3.csv`:
 Komentarze urządzeń importuj osobno, jeśli używana wersja GX Developer na to pozwala.
 
 
-## Defaults V1.5.3
+## Defaults V1.5.4
 
 ```text
 M429 = 1 default  ; Sync countdown with PRACA
