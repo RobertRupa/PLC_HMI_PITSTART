@@ -1,4 +1,18 @@
-# Logika PLC — V1.4.0
+# Logika PLC — V1.4.1
+
+## RM5 INHIBIT
+
+Y23 jest sterowane wyłącznie wejściem X0:
+
+```text
+LDI X0
+OUT Y23
+```
+
+- X0=0 -> Y23=1 -> RM5 zablokowany,
+- X0=1 -> Y23=0 -> RM5 odblokowany.
+
+M413/M415 nadal warunkują programowe przyjęcie impulsu X27, ale nie sterują Y23.
 
 ## Założenie PitStart
 
