@@ -1,4 +1,4 @@
-# HMI — WSStudio / KinSealStudio — V1.5.5
+# HMI — WSStudio / KinSealStudio — V1.5.6
 
 ## Ekrany
 
@@ -183,6 +183,8 @@ W dostępnej konfiguracji WSStudio nie ma potwierdzonej osobnej funkcji „wake 
 | M427 | kredyt dostępny |
 | M435 | limit kredytu osiągnięty / zarezerwowany |
 | M436 | obsługa doładowania RM5 w toku |
+| M448 | STOP podczas RUN — podtrzymanie odliczania do zaniku RUN |
+| M449 | bramka odliczania = M412 OR M448 |
 | D521 | ostatnia paczka RM5 |
 | D522 | impulsy Y0 z ostatniej paczki |
 | D524 | impulsy RM5 sesji |
@@ -192,13 +194,19 @@ W dostępnej konfiguracji WSStudio nie ma potwierdzonej osobnej funkcji „wake 
 | D560 | pozostały kredyt w centach |
 | D565 | licznik zdarzeń RM5 |
 
+## STOP podczas RUN
+
+Jeżeli STOP zostanie naciśnięty podczas aktywnego `M301 = RUN/PRACA`, wyjścia programu zostaną wyłączone, ale czas i kredyt nadal są odliczane do chwili zaniku RUN.
+
+`M448` jest wewnętrznym latchem tego stanu, a `M449` jest wewnętrzną bramką odliczania. HMI nie musi nimi sterować.
+
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.5.5
+D500..D503 = V1.5.6
 D516 = 1
 D517 = 5
-D518 = 5
+D518 = 6
 ```
 
 
