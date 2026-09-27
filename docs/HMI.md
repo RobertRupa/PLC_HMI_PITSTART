@@ -1,4 +1,4 @@
-# HMI — WSStudio — V1.4.1
+# HMI — WSStudio — V1.4.2
 
 ## Ekran Home
 
@@ -116,8 +116,24 @@ M429:
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.4.1
+D500..D503 = V1.4.2
 D516 = 1
 D517 = 4
-D518 = 1
+D518 = 2
 ```
+
+
+## Pasek pozostałego czasu
+
+Do paska postępu użyj:
+- wartość: `D350` = pozostały czas,
+- maksimum dynamiczne: `D559` = TIME_BAR_MAX,
+- minimum: 0.
+
+`D559`:
+- jest zerowane na początku nowej sesji,
+- jest zerowane przy zmianie programu i od razu odbudowywane z czasu nowej taryfy,
+- zwiększa się, gdy doładowanie podniesie dostępny czas,
+- nie maleje podczas normalnego odliczania.
+
+Dzięki temu pasek pokazuje procent pozostałego czasu aktualnej sesji/programu.
