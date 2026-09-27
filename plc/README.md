@@ -1,10 +1,10 @@
-# PLC V1.5.0
+# PLC V1.5.1
 
 ## Pliki
 
 - `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
 - `MAIN.txt` — wersja komentowana,
-- `main_v1.5.0.csv` — czysty CSV do importu GX,
+- `main_v1.5.1.csv` — czysty CSV do importu GX,
 - `DEVICE_MAP.csv` — mapa urządzeń,
 - `DEVICE_COMMENTS.csv` / `DEVICE_COMMENTS.txt` — komentarze urządzeń,
 - `IMPORT_CSV.md` — mapowanie kolumn importu.
@@ -75,7 +75,7 @@ D587 = HMI_WAKE_REQUEST_WORD
 
 ## Import CSV
 
-Kolumny pliku `main_v1.5.0.csv`:
+Kolumny pliku `main_v1.5.1.csv`:
 
 - A = Step number
 - B = Skip
@@ -86,9 +86,21 @@ Kolumny pliku `main_v1.5.0.csv`:
 Komentarze urządzeń importuj osobno, jeśli używana wersja GX Developer na to pozwala.
 
 
-## Defaults V1.5.0
+## Defaults V1.5.1
 
 ```text
 M429 = 1 default  ; Sync countdown with PRACA
 M431 = 1 default  ; Auto Start Program
 ```
+
+
+## RM5 top-up
+
+```text
+M435 = MAX_CREDIT_REACHED
+M436 = RM5_TOPUP_BUSY
+```
+
+Nowa paczka RM5 jest dopisywana do istniejącej kolejki D330. Liczba nowych impulsów Y0 jest ograniczana do wolnego miejsca wynikającego z D549.
+
+Przy M436=1 tick zużycia kredytu jest wstrzymany do końca obsługi zaakceptowanego doładowania. Aktywny program i D558 nie są zmieniane przez samo doładowanie.
