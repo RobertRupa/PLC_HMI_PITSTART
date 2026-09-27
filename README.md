@@ -178,6 +178,7 @@ Dokumentacja ekranów i konfiguracji:
 - dokumentacja producenta WSB7020R i HMI_Setup V5.1 jest podlinkowana bezpośrednio w `docs/HMI.md`,
 - `docs/images/hmi/` — podglądy ekranów i ustawień systemowych,
 - `docs/RM5.md` — konfiguracja RM5, pinout CN5 i złącza programującego TTL, wymóg COM1 dla Clone5 Professional oraz dokumentacja ustawień i danych referencyjnych konkretnego egzemplarza.
+- `docs/SOFTWARE.md` — linki do Clone5 Professional, Clone5, Unio oraz dokumentacji Unio.
 
 
 ## Limit kredytu RM5
