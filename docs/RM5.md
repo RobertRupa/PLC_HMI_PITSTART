@@ -1,4 +1,4 @@
-# Comestero RM5 Evolution — V1.4.9
+# Comestero RM5 Evolution — V1.5.1
 
 ## Założenie projektu
 
@@ -36,16 +36,19 @@ Aktualna logika:
 
 ```text
 X0 = 0 -> Y2 = 1 i Y23 = 1 -> RM5 zablokowany
-X0 = 1 -> Y2 = 0 i Y23 = 0 -> RM5 odblokowany
+M435 = 1 -> Y2 = 1 i Y23 = 1 -> osiągnięty/zarezerwowany limit kredytu
+X0 = 1 i M435 = 0 -> Y2 = 0 i Y23 = 0 -> RM5 odblokowany
 ```
 
 Instruction List:
 
 ```text
 LDI X0
+OR M435
 OUT Y2
 
 LDI X0
+OR M435
 OUT Y23
 ```
 
@@ -88,7 +91,7 @@ Impuls X27 jest przyjmowany tylko przy:
 - M413=1,
 - M415=1.
 
-Y2/Y23 INHIBIT nadal zależą wyłącznie od X0.
+Y2/Y23 INHIBIT zależą od X0 oraz M435. M435 uwzględnia kredyt bieżący i impulsy Y0 oczekujące w kolejce D330.
 
 ## Diagnostyka
 
@@ -127,3 +130,19 @@ Dla tego projektu istotne są:
 - wyjście wartości monet kierowane na CH1.
 
 PLC nie wykorzystuje osobnych wejść dla CH2…CH6.
+
+
+## Limit kredytu
+
+`D549` ma zakres 1…999 jednostek po 0,10 EUR.
+
+```text
+D549 = 50  -> 5,00 EUR
+D549 = 999 -> 99,90 EUR
+```
+
+Do limitu wliczany jest:
+- kredyt w D560,
+- kredyt odpowiadający impulsom oczekującym w D330.
+
+Po wypełnieniu limitu M435 blokuje RM5 przez Y2/Y23. Nowa paczka jest dodatkowo ograniczana do liczby impulsów, które mieszczą się jeszcze poniżej D549.
