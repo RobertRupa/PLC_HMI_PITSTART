@@ -10,6 +10,9 @@
 - przywrócenie jest blokowane, jeśli trwa zbieranie kolejnej paczki RM5 (`M321=1`),
 - `M447` pozostaje markerem diagnostycznym NEW_PROGRAM_START, ale nie steruje już `M410`,
 - wersja PLC V1.5.5.
+- uzupełniono dokumentację RM5 o połączenie programujące TTL i ustawienie adaptera jako COM1 dla Clone5 Professional,
+- dodano ostrzeżenie, że dane kalibracyjne są unikatowe dla konkretnego egzemplarza RM5,
+- przygotowano sekcję z pięcioma zrzutami Clone5: Control, Channels, Configuration, Calibration i COM1.
 
 ## V1.5.4
 
