@@ -176,7 +176,7 @@ Priorytet: Admin > Nieczynne > Wolne > Main.
 Dokumentacja ekranów i konfiguracji:
 - `docs/HMI.md` — mapowanie ekranów, D585/D586, ustawienia Home/Admin i WSStudio,
 - `docs/images/hmi/` — podglądy ekranów i ustawień systemowych,
-- `docs/RM5.md` — konfiguracja RM5, połączenie serwisowe TTL, wymóg COM1 dla Clone5 Professional oraz dokumentacja ustawień i kalibracji.
+- `docs/RM5.md` — konfiguracja RM5, pinout CN5 i złącza programującego TTL, wymóg COM1 dla Clone5 Professional oraz dokumentacja ustawień i danych referencyjnych konkretnego egzemplarza.
 
 
 ## Limit kredytu RM5
