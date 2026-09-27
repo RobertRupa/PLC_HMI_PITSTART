@@ -1,4 +1,4 @@
-PLC_HMI_PITSTART - V1.4.8
+PLC_HMI_PITSTART - V1.4.9
 =====================================
 
 I/O
@@ -76,7 +76,8 @@ D585  HMI SCREEN INDEX, RO
       1 = ADMIN (X14=1)
       2 = STANOWISKO NIECZYNNE (X14=0 and X0=0)
       3 = STANOWISKO WOLNE (X14=0 and X0=1 and M427=0)
-D586  HMI WAKE REQUEST WORD, RO 0/1 = M419
+D586  HMI CURRENT SCREEN INDEX, written by HMI (Screen Index)
+D587  HMI WAKE REQUEST WORD, RO 0/1 = M419
 
 ODCZYTY
 -------
@@ -105,7 +106,7 @@ T203 K300  HMI wake hold ~3 s
 
 WERSJA
 ------
-D500..D503 = V1.4.8
+D500..D503 = V1.4.9
 D516=1
 D517=4
-D518=8
+D518=9
