@@ -1,4 +1,4 @@
-# HMI — WSStudio / KinSealStudio — V1.5.2
+# HMI — WSStudio / KinSealStudio — V1.5.3
 
 ## Ekrany
 
@@ -194,8 +194,40 @@ W dostępnej konfiguracji WSStudio nie ma potwierdzonej osobnej funkcji „wake 
 ## Wersja PLC
 
 ```text
-D500..D503 = V1.5.2
+D500..D503 = V1.5.3
 D516 = 1
 D517 = 5
-D518 = 2
+D518 = 3
 ```
+
+
+### Pilotaggio default
+
+Dodaj na ekranie Admin przełącznik:
+
+```text
+Write address: M439
+Opis: Pilotaggio default
+Typ: Toggle
+Default PLC: ON
+```
+
+Przy starcie programu:
+- M410=1 -> bez zmian,
+- M410=0 i M439=1 -> M410 zostaje ustawione,
+- M410=0 i M439=0 -> pozostaje OFF.
+
+### Domyślna taryfa
+
+```text
+D300 = 10
+D550 = 10
+D551 = 300
+D552 = 300
+D553 = 300
+D554 = 300
+D555 = 300
+D556 = 300
+```
+
+Jeden impuls RM5 odpowiada domyślnie 5 minutom.
