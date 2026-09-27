@@ -1,58 +1,94 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="920" viewBox="0 0 1500 920">
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1260" viewBox="0 0 1800 1260">
 <style>
-text{font-family:Arial,sans-serif;font-size:22px;fill:#111}.title{font-size:34px;font-weight:bold}.h{font-size:26px;font-weight:bold}.box{fill:#fff;stroke:#111;stroke-width:3}.line{stroke:#111;stroke-width:4;fill:none}.note{font-size:18px}
+text{font-family:Arial,sans-serif;fill:#111}.t{font-size:34px;font-weight:bold}.h{font-size:25px;font-weight:bold}.n{font-size:19px}.s{font-size:16px}.b{fill:#fff;stroke:#222;stroke-width:3}.p{fill:#f5faff;stroke:#1d5f91}.r{fill:#f7fff6;stroke:#2e7d32}.c{fill:#fffdf6;stroke:#8a6d1d}.a{fill:#fff7fb;stroke:#8e3b63}.w{fill:#fff3f3;stroke:#b71c1c}.ln{fill:none;stroke:#333;stroke-width:4}.v24{stroke:#c62828}.v0{stroke:#1565c0}.sig{stroke:#2e7d32}.io{stroke:#8e3b63}
 </style>
-<text x="40" y="50" class="title">PLC_HMI_PITSTART — aktualny schemat funkcjonalny</text>
+<rect width="1800" height="1260" fill="#fafafa"/>
+<text x="40" y="52" class="t">PLC_HMI_PITSTART V1.5.7 — HMI/PLC + RM5 + automatyka myjni</text>
 
-<rect x="60" y="130" width="300" height="300" class="box"/>
-<text x="125" y="175" class="h">RM5 Evolution</text>
-<text x="90" y="235">pin 2  +12…24 V</text>
-<text x="90" y="290">pin 1  GND</text>
-<text x="90" y="345">pin 7  CH1</text>
-<text x="90" y="400">pin 6  INHIBIT</text>
+<rect x="45" y="105" width="315" height="190" rx="12" class="b p"/>
+<text x="202" y="145" text-anchor="middle" class="h">ZASILACZ 24 VDC</text>
+<text x="75" y="195" class="n">+24 V → HMI/PLC DC+</text>
+<text x="75" y="230" class="n">0 V → HMI/PLC DC−</text>
+<text x="75" y="265" class="s">F1 HMI/PLC · F2 RM5 · F3 sterowanie</text>
 
-<rect x="520" y="100" width="430" height="690" class="box"/>
-<text x="650" y="145" class="h">PLC SEEKU</text>
-<text x="560" y="215">X0  AUTOMATE_PRESENT</text>
-<text x="560" y="255">X1  PRACA</text>
-<text x="560" y="315">X27 RM5 CH1</text>
-<text x="560" y="375">Y23 RM5 INHIBIT</text>
-<text x="560" y="435">Y0  CREDIT / COMPTEUR</text>
-<text x="560" y="475">Y1  PILOTAGGIO POMPA</text>
-<text x="560" y="515">Y2  PROGRAM 1</text>
-<text x="560" y="555">Y3  PROGRAM 2</text>
-<text x="560" y="595">Y4  PROGRAM 3</text>
-<text x="560" y="635">Y5  PROGRAM 4</text>
-<text x="560" y="675">Y6  PROGRAM 5</text>
-<text x="560" y="715">Y7  PROGRAM 6</text>
-<text x="560" y="755">Y27 OŚWIETLENIE</text>
+<rect x="45" y="350" width="430" height="510" rx="12" class="b r"/>
+<text x="260" y="392" text-anchor="middle" class="h">COMESTERO RM5 EVOLUTION</text>
+<text x="85" y="445" class="n">CN5 pin 1  GND → 0 V</text>
+<text x="85" y="485" class="n">CN5 pin 2  +12…24 V → +24 V</text>
+<text x="85" y="525" class="n">CN5 pin 7  CH1 → X27</text>
+<text x="85" y="565" class="n">CN5 pin 6  INHIBIT ← Y2</text>
+<line x1="80" y1="600" x2="440" y2="600" stroke="#2e7d32" stroke-width="2"/>
+<text x="85" y="640" class="n">CH1: NPN open collector, aktywne LOW</text>
+<text x="85" y="675" class="n">INHIBIT: aktywne HIGH</text>
+<text x="85" y="715" class="n">+24 V → COM grupy Y2 → Y2 → pin 6</text>
+<text x="85" y="755" class="n">Wspólny 0 V RM5 ↔ wejścia PLC</text>
+<text x="85" y="795" class="n">CH2…CH6: nieużywane</text>
+<text x="85" y="830" class="s">Y23 = mirror programowy; nie łączyć z Y2</text>
 
-<rect x="1110" y="150" width="330" height="570" class="box"/>
-<text x="1180" y="195" class="h">Sterownik myjni</text>
-<text x="1140" y="255">AUTOMATE_PRESENT</text>
-<text x="1140" y="295">PRACA</text>
-<text x="1140" y="435">CREDIT</text>
-<text x="1140" y="475">PILOTAGGIO</text>
-<text x="1140" y="535">P1 / P2 / P3</text>
-<text x="1140" y="575">P4 / P5 / P6</text>
-<text x="1140" y="655">OŚWIETLENIE</text>
+<rect x="585" y="95" width="590" height="910" rx="12" class="b c"/>
+<text x="880" y="138" text-anchor="middle" class="h">SEEKU / Winsun — zintegrowany HMI + PLC</text>
+<text x="625" y="185" class="h">WEJŚCIA</text>
+<text x="625" y="225" class="n">X0   AUTOMATE_PRESENT / INVERTER_OK</text>
+<text x="625" y="258" class="n">X1   PRACA / RUN</text>
+<text x="625" y="291" class="n">X4   STOP</text>
+<text x="625" y="324" class="n">X5   PROGRAM 1</text>
+<text x="625" y="357" class="n">X6   PROGRAM 2</text>
+<text x="625" y="390" class="n">X7   PROGRAM 3</text>
+<text x="625" y="423" class="n">X10  PROGRAM 4</text>
+<text x="625" y="456" class="n">X11  PROGRAM 5</text>
+<text x="625" y="489" class="n">X12  PROGRAM 6</text>
+<text x="625" y="522" class="n">X13  MANUAL / FREE</text>
+<text x="625" y="555" class="n">X14  ADMIN</text>
+<text x="625" y="588" class="n">X27  RM5 CH1</text>
+<line x1="620" y1="620" x2="1140" y2="620" stroke="#8a6d1d" stroke-width="2"/>
+<text x="625" y="660" class="h">WYJŚCIA PRZEKAŹNIKOWE</text>
+<text x="625" y="700" class="n">Y0   CREDIT / COUNTER (0,10 EUR / impuls)</text>
+<text x="625" y="733" class="n">Y1   PILOTAGGIO / POMPA</text>
+<text x="625" y="766" class="n">Y2   RM5 INHIBIT</text>
+<text x="625" y="799" class="n">Y3/Y4/Y5   PROGRAM 1/2/3</text>
+<text x="625" y="832" class="n">Y6/Y7/Y10  PROGRAM 4/5/6</text>
+<text x="625" y="865" class="n">Y23  mirror INHIBIT — zapas</text>
+<text x="625" y="898" class="n">Y27  WORK LIGHTS</text>
+<line x1="620" y1="925" x2="1140" y2="925" stroke="#8a6d1d" stroke-width="2"/>
+<text x="625" y="960" class="s">HMI ↔ PLC: komunikacja wewnętrzna; brak przewodów polowych</text>
+<text x="625" y="985" class="s">M400/M401…406/M410/M414/M429/M431 · D585/D586/D582</text>
 
-<path d="M360 290 H460 V315 H520" class="line"/>
-<path d="M360 345 H520" class="line"/>
-<path d="M520 375 H430 V400 H360" class="line"/>
+<rect x="1280" y="145" width="475" height="715" rx="12" class="b a"/>
+<text x="1518" y="188" text-anchor="middle" class="h">AUTOMATYKA MYJNI</text>
+<text x="1320" y="235" class="h">DO PLC</text>
+<text x="1320" y="275" class="n">AUTOMATE_PRESENT → X0</text>
+<text x="1320" y="310" class="n">PRACA / RUN → X1</text>
+<text x="1320" y="345" class="n">STOP → X4</text>
+<text x="1320" y="380" class="n">P1…P6 → X5…X12</text>
+<text x="1320" y="415" class="n">MANUAL → X13 · ADMIN → X14</text>
+<text x="1320" y="458" class="s">Styk do 0 V lub NPN sinking.</text>
+<text x="1320" y="484" class="s">PNP +24 V → przekaźnik/optoizolator.</text>
+<line x1="1315" y1="515" x2="1720" y2="515" stroke="#8e3b63" stroke-width="2"/>
+<text x="1320" y="555" class="h">Z PLC</text>
+<text x="1320" y="595" class="n">Y0 → CREDIT / COUNTER</text>
+<text x="1320" y="630" class="n">Y1 → PILOTAGGIO</text>
+<text x="1320" y="665" class="n">Y3…Y10 → PROGRAM 1…6</text>
+<text x="1320" y="700" class="n">Y27 → OŚWIETLENIE</text>
+<text x="1320" y="750" class="s">COM grup wyjść dopasować do wejść myjni.</text>
+<text x="1320" y="778" class="s">Przy różnych napięciach/polaryzacji:</text>
+<text x="1320" y="804" class="s">zastosować przekaźniki pośrednie.</text>
 
-<path d="M1110 255 H950 V215" class="line"/>
-<path d="M1110 295 H950 V255" class="line"/>
+<polyline points="360,190 515,190 515,160 585,160" class="ln v24"/>
+<polyline points="360,230 535,230 535,195 585,195" class="ln v0"/>
+<polyline points="360,190 500,190 500,485 475,485" class="ln v24"/>
+<polyline points="360,230 520,230 520,445 475,445" class="ln v0"/>
+<polyline points="475,525 535,525 535,588 585,588" class="ln sig"/>
+<polyline points="585,766 550,766 550,565 475,565" class="ln v24"/>
 
-<path d="M950 435 H1110" class="line"/>
-<path d="M950 475 H1110" class="line"/>
-<path d="M950 515 H1040 V535 H1110" class="line"/>
-<path d="M950 555 H1030 V535 H1110" class="line"/>
-<path d="M950 595 H1020 V535 H1110" class="line"/>
-<path d="M950 635 H1040 V575 H1110" class="line"/>
-<path d="M950 675 H1030 V575 H1110" class="line"/>
-<path d="M950 715 H1020 V575 H1110" class="line"/>
-<path d="M950 755 H1050 V655 H1110" class="line"/>
+<polyline points="1280,275 1205,275 1205,225 1175,225" class="ln io"/>
+<polyline points="1280,310 1220,310 1220,258 1175,258" class="ln io"/>
+<polyline points="1175,700 1240,700 1240,595 1280,595" class="ln io"/>
+<polyline points="1175,733 1250,733 1250,630 1280,630" class="ln io"/>
+<polyline points="1175,799 1260,799 1260,665 1280,665" class="ln io"/>
+<polyline points="1175,898 1270,898 1270,700 1280,700" class="ln io"/>
 
-<text x="60" y="840" class="note">Y0: CREDIT; Y1: Pilotaggio; Y2…Y7: P1…P6; Y23: RM5 inhibit; Y27: oświetlenie.</text>
+<rect x="45" y="1045" width="1710" height="160" rx="12" class="b w"/>
+<text x="80" y="1088" class="h" fill="#b71c1c">KONTROLA PRZED PODŁĄCZENIEM</text>
+<text x="80" y="1128" class="n">Zweryfikuj fizyczne zaciski X27/Y27, podział grup COM i polaryzację wejść automatyki na konkretnym egzemplarzu.</text>
+<text x="80" y="1164" class="n">Do RM5 INHIBIT używany jest Y2. Y23 pozostaje zapasem programowym — nie zwieraj Y2 i Y23.</text>
 </svg>
