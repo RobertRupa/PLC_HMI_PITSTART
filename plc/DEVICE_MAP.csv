@@ -11,6 +11,7 @@ D555,Data,Program 5 seconds at base price,HMI RW 1..600 default 70
 D556,Data,Program 6 seconds at base price,HMI RW 1..600 default 70
 D557,Data,Last selected program service time,RO
 D558,Data,Last selected program number 1..6,RO
+D559,Data,TIME_BAR_MAX seconds,RO; max available time for current program/session
 D560,Data,Remaining credit x100 of one 0.10 EUR unit,RO; 100=0.10 EUR
 D561,Data,Fractional consumption accumulator,Internal
 D562,Data,Credit subunits consumed on current tick,Internal
