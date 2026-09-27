@@ -69,6 +69,34 @@ Ekran jest wybierany przy `D585=2`.
 
 Ekran jest wybierany przy `D585=3`.
 
+## Aktualne zrzuty HMI — V1.5.6
+
+Poniższe nazwy są przeznaczone dla aktualnych zrzutów projektu. Pliki należy ręcznie dodać do `docs/images/hmi/`.
+
+### 000: Home — aktualny widok
+
+![Home V1.5.6](images/hmi/hmi_v1_5_6_screen_000_home.png)
+
+### 001: Admin — aktualny widok
+
+![Admin V1.5.6](images/hmi/hmi_v1_5_6_screen_001_admin.png)
+
+### 002: Error — Stanowisko nieczynne
+
+![Error V1.5.6](images/hmi/hmi_v1_5_6_screen_002_error.png)
+
+### 003: Ready — Stanowisko wolne
+
+![Ready V1.5.6](images/hmi/hmi_v1_5_6_screen_003_ready.png)
+
+### PLC Control / Control Screen Switch
+
+![PLC Control V1.5.6](images/hmi/hmi_v1_5_6_system_plc_control.png)
+
+### HMI Status / Screen Index
+
+![HMI Status V1.5.6](images/hmi/hmi_v1_5_6_system_hmi_status.png)
+
 ## Konfiguracja WSStudio
 
 ### Lista ekranów
@@ -105,6 +133,31 @@ W `System Settings -> HMI Status`:
 - adres: `[Mitsubishi_Fx1n]D586`.
 
 D586 jest zapisywany przez HMI i podaje PLC indeks aktualnie wyświetlanego ekranu. PLC nie zapisuje D586.
+
+## Dokumentacja i oprogramowanie HMI
+
+Model używany w projekcie: **SEEKU / Winsun WSB7020R**, 7", wersja z wyjściami przekaźnikowymi.
+
+Producent podaje dla serii WSB oprogramowanie **HMI_Setup V5.1**. Strona modelu zawiera parametry urządzenia oraz sekcję pobierania programu i instrukcji.
+
+- [WSB7020R — strona producenta](https://www.winsunzk.cn/pdetail/672317c74fbc8440b904f66a)
+- [WS/WSB HMI&PLC All-in-one User Manual v1.79 — PDF](https://www.winsunzk.cn/upload/application/upload_645b146784a24ab5f250e183416890b1.pdf)
+- [HMI_Setup V5.1 — pakiet producenta](https://www.winsunzk.cn/upload/application/upload_594f4ede25a16934f8723e5d2ff08091.zip)
+- [Angielski opis WS7020R / WSB7020R — Manuals+](https://manuals.plus/ae/1005009073971796)
+
+Projekt HMI z tego repo:
+- [projects/hmi/pitstart_hmi.zip](../projects/hmi/pitstart_hmi.zip)
+
+Dokumentacja PLC:
+- [opis logiki PLC](LADDER_LOGIC.md),
+- [konfiguracja RM5](RM5.md),
+- [główny README projektu](../README.md).
+
+### Komunikacja HMI <-> PLC
+
+Dla protokołu Mitsubishi FX1N dokumentacja rodziny podaje konfigurację po stronie HMI z prędkością 38400 bps i komunikacją RS232. W projekcie należy zachować ustawienia zgodne z faktycznie używanym portem i sterownikiem.
+
+Po pobraniu projektu do panelu przewód użyty wyłącznie do downloadu nie powinien pozostawać podłączony, jeżeli blokuje wewnętrzną komunikację HMI z PLC.
 
 ## Home
 
