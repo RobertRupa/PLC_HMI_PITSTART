@@ -1,4 +1,4 @@
-# Opis projektu — V1.5.2
+# Opis projektu — V1.5.3
 
 Projekt zastępuje funkcje Comestero PitStart w sterowniku myjni i współpracuje z HMI oraz akceptorem monet RM5 Evolution.
 
@@ -126,3 +126,20 @@ D549: 1…999 jednostek po 0,10 EUR. M435 blokuje RM5, gdy kolejny pełny impuls
 ## Restart
 
 Po wejściu PLC w RUN T204 tworzy okno resetu startowego. Gdy M438=1 zerowane są stan sesji, kredyt, czas, kolejka Y0, liczniki diagnostyczne i rejestry robocze D588…D594.
+
+
+## Pilotaggio default
+
+`M439` przechowuje domyślny stan Pilotaggio i jest dostępne z HMI.
+
+Przy starcie programu PLC sprawdza M410. Jeżeli M410=0, a M439=1, ustawia M410=1. M439 domyślnie startuje w stanie ON.
+
+## Domyślna taryfa
+
+```text
+D300=10
+D550=10
+D551..D556=300
+```
+
+Jeden impuls RM5 daje wtedy 5 minut dla P1…P6.
