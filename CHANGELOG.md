@@ -12,7 +12,11 @@
 - wersja PLC V1.5.5.
 - uzupełniono dokumentację RM5 o połączenie programujące TTL i ustawienie adaptera jako COM1 dla Clone5 Professional,
 - dodano ostrzeżenie, że dane kalibracyjne są unikatowe dla konkretnego egzemplarza RM5,
-- przygotowano sekcję z pięcioma zrzutami Clone5: Control, Channels, Configuration, Calibration i COM1.
+- dodano pięć rzeczywistych materiałów RM5: Channels 1–10, Configuration, Hardware/Reference, pinout złącza programującego TTL i pinout CN5,
+- udokumentowano pinout TTL: GND, +5 VDC, TX i RX oraz połączenie TX<->RX z adapterem USB-UART,
+- udokumentowano CN5: zasilanie 12–24 VDC, INHIBIT i wyjścia CH1…CH6,
+- zapisano aktualne ustawienia Clone5: 00-Validator, Multi pulse ON i Credit pulse width 100 ms,
+- zaznaczono, że wartości HFU/Dim./LF/HFL/Amp. oraz Standby/Reference są egzemplarzowe i nie mogą być kopiowane do innego RM5.
 
 ## V1.5.4
 
