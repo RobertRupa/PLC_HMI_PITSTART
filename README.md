@@ -1,8 +1,8 @@
 # PLC_HMI_PITSTART
 
-Aktualna wersja PLC: **V1.4.0**.
+Aktualna wersja PLC: **V1.4.1**.
 
-Logika V1.4.0 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
+Logika V1.4.1 została przebudowana na model kredytowy zgodny z zachowaniem PitStart:
 - `Y0 / PITSTART_CREDITS` reprezentuje jednostki **0,10 EUR**,
 - `D300` określa wartość RM5 CH1 w jednostkach 0,10 EUR,
 - wspólna cena bazowa jest w `D550`,
@@ -23,7 +23,7 @@ Logika V1.4.0 została przebudowana na model kredytowy zgodny z zachowaniem PitS
 - Y0 — PITSTART_CREDITS / Counter
 - Y1 — PILOTAGGIO
 - Y2…Y7 — P1…P6
-- Y23 — RM5 INHIBIT
+- Y23 — RM5 INHIBIT; aktywne wyłącznie gdy X0=0
 - Y27 — WORK LIGHTS
 
 ## Model kredytu
