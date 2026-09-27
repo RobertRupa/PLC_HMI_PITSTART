@@ -2,6 +2,10 @@
 
 ## V1.5.7
 
+- przygotowano repo pod `projects/hmi/pitstart.hs` jako główny edytowalny plik projektu HMI,
+- dodano `projects/hmi/README.md` z parametrami odczytanymi z pliku KinSealStudio,
+- udokumentowano profil SUP070 / wsb-070-16M, ekran 7.0" 800x480, COM1/COM2, USB device i sterownik Mitsubishi_Fx1n,
+- `pitstart_hmi.zip` pozostaje starszym archiwum transportowym; plik `.hs` jest przeznaczony do ręcznego uploadu,
 - poprawiono działanie `M429 = Sync time with RUN`,
 - przy `M429=1` odliczanie jest sterowane bezpośrednio przez `M301=PRACA/RUN`,
 - STOP wyłącza program i wyjścia, ale nie zatrzymuje czasu dopóki RUN pozostaje aktywny,
