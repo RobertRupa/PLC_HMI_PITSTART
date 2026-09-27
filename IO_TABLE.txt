@@ -1,4 +1,4 @@
-PLC_HMI_PITSTART - V1.5.3
+PLC_HMI_PITSTART - V1.5.4
 =====================================
 
 I/O
@@ -40,6 +40,7 @@ M414  WORK_LIGHTS_ENABLE
 M429  SYNC_COUNTDOWN_WITH_PRACA (default ON)
 M431  AUTO_START_PROGRAM_ENABLE (default ON)
 M439  PILOTAGGIO_DEFAULT (default ON)
+M447  NEW_PROGRAM_START
 M432  AUTO_START_TRIGGER
 M433  AUTO_START_DONE
 M434  AUTO_START_PROGRAM_OK
@@ -114,10 +115,10 @@ T204 K100  startup reset window
 
 WERSJA
 ------
-D500..D503 = V1.5.3
+D500..D503 = V1.5.4
 D516=1
 D517=5
-D518=3
+D518=4
 
 
 DOŁADOWANIE
@@ -138,6 +139,9 @@ D551..D556=300
 
 PILOTAGGIO DEFAULT
 ------------------
-M439 ustawia domyślny stan Pilotaggio przy starcie programu.
-Jeżeli M410=0 w chwili wyboru programu i M439=1, PLC ustawia M410=1.
-Jeżeli M439=0, M410 pozostaje wyłączone.
+M439 ustawia stan Pilotaggio tylko przy starcie programu ze stanu bez aktywnego programu.
+M447 sygnalizuje taki start przez jeden scan.
+M439=1 -> M410 zostaje ustawione.
+M439=0 -> M410 zostaje wyzerowane.
+Zmiana P1..P6 podczas działającego programu nie zmienia M410.
+Zmiana M439 podczas działającego programu nie zmienia bieżącego M410; do sterowania bieżącym stanem służy M410.
