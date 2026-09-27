@@ -171,7 +171,9 @@ Priorytet: Admin > Nieczynne > Wolne > Main.
 ## Pliki projektów
 
 - `projects/plc/PitStart.zip` — projekt PLC,
-- `projects/hmi/pitstart_hmi.zip` — projekt HMI w archiwum transportowym.
+- `projects/hmi/pitstart.hs` — główny edytowalny projekt HMI KinSealStudio,
+- `projects/hmi/README.md` — parametry i opis pliku HMI,
+- `projects/hmi/pitstart_hmi.zip` — starsze archiwum transportowe.
 
 Dokumentacja ekranów i konfiguracji:
 - `docs/HMI.md` — mapowanie ekranów, D585/D586, ustawienia Home/Admin i WSStudio,
