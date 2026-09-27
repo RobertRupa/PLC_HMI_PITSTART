@@ -2,23 +2,26 @@
 
 ## V1.5.7
 
-- przygotowano katalog i nazwy lokalnych manuali HMI: `WSB_HMI_PLC_All_in_one_User_Manual_V1.79.pdf` oraz `WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf`,
-- oznaczono WSB V1.79 jako podstawową instrukcję dla WSB7020R,
-- oznaczono WSC V1.13 jako dokumentację porównawczą dla innej rodziny WSC/WSCH,
-- przygotowano repo pod `projects/hmi/pitstart.hs` jako główny edytowalny plik projektu HMI,
-- dodano `projects/hmi/README.md` z parametrami odczytanymi z pliku KinSealStudio,
-- udokumentowano profil SUP070 / wsb-070-16M, ekran 7.0" 800x480, COM1/COM2, USB device i sterownik Mitsubishi_Fx1n,
-- `pitstart_hmi.zip` pozostaje starszym archiwum transportowym; plik `.hs` jest przeznaczony do ręcznego uploadu,
-- poprawiono działanie `M429 = Sync time with RUN`,
-- przy `M429=1` odliczanie jest sterowane bezpośrednio przez `M301=PRACA/RUN`,
-- STOP wyłącza program i wyjścia, ale nie zatrzymuje czasu dopóki RUN pozostaje aktywny,
-- przy `M429=0` odliczanie nadal zależy od `M412=WORK_ACTIVE`,
-- `M448` pełni funkcję `COUNTDOWN_LOCAL_ACTIVE`,
-- `M449` jest właściwą bramką `COUNTDOWN_ACTIVE`,
-- dodano `plc/main_v1.5.7.csv` do bezpośredniego importu w GX Developer,
-- CSV zweryfikowano względem `MAIN_GXDEV_ENTRY.txt`: 1017 instrukcji, pełna zgodność.
+- poprawiono działanie `M429 = Sync time with RUN`: przy M429=1 odliczanie śledzi bezpośrednio `M301=PRACA/RUN`,
+- STOP wyłącza program i wyjścia, ale przy M429=1 nie zatrzymuje czasu dopóki RUN pozostaje aktywny,
+- przy M429=0 odliczanie zależy od `M412=WORK_ACTIVE`,
+- `M448 = COUNTDOWN_LOCAL_ACTIVE` jest bieżącą gałęzią, nie latchem,
+- `M449 = COUNTDOWN_ACTIVE` jest końcową bramką odliczania,
+- dodano i zweryfikowano `plc/main_v1.5.7.csv`; 1017 instrukcji jest zgodnych z `MAIN_GXDEV_ENTRY.txt`,
+- potwierdzono obecność `projects/hmi/pitstart.hs`; zaktualizowano jego opis, hash i metadane,
+- potwierdzono obecność `projects/plc/PitStart.zip`,
+- potwierdzono lokalne manuale: WSB V1.79, WSC V1.13 oraz RM5 Evolution,
+- rozdzielono parametry WSB (FX1N / 38400 / RS232) od parametrów WSC (FX3U / 19200 / RS232),
+- usunięto odwołania do nieistniejącego `pitstart_hmi.zip` i teksty „do ręcznego uploadu” dla plików już obecnych w repo,
+- poprawiono `PROJECT_DESCRIPTION.md`, `STARTUP_AND_BUTTONS.md`, `WIRING.md`, `PITSTART.md`, `HMI.md` i `LADDER_LOGIC.md` do stanu V1.5.7,
+- poprawiono opis RM5 i dodano lokalny link do `manual_rm5.pdf`,
+- uzupełniono `DEVICE_MAP.csv` o fizyczne wejścia, komendy HMI, stany RM5, rejestry wersji i rejestry obliczeniowe,
+- poprawiono komentarze rejestrów D523/D534/D535/D581/D583/D591 i dodano D595,
+- udokumentowano ograniczenie 16-bitowego D350 i konserwatywny warunek `D549 * D557 / D550 <= 32767 s`.
 
 ## V1.5.6
+
+> Historyczne zachowanie V1.5.6. Logika M448/M449 została zastąpiona w V1.5.7.
 - dodano `docs/SOFTWARE.md` z linkami do Clone5 Professional, Clone5, Unio i dokumentacji Unio,
 
 - STOP naciśnięty podczas aktywnego RUN nie zatrzymuje odliczania kredytu,
