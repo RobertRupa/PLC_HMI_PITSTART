@@ -1,10 +1,10 @@
-# PLC V1.5.4
+# PLC V1.5.6
 
 ## Pliki
 
 - `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
 - `MAIN.txt` — wersja komentowana,
-- `main_v1.5.4.csv` — czysty CSV do importu GX,
+- `main_v1.5.5.csv` — ostatni zapisany CSV do importu GX; źródła V1.5.6 są w `MAIN_GXDEV_ENTRY.txt` i `MAIN.txt`,
 - `DEVICE_MAP.csv` — mapa urządzeń,
 - `DEVICE_COMMENTS.csv` / `DEVICE_COMMENTS.txt` — komentarze urządzeń,
 - `IMPORT_CSV.md` — mapowanie kolumn importu.
@@ -75,7 +75,7 @@ D587 = HMI_WAKE_REQUEST_WORD
 
 ## Import CSV
 
-Kolumny pliku `main_v1.5.4.csv`:
+Kolumny pliku CSV importowanego do GX Developer:
 
 - A = Step number
 - B = Skip
@@ -86,7 +86,7 @@ Kolumny pliku `main_v1.5.4.csv`:
 Komentarze urządzeń importuj osobno, jeśli używana wersja GX Developer na to pozwala.
 
 
-## Defaults V1.5.4
+## Defaults V1.5.6
 
 ```text
 M429 = 1 default  ; Sync countdown with PRACA
@@ -126,13 +126,22 @@ Przez początkowe okno po wejściu PLC w RUN zerowane są rejestry i bity bież�
 Wtedy Y2 i Y23 przechodzą w stan INHIBIT.
 
 
+## STOP during RUN
+
+```text
+M448 = STOP_RUN_COUNTDOWN
+M449 = COUNTDOWN_ACTIVE
+```
+
+Jeżeli STOP zostanie naciśnięty przy aktywnym M301/RUN i M412/WORK_ACTIVE, M448 podtrzymuje zużycie kredytu do zaniku RUN. Wyjścia programu pozostają wyłączone, ponieważ nadal zależą od M412.
+
 ## Pilotaggio default
 
 ```text
 M439 = PILOTAGGIO_DEFAULT
 ```
 
-M439 jest HMI RW i domyślnie ON. Przy impulsie wyboru programu, jeśli M410 jest OFF i M439 jest ON, PLC ustawia M410.
+M439 jest HMI RW i domyślnie ON. Po zakończeniu kolejki Y0, jeśli M410 jest OFF, bieżące M439 decyduje o przywróceniu Pilotaggio.
 
 ## Default tariff
 
