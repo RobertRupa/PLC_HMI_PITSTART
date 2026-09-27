@@ -1,4 +1,4 @@
-# Logika PLC — V1.4.7
+# Logika PLC — V1.4.8
 
 ## RM5 INHIBIT
 
@@ -74,6 +74,8 @@ Przy zmianie programu D561…D563 są zerowane. Błąd spowodowany zmianą taryf
 ## Synchronizacja z PRACA
 
 `M430 = M301 OR /M429`.
+
+Domyślnie po pierwszym skanie `M429=1`.
 
 - M429=0: M430 jest zawsze aktywne, więc czas jest zużywany zgodnie z WORK_ACTIVE.
 - M429=1: M430=M301, więc czas jest zużywany tylko podczas rzeczywistego PRACA z automatyki.
@@ -210,43 +212,37 @@ OUT M416
 ```
 
 
-## Admin screen request
+## HMI screen index
 
 ```text
-LD X14
-OUT M303
+X14 -> M303
+D585 = HMI_SCREEN_INDEX
 ```
 
-`M303 = ADMIN_SCREEN_REQUEST` jest statusem RO dla HMI:
-- 1 = ekran Admin,
-- 0 = ekran Home.
-
-
-## HMI word triggers
-
-Dla HMI bez obsługi bitów M jako triggerów ekranów:
+Logika:
 
 ```text
-D585 = ADMIN_SCREEN_REQUEST_WORD
-       0/1 mirror X14 -> M303
-
-D586 = HMI_WAKE_REQUEST_WORD
-       0/1 mirror M419
+default                         -> D585=0
+/M303 AND /M300                 -> D585=2
+/M303 AND M300 AND /M427        -> D585=3
+M303                            -> D585=1
 ```
 
-D585=1 oznacza ekran Admin, D585=0 ekran Home.
-D586=1 jest aktywne około 3 s po zaakceptowanym impulsie RM5.
+Znaczenie:
+- 0 = Main/Work,
+- 1 = Admin,
+- 2 = Stanowisko nieczynne,
+- 3 = Stanowisko wolne.
 
+Zapis Admin wykonywany jest jako ostatni, więc ma najwyższy priorytet.
 
-## Wyjścia programów V1.4.7
+## Default settings
+
+Na pierwszym skanie:
 
 ```text
-P1 -> Y3
-P2 -> Y4
-P3 -> Y5
-P4 -> Y6
-P5 -> Y7
-P6 -> Y10
+SET M429   ; Sync countdown with PRACA
+SET M431   ; Auto Start Program
 ```
 
-FX używa ósemkowej numeracji X/Y, dlatego po Y7 występuje Y10; Y8 nie istnieje.
+Oba ustawienia domyślnie startują w stanie ON.
