@@ -1,4 +1,4 @@
-# Logika PLC — V1.5.4
+# Logika PLC — V1.5.5
 
 ## RM5 INHIBIT
 
@@ -331,24 +331,28 @@ M439 = PILOTAGGIO_DEFAULT
 M447 = NEW_PROGRAM_START
 ```
 
-M447 jest generowane tylko wtedy, gdy występuje wybór M470…M475 i żaden z M420…M425 nie był wcześniej aktywny.
+Od V1.5.5 `M447` nie ustawia ani nie zeruje `M410`. Pozostaje jednocyklowym markerem diagnostycznym rozpoczęcia programu ze stanu bez aktywnego programu.
+
+Stan domyślny Pilotaggio jest stosowany po zakończeniu całej kolejki impulsów `Y0`. Logika wykonywana jest na końcu ostatniego `T202`:
 
 ```text
-(M470 OR ... OR M475)
-AND /M420
-AND /M421
-AND /M422
-AND /M423
-AND /M424
-AND /M425
--> M447
-
-M447 AND M439  -> SET M410
-M447 AND /M439 -> RST M410
+LD T202
+AND<= D330 K0
+ANI M321
+ANI M330
+ANI M331
+ANI M410
+AND M439
+SET M410
 ```
 
-Zmiana programu przy aktywnym M420…M425 nie zmienia M410. M439 jest nastawą dla kolejnego startu, nie sterowaniem bieżącej sesji.
+Znaczenie:
+- `M410=1` -> brak zmiany; sterowanie Pilotaggio działa jak dotychczas,
+- `M410=0, M439=1` -> po zakończeniu impulsów PLC ustawia `M410=1`,
+- `M410=0, M439=0` -> `M410` pozostaje wyłączone,
+- `M321=1` -> trwa zbieranie kolejnej paczki RM5, więc przywrócenie jest odłożone do końca całej obsługi.
 
+Zmiana `M439` na HMI w czasie wysyłania impulsów jest uwzględniana jako aktualna wartość w chwili zakończenia kolejki.
 
 ## Domyślna taryfa
 
