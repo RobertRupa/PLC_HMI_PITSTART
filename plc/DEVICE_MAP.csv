@@ -1,87 +1,134 @@
 Device,Type,Function,Startup/Notes
-D300,Data,RM5 CH1 value in 0.10 EUR units,HMI RW 1..100 default 10
-D528,Data,Global clock correction x100,HMI RW 50..200 default 100
-D549,Data,Maximum credit in 0.10 EUR units,HMI RW 1..999 default 50
-D550,Data,Common base price in 0.10 EUR units,HMI RW 1..D549 default 10
-D551,Data,Program 1 seconds at base price,HMI RW 1..600 default 300
-D552,Data,Program 2 seconds at base price,HMI RW 1..600 default 300
-D553,Data,Program 3 seconds at base price,HMI RW 1..600 default 300
-D554,Data,Program 4 seconds at base price,HMI RW 1..600 default 300
-D555,Data,Program 5 seconds at base price,HMI RW 1..600 default 300
-D556,Data,Program 6 seconds at base price,HMI RW 1..600 default 300
-D557,Data,Last selected program service time,RO
-D558,Data,Last selected program number 1..6,RO
-D559,Data,TIME_BAR_MAX seconds,RO; max available time for current program/session
-D560,Data,Remaining credit cents,RO; 10=0.10 EUR and 100=1.00 EUR
-D561,Data,Fractional consumption accumulator,Internal
-D562,Data,Credit subunits consumed on current tick,Internal
-D563,Data,Consumption division remainder,Internal
-D565,Data,HMI wake/coin event counter,RO increments on accepted X27
-D580,Data,Whole remaining 0.10 EUR credit units,RO
-D581,Data,Reserved,RO/internal
-D582,Data,Remaining credit cents,RO
-D583,Data,Reserved,RO/internal
-D584,Data,Auto start program number,HMI RW 1..6 default 1
-D585,Data,HMI_SCREEN_INDEX,RO; 0 main 1 admin 2 inactive 3 free
-D586,Data,HMI_CURRENT_SCREEN_INDEX,HMI writes active screen index; PLC does not write
-D587,Data,HMI_WAKE_REQUEST_WORD,RO 0/1 mirror of M419
-D588:D589,Data,Queued credit cents / temporary 32-bit product,Internal
-D590:D591,Data,Projected credit / DIV result,Internal
-D592,Data,Free credit cents below D549,Internal
-D594,Data,Free Y0 pulse slots below D549,Internal
-D350,Data,Remaining time seconds for last selected program,RO
-D540,Data,Remaining minutes,RO
-D541,Data,Remaining seconds,RO
-D521,Data,Last RM5 packet raw pulses,RO
-D522,Data,Last packet Counter/CREDIT pulses generated,RO
-D524,Data,RM5 raw pulses session,RO
-D525:D526,Data,Expected Counter/CREDIT pulses from session,RO 32-bit
-D533,Data,Counter/CREDIT pulses actually sent on Y0,RO
-M300,Bit,AUTOMATE_PRESENT / INVERTER_OK,X0
-M301,Bit,PRACA / machine actually running,X1
-M302,Bit,MANUAL_FREE status,X13
-M303,Bit,ADMIN_SCREEN_REQUEST,X14; follows physical admin switch
-M410,Bit,PILOTAGGIO_ENABLE,HMI RW default ON
-M411,Bit,RESET_DIAGNOSTIC_SESSION_COUNTERS,HMI momentary
-M412,Bit,WORK_ACTIVE,RO
-M413,Bit,RM5_VALUE_OK,D300 valid
-M414,Bit,WORK_LIGHTS_ENABLE,HMI RW default ON
-M415,Bit,TARIFF_CONFIG_OK,D549 D550 D551..D556 D528 valid
-M416,Bit,ONE_SECOND_CONSUMPTION_TICK,Internal
-M417,Bit,NEW_SESSION_PULSE,Internal
-M419,Bit,HMI_WAKE_REQUEST,RO held approx 3 s after accepted coin
-M420-M425,Bit,Program 1..6 active,RO
-M426,Bit,TIME_DISPLAY_VALID,RO
-M427,Bit,CREDIT_AVAILABLE,RO
-M429,Bit,SYNC_COUNTDOWN_WITH_PRACA,HMI RW default ON
-M430,Bit,RUN_TIME_ENABLE,RO mirror of M449 COUNTDOWN_ACTIVE
-M431,Bit,AUTO_START_PROGRAM_ENABLE,HMI RW default ON
-M432,Bit,AUTO_START_TRIGGER,RO one-scan trigger after Y0 queue is fully idle
-M433,Bit,AUTO_START_DONE,RO latch prevents repeated automatic start in same session
-M434,Bit,AUTO_START_PROGRAM_OK,RO; D584 is 1..6
-M435,Bit,RM5_INHIBIT_LIMIT,RO; another full RM5 input pulse cannot fit below D549 or pending packet filled free capacity
-M436,Bit,RM5_TOPUP_BUSY,RO; RM5 packet or Y0 queue is being processed
-M437,Bit,RM5_PENDING_AT_LIMIT,RO; pending RM5 packet reserved all remaining credit slots
-M438,Bit,STARTUP_RESET_ACTIVE,RO; active while T204 startup reset window is running
-M439,Bit,PILOTAGGIO_DEFAULT,HMI RW default ON; when M410 is OFF current M439 is applied after complete Y0 queue
-M447,Bit,NEW_PROGRAM_START,Internal diagnostic one-scan pulse when selecting a program from idle state; does not change M410
-M448,Bit,COUNTDOWN_LOCAL_ACTIVE,Internal branch: not M429 AND M412
-M449,Bit,COUNTDOWN_ACTIVE,Internal selector: when M429=0 follows M412; when M429=1 follows M301 RUN
-M460-M465,Bit,AUTO_SELECT_P1_P6,Internal one-scan auto program select
-M470-M475,Bit,EFFECTIVE_SELECT_P1_P6,Internal manual/HMI OR auto select
+X0,Input,AUTOMATE_PRESENT / INVERTER_OK,Mirrored to M300
+X1,Input,PRACA / machine RUN feedback,Mirrored to M301
+X4,Input,STOP_BUTTON,Combined with HMI M400 into M440
+X5,Input,PROGRAM_1_BUTTON,Combined with M401
+X6,Input,PROGRAM_2_BUTTON,Combined with M402
+X7,Input,PROGRAM_3_BUTTON,Combined with M403
+X10,Input,PROGRAM_4_BUTTON,Combined with M404
+X11,Input,PROGRAM_5_BUTTON,Combined with M405
+X12,Input,PROGRAM_6_BUTTON,Combined with M406
+X13,Input,MANUAL_FREE status,Mirrored to M302; no free-credit logic
+X14,Input,ADMIN_SWITCH,Mirrored to M303
+X27,Input,RM5_CH1,Only RM5 pulse input used by PLC
 Y0,Output,PITSTART_CREDITS / Counter,One pulse = 0.10 EUR
 Y1,Output,PILOTAGGIO,M410 AND M412
-Y2,Output,RM5 INHIBIT PRIMARY,ON when X0=0 or M435=1; current physical output
+Y2,Output,RM5 INHIBIT PRIMARY,ON when X0=0 or M435=1; current physical RM5 inhibit
 Y3,Output,PROGRAM 1,M420 AND M300 AND credit
 Y4,Output,PROGRAM 2,M421 AND M300 AND credit
 Y5,Output,PROGRAM 3,M422 AND M300 AND credit
 Y6,Output,PROGRAM 4,M423 AND M300 AND credit
 Y7,Output,PROGRAM 5,M424 AND M300 AND credit
 Y10,Output,PROGRAM 6,M425 AND M300 AND credit; FX octal address after Y7
-Y23,Output,RM5 INHIBIT COMPATIBILITY MIRROR,Same logic as Y2; retained for future PLC with more outputs
+Y23,Output,RM5 INHIBIT COMPATIBILITY MIRROR,Same logic as Y2; not primary physical output
 Y27,Output,WORK LIGHTS,M414 AND M412
+M300,Bit,AUTOMATE_PRESENT / INVERTER_OK,X0
+M301,Bit,PRACA / machine actually running,X1
+M302,Bit,MANUAL_FREE status,X13
+M303,Bit,ADMIN_SCREEN_REQUEST,X14
+M320,Bit,RM5_ACCEPTED_PULSE,One-scan pulse from rising X27 after validation
+M321,Bit,RM5_PACKET_ACTIVE,Set while collecting current RM5 pulse packet
+M330,Bit,CREDIT_ON_PHASE,Drives Y0 during T201
+M331,Bit,CREDIT_OFF_PHASE,Inter-pulse phase during T202
+M400,Bit,HMI_STOP,HMI momentary
+M401,Bit,HMI_PROGRAM_1,HMI momentary
+M402,Bit,HMI_PROGRAM_2,HMI momentary
+M403,Bit,HMI_PROGRAM_3,HMI momentary
+M404,Bit,HMI_PROGRAM_4,HMI momentary
+M405,Bit,HMI_PROGRAM_5,HMI momentary
+M406,Bit,HMI_PROGRAM_6,HMI momentary
+M410,Bit,PILOTAGGIO_ENABLE,HMI RW default ON
+M411,Bit,RESET_DIAGNOSTIC_SESSION_COUNTERS,HMI momentary
+M412,Bit,WORK_ACTIVE,RO; active program AND M300 AND credit AND no STOP
+M413,Bit,RM5_VALUE_OK,D300 valid
+M414,Bit,WORK_LIGHTS_ENABLE,HMI RW default ON
+M415,Bit,TARIFF_CONFIG_OK,Checks individual configuration ranges
+M416,Bit,ONE_SECOND_CONSUMPTION_TICK,Internal pulse gated by M449 M426 and not M436
+M417,Bit,NEW_SESSION_PULSE,Internal pulse before first accepted RM5 credit of a new session
+M419,Bit,HMI_WAKE_REQUEST,RO held approx 3 s after accepted X27
+M420-M425,Bit,Program 1..6 active,RO latches
+M426,Bit,TIME_DISPLAY_VALID,D558>0 AND D557>0 AND D560>0
+M427,Bit,CREDIT_AVAILABLE,D560>0
+M429,Bit,SYNC_COUNTDOWN_WITH_PRACA,HMI RW default ON
+M430,Bit,RUN_TIME_ENABLE,RO mirror of M449 COUNTDOWN_ACTIVE
+M431,Bit,AUTO_START_PROGRAM_ENABLE,HMI RW default ON
+M432,Bit,AUTO_START_TRIGGER,RO one-scan auto start trigger
+M433,Bit,AUTO_START_DONE,RO latch prevents repeated auto start in same session
+M434,Bit,AUTO_START_PROGRAM_OK,D584 is 1..6
+M435,Bit,RM5_INHIBIT_LIMIT,RO blocks RM5 when next full CH1 value cannot fit or pending packet fills capacity
+M436,Bit,RM5_TOPUP_BUSY,RO packet or Y0 queue is being processed
+M437,Bit,RM5_PENDING_AT_LIMIT,RO pending packet has filled remaining slots
+M438,Bit,STARTUP_RESET_ACTIVE,RO while T204 startup reset window is active
+M439,Bit,PILOTAGGIO_DEFAULT,HMI RW default ON; applied after complete Y0 queue if M410 is OFF
+M440,Bit,STOP_CMD,X4 OR M400
+M441,Bit,PROGRAM_1_CMD,X5 OR M401
+M442,Bit,PROGRAM_2_CMD,X6 OR M402
+M443,Bit,PROGRAM_3_CMD,X7 OR M403
+M444,Bit,PROGRAM_4_CMD,X10 OR M404
+M445,Bit,PROGRAM_5_CMD,X11 OR M405
+M446,Bit,PROGRAM_6_CMD,X12 OR M406
+M447,Bit,NEW_PROGRAM_START,Internal diagnostic one-scan marker; does not change M410
+M448,Bit,COUNTDOWN_LOCAL_ACTIVE,NOT M429 AND M412; not a latch in V1.5.7
+M449,Bit,COUNTDOWN_ACTIVE,When M429=0 follows M412; when M429=1 follows M301 RUN
+M451-M456,Bit,Manual/HMI program select pulses,One-scan P1..P6 selects
+M460-M465,Bit,AUTO_SELECT_P1_P6,Internal one-scan auto selects
+M470-M475,Bit,EFFECTIVE_SELECT_P1_P6,Manual/HMI OR auto select
+M8000,Special bit,PLC_ALWAYS_ON,Mitsubishi special relay
+M8002,Special bit,PLC_FIRST_SCAN,Mitsubishi special relay
+M8013,Special bit,PLC_1S_CLOCK,Used for consumption tick
+D300,Data,RM5 CH1 value in 0.10 EUR units,HMI RW 1..100 default 10
+D320,Data,Current RM5 packet raw pulse count,Internal
+D330,Data,Y0 / Counter pulse queue,Internal
+D350,Data,Remaining time seconds for selected tariff,RO 16-bit; see time-range warning
+D351,Data,Reserved / legacy,Reset only
+D500-D503,Data,PLC version text for HMI,RO
+D516,Data,PLC version major,RO = 1
+D517,Data,PLC version minor,RO = 5
+D518,Data,PLC version patch,RO = 7
+D521,Data,Last RM5 packet raw pulses,RO
+D522,Data,Last packet Y0 pulses accepted into queue,RO
+D523,Data,Reserved / legacy,Reset only
+D524,Data,RM5 raw pulses in session,RO
+D525-D526,Data,Expected Y0 pulses from session,32-bit MUL result
+D528,Data,Global clock correction x100,HMI RW 50..200 default 100
+D533,Data,Y0 pulses actually sent,RO
+D534-D535,Data,Reserved / legacy,Reset only
+D540,Data,Remaining whole minutes,RO quotient of D350 / 60
+D541,Data,Remaining seconds part,RO remainder of D350 / 60
+D542-D543,Data,Current RM5 packet value in Y0 pulses,32-bit MUL result; low word D542 is used
+D549,Data,Maximum credit in 0.10 EUR units,HMI RW 1..999 default 50
+D550,Data,Common base price in 0.10 EUR units,HMI RW 1..50 startup range; M415 also requires <=D549
+D551-D556,Data,Program 1..6 seconds at base price,HMI RW 1..600 default 300
+D557,Data,Selected program service time,RO
+D558,Data,Last selected program number 1..6,RO; STOP does not clear it
+D559,Data,TIME_BAR_MAX seconds,RO session/program maximum
+D560,Data,Remaining credit cents,RO; 10=0.10 EUR and 100=1.00 EUR
+D561,Data,Fractional consumption accumulator,Internal
+D562,Data,Credit cents consumed on current tick,Internal DIV quotient
+D563,Data,Consumption division remainder,Internal DIV remainder copied back to D561
+D565,Data,HMI wake/coin event counter,RO increments on accepted X27
+D566,Data,MAX_CREDIT_CENTS,D549 * 10
+D567,Data,MAX_CREDIT_ADD_LIMIT,D566 - 10
+D568-D569,Data,BASE_PRICE_CENTS product,D550 * 10; high word D569 normally zero
+D570-D571,Data,Temporary 32-bit calculation product,Internal
+D574-D575,Data,Temporary DDIV quotient,Internal
+D576-D577,Data,Temporary DDIV remainder,Internal
+D580,Data,Whole remaining 0.10 EUR units,RO quotient D560 / 10
+D581,Data,Remaining single cents,RO remainder D560 / 10; 0..9
+D582,Data,Remaining credit cents mirror,RO copy of D560
+D583,Data,Reserved / legacy,Reset only
+D584,Data,Auto start program number,HMI RW 1..6 default 1
+D585,Data,HMI_SCREEN_INDEX,PLC -> HMI; 0 main 1 admin 2 inactive 3 free
+D586,Data,HMI_CURRENT_SCREEN_INDEX,HMI -> PLC; PLC does not write
+D587,Data,HMI_WAKE_REQUEST_WORD,RO 0/1 mirror of M419
+D588-D589,Data,Queued Y0 value in cents product,D330 * 10
+D590,Data,Projected credit cents,D560 + D588
+D591,Data,Reserved / legacy,Reset only
+D592,Data,Free credit cents below D549,Internal
+D594,Data,Free full Y0 pulse slots below D549,Quotient D592 / 10
+D595,Data,Free-credit remainder cents,Implicit remainder of DIV D592 / 10
 T200,Timer,RM5 packet timeout,K100
-T201,Timer,CREDIT ON,K10
-T202,Timer,CREDIT OFF,K10
+T201,Timer,CREDIT / Y0 ON,K10
+T202,Timer,CREDIT / Y0 OFF,K10
 T203,Timer,HMI wake hold,K300 approx 3 s
 T204,Timer,Startup reset window,K100
