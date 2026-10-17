@@ -1,4 +1,4 @@
-# PLC V1.5.8
+# PLC V1.5.9
 
 ## Pliki
 
@@ -6,7 +6,7 @@
 
 - `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
 - `MAIN.txt` — wersja komentowana,
-- `main_v1.5.8.csv` — aktualny CSV do importu GX Developer,
+- `main_v1.5.9.csv` — aktualny CSV do importu GX Developer,
 - `DEVICE_MAP.csv` — mapa urządzeń,
 - `DEVICE_COMMENTS.csv` / `DEVICE_COMMENTS.txt` — komentarze urządzeń,
 - `IMPORT_CSV.md` — mapowanie kolumn importu.
@@ -16,6 +16,10 @@
 Bity HMI RW: `M480` = invert X0, `M481` = invert X1, `M482` = invert X2, `M483` = invert X3, `M484` = invert X4, `M485` = invert X13. Każdy bit: 0 = bez inwersji, 1 = inwersja. Bity konfiguracyjne nie są zerowane przez logikę startową; zachowanie po zaniku zasilania zależy od zakresów retencji ustawionych w parametrach PLC.
 
 Efektywne stany: `M300=X0 XOR M480`, `M301=X1 XOR M481`, `M304=X2 XOR M482`, `M305=X3 XOR M483`, `M306=X4 XOR M484`, `M302=X13 XOR M485`. STOP: `M440=M306 OR M400`. RM5 INHIBIT Y2/Y23 korzysta z efektywnego M300. Uwaga: inwersja logiczna nie zmienia elektrycznej charakterystyki wejść.
+
+## Przerwa Y1 przy zmianie programu
+
+Zmiana wyboru M470..M475 na inny niż aktualny D558 przy aktywnym M412 ustawia M486. T205 K50 (timer T205 o bazie 10 ms) odmierza 0,5 s, następnie kasuje M486. Wyjście Y1: M410 AND M412 AND NOT M486. Ponowny wybór tego samego programu nie uruchamia przerwy. Wyjścia Y3..Y10 nadal aktualizują się bezpośrednio na nowy program. M486 i T205 to elementy wewnętrzne (nie sterować z HMI).
 
 ## Aktualna mapa wyjść
 
