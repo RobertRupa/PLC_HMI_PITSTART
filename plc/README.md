@@ -1,4 +1,4 @@
-# PLC V1.5.7
+# PLC V1.5.8
 
 ## Pliki
 
@@ -6,10 +6,16 @@
 
 - `MAIN_GXDEV_ENTRY.txt` — aktualna lista instrukcji do GX Developer,
 - `MAIN.txt` — wersja komentowana,
-- `main_v1.5.7.csv` — aktualny CSV do importu GX Developer,
+- `main_v1.5.8.csv` — aktualny CSV do importu GX Developer,
 - `DEVICE_MAP.csv` — mapa urządzeń,
 - `DEVICE_COMMENTS.csv` / `DEVICE_COMMENTS.txt` — komentarze urządzeń,
 - `IMPORT_CSV.md` — mapowanie kolumn importu.
+
+## Polaryzacja wejść (HMI Admin)
+
+Bity HMI RW: `M480` = invert X0, `M481` = invert X1, `M482` = invert X2, `M483` = invert X3, `M484` = invert X4, `M485` = invert X13. Każdy bit: 0 = bez inwersji, 1 = inwersja. Bity konfiguracyjne nie są zerowane przez logikę startową; zachowanie po zaniku zasilania zależy od zakresów retencji ustawionych w parametrach PLC.
+
+Efektywne stany: `M300=X0 XOR M480`, `M301=X1 XOR M481`, `M304=X2 XOR M482`, `M305=X3 XOR M483`, `M306=X4 XOR M484`, `M302=X13 XOR M485`. STOP: `M440=M306 OR M400`. RM5 INHIBIT Y2/Y23 korzysta z efektywnego M300. Uwaga: inwersja logiczna nie zmienia elektrycznej charakterystyki wejść.
 
 ## Aktualna mapa wyjść
 
@@ -32,8 +38,8 @@ FX numeruje X/Y ósemkowo, dlatego po Y7 występuje Y10.
 Y2 i Y23 mają identyczną logikę INHIBIT:
 
 ```text
-X0=0 OR M435=1 -> ON
-X0=1 AND M435=0 -> OFF
+M300=0 OR M435=1 -> ON
+M300=1 AND M435=0 -> OFF
 ```
 
 Na obecnym sprzęcie używany jest Y2; Y23 pozostaje dla przyszłego sterownika z większą liczbą wyjść.
