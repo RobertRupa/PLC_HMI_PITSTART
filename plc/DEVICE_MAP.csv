@@ -132,3 +132,12 @@ T201,Timer,CREDIT / Y0 ON,K10
 T202,Timer,CREDIT / Y0 OFF,K10
 T203,Timer,HMI wake hold,K300 approx 3 s
 T204,Timer,Startup reset window,K100
+M480,Bit,INVERT_X0,HMI RW: 0 normal / 1 inverted; effective M300
+M481,Bit,INVERT_X1,HMI RW: 0 normal / 1 inverted; effective M301
+M482,Bit,INVERT_X2,HMI RW: 0 normal / 1 inverted; effective M304 diagnostic
+M483,Bit,INVERT_X3,HMI RW: 0 normal / 1 inverted; effective M305 diagnostic
+M484,Bit,INVERT_X4_STOP,HMI RW: 0 normal / 1 inverted; effective M306 feeds M440
+M485,Bit,INVERT_X13,HMI RW: 0 normal / 1 inverted; effective M302
+M304,Bit,X2_EFFECTIVE,Raw X2 XOR M482
+M305,Bit,X3_EFFECTIVE,Raw X3 XOR M483
+M306,Bit,X4_EFFECTIVE,Raw X4 XOR M484
