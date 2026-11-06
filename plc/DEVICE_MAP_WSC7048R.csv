@@ -149,3 +149,5 @@ M490,Bit,HMI_DISPLAY_CREDITS_MODE,HMI RW: 0 display remaining seconds / 1 displa
 D596,Data,HMI_DISPLAY_VALUE,RO: M490=0 -> D350 remaining seconds; M490=1 -> D580 credits in 0.10 EUR units
 D597,Data,HMI_TIME_COUNTER_VISIBLE,RO 0/1: 1 when M427=1 and M490=0; otherwise 0
 D598,Data,HMI_CREDIT_COUNTER_VISIBLE,RO 0/1: 1 when M427=1 and M490=1; otherwise 0
+M491,Bit,RESET_CREDIT_ON_STOP,HMI RW 0 keep credit (default after PLC start); 1 clear remaining credit and pending Y0 queue on STOP edge
+M492,Bit,STOP_CREDIT_RESET_PULSE,RO internal one-scan pulse when M440 rising and M491=1; not HMI writable
