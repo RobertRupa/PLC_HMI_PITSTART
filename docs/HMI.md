@@ -395,3 +395,8 @@ Jeden impuls RM5 odpowiada domyślnie 5 minutom.
 Wariant PLC V1.5.17 nie używa już M414: światła Y20 działają przy D585=0 (Home 000). D585 jest indeksem zadanym przez PLC; D586 jest rejestrem zgłaszanego przez HMI ekranu, jeśli panel ma włączoną tę funkcję.
 
 **Do wykonania w projekcie HMI**: usunąć przełącznik Touch Control powiązany z LB555 i wszystkie zależności ukrywania przycisków/obiektów od LB555; ustawić ich widoczność bezwarunkową. Usunąć również przełącznik Work Lights powiązany z M414, ponieważ nie steruje już światłami. Projekt `projects/hmi/pitstart.hs` w natywnym binarnym formacie KinSealStudio **nie został edytowany**; wymaga wykonania tej zmiany w HMI Studio oraz kompilacji i wgrania do panelu.
+
+
+## WSC-7048R V1.5.20 — STOP resetuje kredyty (opcja)
+
+Na ekranie Admin dodaj przełącznik on/off (RW) do adresu `[Mitsubishi_Fx1n]M491` z opisem „Reset credits on STOP”. `0` (domyślnie przy RUN): STOP jedynie zatrzymuje program; kredyt pozostaje. `1`: STOP z fizycznego X15 lub momentary HMI M400 jednorazowo kasuje kredyt D560 oraz bieżącą kolejkę RM5/Y0. `M492` to wewnętrzny bit impulsu resetu, nie podłączać do przycisku HMI. Zmiana w projekcie natywnym `pitstart.hs` musi być wykonana w KinSealStudio; nie zapisano jej automatycznie w pliku HMI.
