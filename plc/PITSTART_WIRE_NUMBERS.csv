@@ -20,5 +20,5 @@ CN5,9,1,OUTPUT_CONTACT_COMMON,C0_OR_C1,USER,Do not assume 0V or +24V
 CN5,12,1,OUTPUT_CONTACT_COMMON,C0_OR_C1,USER,Do not assume 0V or +24V
 CN5,1,6,PROGRAM_5,Y6,USER,Target new PLC firmware only
 CN5,4,8,PROGRAM_6,Y7,USER,Target new PLC firmware only
-CN5,7,7,PILOTAGGIO_PUMP,Y1,USER,Dry control contact
+CN5,7,7,PUMP_CONTROL,Y1,USER,Dry pump control contact
 CN5,10,9,COIN_COUNTER,Y0,USER,One pulse 0.10 EUR
