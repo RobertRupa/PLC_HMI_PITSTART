@@ -124,3 +124,24 @@ Zmiany względem źródła V1.5.10: `OUT Y2` -> `OUT M498` (diagnostyka INHIBIT)
 **Nie dokonano pełnej konwersji projektu natywnego PLC ani próby kompilacji.** Potwierdzić format importu CSV, typ wyjść i adresy dostępne w WSC-7048R. Fizyczny STOP awaryjny poza logiką PLC.
 
 Proponowane mapowanie **nie jest jeszcze zwalidowanym firmware**. 
+
+## Konfiguracja inwersji wejść PITSTART (wariant WSC)
+
+| Wejście | Przewód | Znaczenie | Flaga inwersji HMI RW | Stan efektywny |
+|---|---|---|---|---|
+| X0 | 11 / CN8.1 | INVERTER_OK / automat dostępny | M480 | M300 = X0 XOR M480 |
+| X1 | **12 / CN9.1 tylko po potwierdzeniu** | PRACA / RUN (niepotwierdzone) | M481 | M301 = X1 XOR M481 |
+| X13 | 13 / CN8.3 | MANUAL/FREE | M485 | M302 = X13 XOR M485 |
+| X14 | 14/15 / CN10 | ADMIN po dopasowaniu elektrycznym | **M488 (NOWE)** | M303 = X14 XOR M488 |
+
+0 oznacza normalną logikę, 1 inwersję. Odczytywane flagi muszą być ustawione w PLC/HMI; dodanie adresów nie tworzy samoczynnie kontrolek na ekranie konfiguracji projektu binarnego `pitstart.hs`.
+
+**UWAGA:** Przy starcie PLC wszystkie flagi powinny mieć znane wartości, a ich retencja po zaniku zasilania zależy od parametrów pamięci PLC. Nie dodano resetowania M488 podczas pierwszego skanu, ale nie gwarantuje to utrzymania stanu. Jeśli wejście X0 jest aktywne-niskim, ustaw M480=1 przed dopuszczeniem pracy. Inwersja jest wyłącznie logiczna i nie zastępuje dopasowania elektrycznego ani separacji galwanicznej. Przy M481=1 bez podłączonego X1 system zobaczy fałszywy RUN — nie aktywować, zanim CN9.1 nie będzie zidentyfikowany.
+
+### Nowa drabinka
+
+- `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` — źródłowa lista instrukcji, rozszerzona o XOR X14.
+- `plc/main_wsc7048r_v1.5.11.csv` — nowy plik importu GX Developer z przeliczonymi numerami kroków.
+- `plc/MAIN_WSC7048R.txt` — źródło z komentarzami.
+
+Przed uruchomieniem przetestować oba stany dla każdej flagi M480/M481/M485/M488, uprawnienia do ADMIN, stan INHIBIT Y23 i zachowanie po zaniku zasilania.
