@@ -1,6 +1,6 @@
 Device,Type,Function,Startup/Notes
-X0,Input,AUTOMATE_PRESENT / INVERTER_OK,Mirrored to M300
-X1,Input,PRACA / machine RUN feedback,Mirrored to M301
+X0,Input,AUTOMATE_PRESENT / INVERTER_OK,Effective M300 = X0 XOR M480
+X1,Input,PRACA / machine RUN feedback,Effective M301 = X1 XOR M481; wire 12 unverified
 X4,Input,STOP_BUTTON,Combined with HMI M400 into M440
 X5,Input,PROGRAM_1_BUTTON,Combined with M401
 X6,Input,PROGRAM_2_BUTTON,Combined with M402
@@ -8,8 +8,8 @@ X7,Input,PROGRAM_3_BUTTON,Combined with M403
 X10,Input,PROGRAM_4_BUTTON,Combined with M404
 X11,Input,PROGRAM_5_BUTTON,Combined with M405
 X12,Input,PROGRAM_6_BUTTON,Combined with M406
-X13,Input,MANUAL_FREE status,Mirrored to M302; no free-credit logic
-X14,Input,ADMIN_SWITCH,Mirrored to M303
+X13,Input,MANUAL_FREE status,Effective M302 = X13 XOR M485; no free-credit logic
+X14,Input,ADMIN_SWITCH,Effective M303 = X14 XOR M488
 X27,Input,RM5_CH1,Only RM5 pulse input used by PLC
 Y0,Output,PITSTART_CREDITS / Counter,One pulse = 0.10 EUR; wire 9 CN5.10
 Y1,Output,PILOTAGGIO / POMPA,M410 AND M412 AND NOT M486; wire 7 CN5.7
@@ -145,3 +145,4 @@ M306,Bit,X4_EFFECTIVE,Raw X4 XOR M484
 M487,Bit,DISABLE_Y1_CHANGE_DELAY,HMI RW: 0=500ms Y1 delay enabled; 1=delay disabled
 
 M498,Bit,RM5_INHIBIT_DIAGNOSTIC,Same condition as Y23; old physical Y2 inhibit coil retargeted
+M488,Bit,INVERT_X14_ADMIN,HMI RW: 0 normal / 1 inverted; effective M303; retention requires PLC settings
