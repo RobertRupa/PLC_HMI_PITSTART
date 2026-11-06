@@ -115,7 +115,7 @@ PE zasilania ------------------------------------ szyna PE
 
 - [MAIN_WSC7048R_GXDEV_ENTRY.txt](../plc/MAIN_WSC7048R_GXDEV_ENTRY.txt) — Instruction List do wprowadzania w GX Developer.
 - [MAIN_WSC7048R.txt](../plc/MAIN_WSC7048R.txt) — komentowane źródło programu.
-- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — historyczny wariant importu sprzed inwersji ADMIN. Do nowych wdrożeń używaj **main_wsc7048r_v1.5.11.csv**.
+- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.11.csv** zachowuje oryginalny ADMIN.
 - [DEVICE_MAP_WSC7048R.csv](../plc/DEVICE_MAP_WSC7048R.csv) — mapa urządzeń wariantu WSC.
 - [DEVICE_COMMENTS_WSC7048R.csv](../plc/DEVICE_COMMENTS_WSC7048R.csv) — komentarze urządzeń wariantu WSC.
 
@@ -125,23 +125,25 @@ Zmiany względem źródła V1.5.10: `OUT Y2` -> `OUT M498` (diagnostyka INHIBIT)
 
 Proponowane mapowanie **nie jest jeszcze zwalidowanym firmware**. 
 
-## Konfiguracja inwersji wejść PITSTART (wariant WSC)
+## Opis pinów PITSTART a logika programu
 
-| Wejście | Przewód | Znaczenie | Flaga inwersji HMI RW | Stan efektywny |
-|---|---|---|---|---|
-| X0 | 11 / CN8.1 | INVERTER_OK / automat dostępny | M480 | M300 = X0 XOR M480 |
-| X1 | **12 / CN9.1 tylko po potwierdzeniu** | PRACA / RUN (niepotwierdzone) | M481 | M301 = X1 XOR M481 |
-| X13 | 13 / CN8.3 | MANUAL/FREE | M485 | M302 = X13 XOR M485 |
-| X14 | 14/15 / CN10 | ADMIN po dopasowaniu elektrycznym | **M488 (NOWE)** | M303 = X14 XOR M488 |
+Przewody i piny PITSTART służą wyłącznie do opisu połączeń oraz mapowania I/O; nie stanowią nowych komend PLC.
 
-0 oznacza normalną logikę, 1 inwersję. Odczytywane flagi muszą być ustawione w PLC/HMI; dodanie adresów nie tworzy samoczynnie kontrolek na ekranie konfiguracji projektu binarnego `pitstart.hs`.
+| Wejście | Przewód i złącze | Dotychczasowa logika |
+|---|---|---|
+| X0 | 11 / CN8.1, wspólny 10 / CN8.2 | X0 XOR M480 -> M300 |
+| X1 | 12 / CN9.1, funkcja NIEPOTWIERDZONA | X1 XOR M481 -> M301; nie podłączać bez identyfikacji |
+| X13 | 13 / CN8.3, prawdopodobnie MANUAL/FREE, wspólny 10 / CN8.4 | X13 XOR M485 -> M302 |
+| X14 | 14/15 / CN10.1 / CN10.3 | **LD X14; OUT M303** — ADMIN bez inwersji |
 
-**UWAGA:** Przy starcie PLC wszystkie flagi powinny mieć znane wartości, a ich retencja po zaniku zasilania zależy od parametrów pamięci PLC. Nie dodano resetowania M488 podczas pierwszego skanu, ale nie gwarantuje to utrzymania stanu. Jeśli wejście X0 jest aktywne-niskim, ustaw M480=1 przed dopuszczeniem pracy. Inwersja jest wyłącznie logiczna i nie zastępuje dopasowania elektrycznego ani separacji galwanicznej. Przy M481=1 bez podłączonego X1 system zobaczy fałszywy RUN — nie aktywować, zanim CN9.1 nie będzie zidentyfikowany.
+Flagi M480/M481/M485 istniały wcześniej i pozostały bez zmian. Nową inwersję ADMIN wycofano. Nie ma M488 w wykonywanym programie PLC. Nie zmieniono projektu HMI.
 
-### Nowa drabinka
+Przewody 14/15 opisują polaryzację wiązki, nie uprawniają do podłączenia ich bezpośrednio do X14. Wymagane jest sprawdzenie typu i napięcia sygnału.
 
-- `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` — źródłowa lista instrukcji, rozszerzona o XOR X14.
-- `plc/main_wsc7048r_v1.5.11.csv` — nowy plik importu GX Developer z przeliczonymi numerami kroków.
-- `plc/MAIN_WSC7048R.txt` — źródło z komentarzami.
+### Aktualna drabinka
 
-Przed uruchomieniem przetestować oba stany dla każdej flagi M480/M481/M485/M488, uprawnienia do ADMIN, stan INHIBIT Y23 i zachowanie po zaniku zasilania.
+- `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` — ADMIN jak wcześniej (X14 -> M303).
+- `plc/main_wsc7048r_v1.5.11.csv` — nowy stan CSV bez inwersji X14.
+- `plc/DEVICE_MAP_WSC7048R.csv` — opisy i mapowanie przewodów.
+
+Drabinka nie jest potwierdzona kompilacją ani testem sprzętowym.
