@@ -148,3 +148,4 @@ M487,Bit,DISABLE_Y1_CHANGE_DELAY,HMI RW: 0=500ms Y1 delay enabled; 1=delay disab
 M498,Bit,RM5_INHIBIT_DIAGNOSTIC,Same condition as Y23; old physical Y2 inhibit coil retargeted
 M490,Bit,HMI_DISPLAY_CREDITS_MODE,HMI RW: 0 display remaining seconds / 1 display 0.10 EUR credits; reset OFF on boot
 D596,Data,HMI_DISPLAY_VALUE,RO: M490=0 -> D350 remaining seconds; M490=1 -> D580 credits in 0.10 EUR units
+D597,Data,HMI_COUNTER_VIEW,RO: 0 no credit (M427=0); 1 time (M427=1 and M490=0); 2 credit (M427=1 and M490=1)
