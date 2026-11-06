@@ -9,7 +9,7 @@ LD M8000
 OUT T204 K100
 LDI T204
 OUT M438
-; PLC_HMI_PITSTART WSC-7048R variant based on V1.5.10
+; PLC_HMI_PITSTART WSC-7048R variant v1.5.12 based on V1.5.10
 ; PitStart-compatible monetary-credit/time model
 ;
 ; Counter/PITSTART_CREDITS Y0 represents 0.10 EUR units.
@@ -57,7 +57,10 @@ OUT M438
 ; M437 = RM5_PENDING_AT_LIMIT; pending packet has reserved all remaining Y0 pulse slots.
 ; M438 = STARTUP_RESET_ACTIVE; held during T204 startup window to clear runtime/session state.
 ; M448 = COUNTDOWN_LOCAL_ACTIVE; internal branch used when Sync time with RUN (M429) is OFF.
-; Existing input invert settings: M480=X0, M481=X1, M485=X13 (unchanged).
+; Input mapping WSC: X13(old Manual/Free) -> X3; X2->X4; X4 STOP->X5; X5 P1->X13; X3 diagnostics->X2.
+; Inversion flags follow functions: M485 inverts Manual/Free at X3, M484 inverts STOP at X5.
+; M482 diagnostic operates physical X4; M483 diagnostic operates physical X2.
+; Original ADMIN X14 -> M303 is unchanged.
 ; Inverted input = raw input XOR invert bit; 0=normal, 1=reverse.
 ; ADMIN remains original direct input: X14 -> M303, no inversion.
 ; M449 = COUNTDOWN_ACTIVE; selects M412 when M429=0, or M301/RUN when M429=1.
@@ -483,21 +486,21 @@ LDI X1
 AND M481
 ORB
 OUT M301
-LD X2
+LD X4
 ANI M482
-LDI X2
+LDI X4
 AND M482
 ORB
 OUT M304
-LD X3
+LD X2
 ANI M483
-LDI X3
+LDI X2
 AND M483
 ORB
 OUT M305
-LD X13
+LD X3
 ANI M485
-LDI X13
+LDI X3
 AND M485
 ORB
 OUT M302
@@ -726,16 +729,16 @@ OR M321
 OR M330
 OR M331
 OUT M436
-LD X4
+LD X5
 ANI M484
-LDI X4
+LDI X5
 AND M484
 ORB
 OUT M306
 LD M306
 OR M400
 OUT M440
-LD X5
+LD X13
 OR M401
 OUT M441
 LD X6
