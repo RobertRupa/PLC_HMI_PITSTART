@@ -4,24 +4,24 @@ X1,Input,PRACA RUN feedback,Wire 12 CN9.1 unverified; do not connect until ident
 X2,Input,MANUAL_FREE PitStart,Wire 13 CN8.3; effective M302 = X2 XOR M485
 X3,Input,DIAGNOSTIC (prior X4),Effective M304 = X3 XOR M482
 X4,Input,DIAGNOSTIC (prior X2),Effective M305 = X4 XOR M483
-X5,Input,STOP_BUTTON moved from X4,Effective M306 = X5 XOR M484; PLC software STOP not E-STOP
 X14,Input,ADMIN_SWITCH original mode,Direct X14 to M303; CN10 wires 14 and 15 require electrical verification
-X15,Input,PROGRAM_1_BUTTON,Physical P1 OR HMI M401 -> M441
-X16,Input,PROGRAM_2_BUTTON,Physical P2 OR HMI M402 -> M442
-X17,Input,PROGRAM_3_BUTTON,Physical P3 OR HMI M403 -> M443
-X20,Input,PROGRAM_4_BUTTON,Physical P4 OR HMI M404 -> M444
-X21,Input,PROGRAM_5_BUTTON,Physical P5 OR HMI M405 -> M445
-X22,Input,PROGRAM_6_BUTTON,Physical P6 OR HMI M406 -> M446
+X15,Input,STOP_BUTTON,Effective M306 = X15 XOR M484; software STOP not emergency stop
+X16,Input,PROGRAM_1_BUTTON,Physical P1 OR HMI M401 -> M441
+X17,Input,PROGRAM_2_BUTTON,Physical P2 OR HMI M402 -> M442
+X20,Input,PROGRAM_3_BUTTON,Physical P3 OR HMI M403 -> M443
+X21,Input,PROGRAM_4_BUTTON,Physical P4 OR HMI M404 -> M444
+X22,Input,PROGRAM_5_BUTTON,Physical P5 OR HMI M405 -> M445
+X23,Input,PROGRAM_6_BUTTON,Physical P6 OR HMI M406 -> M446
 X27,Input,RM5_CH1,Only RM5 pulse input used by PLC
 Y0,Output,PITSTART_CREDITS / Counter,One pulse = 0.10 EUR; wire 9 CN5.10
-Y1,Output,PILOTAGGIO / POMPA,M410 AND M412 AND NOT M486; wire 7 CN5.7
+Y1,Output,PUMP_CONTROL,M410 AND M412 AND NOT M486; wire 7 CN5.7
 Y2,Output,PROGRAM 1,M420 AND M300 AND credit; wire 2 CN4.1
 Y3,Output,PROGRAM 2,M421 AND M300 AND credit; wire 3 CN4.4
 Y4,Output,PROGRAM 3,M422 AND M300 AND credit; wire 4 CN4.7
 Y5,Output,PROGRAM 4,M423 AND M300 AND credit; wire 5 CN4.10
 Y6,Output,PROGRAM 5,M424 AND M300 AND credit; wire 6 CN5.1
 Y7,Output,PROGRAM 6,M425 AND M300 AND credit; wire 8 CN5.4
-Y20,Output,WORK LIGHTS,ON when D585=0 (PLC Home screen); OFF for D585 1 2 3
+Y20,Output,WORK_LIGHTS,ON when D585=0 (Home 000); OFF when D585 nonzero
 Y21,Output,RESERVED,No OUT instruction; do not connect to load yet
 Y22,Output,RESERVED,No OUT instruction; do not connect to load yet
 Y23,Output,RM5 INHIBIT PRIMARY,M300=0 OR M435=1; RM5 CN5.6 via interface
@@ -40,7 +40,7 @@ M403,Bit,HMI_PROGRAM_3,HMI momentary
 M404,Bit,HMI_PROGRAM_4,HMI momentary
 M405,Bit,HMI_PROGRAM_5,HMI momentary
 M406,Bit,HMI_PROGRAM_6,HMI momentary
-M410,Bit,PILOTAGGIO_ENABLE,HMI RW default ON
+M410,Bit,PUMP_CONTROL_ENABLE,HMI RW default ON
 M411,Bit,RESET_DIAGNOSTIC_SESSION_COUNTERS,HMI momentary
 M412,Bit,WORK_ACTIVE,RO; active program AND M300 AND credit AND no STOP
 M413,Bit,RM5_VALUE_OK,D300 valid
@@ -61,14 +61,14 @@ M435,Bit,RM5_INHIBIT_LIMIT,RO blocks RM5 when next full CH1 value cannot fit or 
 M436,Bit,RM5_TOPUP_BUSY,RO packet or Y0 queue is being processed
 M437,Bit,RM5_PENDING_AT_LIMIT,RO pending packet has filled remaining slots
 M438,Bit,STARTUP_RESET_ACTIVE,RO while T204 startup reset window is active
-M439,Bit,PILOTAGGIO_DEFAULT,HMI RW default ON; applied after complete Y0 queue if M410 is OFF
-M440,Bit,STOP_CMD,Effective X5 via M306 OR M400
-M441,Bit,PROGRAM_1_CMD,X15 OR M401
-M442,Bit,PROGRAM_2_CMD,X16 OR M402
-M443,Bit,PROGRAM_3_CMD,X17 OR M403
-M444,Bit,PROGRAM_4_CMD,X20 OR M404
-M445,Bit,PROGRAM_5_CMD,X21 OR M405
-M446,Bit,PROGRAM_6_CMD,X22 OR M406
+M439,Bit,PUMP_CONTROL_DEFAULT,HMI RW default ON; applied after complete Y0 queue if M410 is OFF
+M440,Bit,STOP_CMD,Effective X15 via M306 OR M400
+M441,Bit,PROGRAM_1_CMD,X16 OR M401
+M442,Bit,PROGRAM_2_CMD,X17 OR M402
+M443,Bit,PROGRAM_3_CMD,X20 OR M403
+M444,Bit,PROGRAM_4_CMD,X21 OR M404
+M445,Bit,PROGRAM_5_CMD,X22 OR M405
+M446,Bit,PROGRAM_6_CMD,X23 OR M406
 M447,Bit,NEW_PROGRAM_START,Internal diagnostic one-scan marker; does not change M410
 M448,Bit,COUNTDOWN_LOCAL_ACTIVE,NOT M429 AND M412; not a latch in V1.5.7
 M449,Bit,COUNTDOWN_ACTIVE,When M429=0 follows M412; when M429=1 follows M301 RUN
@@ -138,11 +138,11 @@ M480,Bit,INVERT_X0,HMI RW: 0 normal / 1 inverted; effective M300
 M481,Bit,INVERT_X1,HMI RW: 0 normal / 1 inverted; effective M301
 M482,Bit,INVERT_DIAGNOSTIC_X3,HMI RW 0 normal 1 inverted
 M483,Bit,INVERT_DIAGNOSTIC_X4,HMI RW 0 normal 1 inverted
-M484,Bit,INVERT_X5_STOP,HMI RW: 0 normal / 1 inverted; effective M306 feeds M440
+M484,Bit,INVERT_X15_STOP,HMI RW 0 normal 1 inverted
 M485,Bit,INVERT_X2_MANUAL_FREE,HMI RW 0 normal 1 inverted
 M304,Bit,X3_EFFECTIVE,Raw X3 XOR M482
 M305,Bit,X4_EFFECTIVE,Raw X4 XOR M483
-M306,Bit,STOP_X5_EFFECTIVE,Raw X5 XOR M484
+M306,Bit,STOP_X15_EFFECTIVE,Raw X15 XOR M484
 M487,Bit,DISABLE_Y1_CHANGE_DELAY,HMI RW: 0=500ms Y1 delay enabled; 1=delay disabled
 M498,Bit,RM5_INHIBIT_DIAGNOSTIC,Same condition as Y23; old physical Y2 inhibit coil retargeted
 M490,Bit,HMI_DISPLAY_CREDITS_MODE,HMI RW: 0 display remaining seconds / 1 display 0.10 EUR credits; reset OFF on boot
