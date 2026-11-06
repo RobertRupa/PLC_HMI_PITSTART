@@ -57,16 +57,16 @@ OUT M438
 ; M437 = RM5_PENDING_AT_LIMIT; pending packet has reserved all remaining Y0 pulse slots.
 ; M438 = STARTUP_RESET_ACTIVE; held during T204 startup window to clear runtime/session state.
 ; M448 = COUNTDOWN_LOCAL_ACTIVE; internal branch used when Sync time with RUN (M429) is OFF.
-; Invert settings (HMI RW): M480=X0, M481=X1 (only if wired), M485=X13, M488=X14.
+; Existing input invert settings: M480=X0, M481=X1, M485=X13 (unchanged).
 ; Inverted input = raw input XOR invert bit; 0=normal, 1=reverse.
-; M488 may be non-retentive on power loss: configure PLC latch parameters or reapply from HMI at start.
+; ADMIN remains original direct input: X14 -> M303, no inversion.
 ; M449 = COUNTDOWN_ACTIVE; selects M412 when M429=0, or M301/RUN when M429=1.
 ; M430 = RUN_TIME_ENABLE; mirror of M449 for diagnostics.
 ; M460..M465 = auto-select pulses P1..P6.
 ; M470..M475 = effective select pulses (manual/HMI OR auto).
 ;
 ; HMI screen selection:
-; X14 -> M303 = ADMIN_SCREEN_REQUEST (X14 XOR M488).
+; X14 -> M303 = ADMIN_SCREEN_REQUEST (direct signal).
 ; D585 = HMI_SCREEN_INDEX:
 ;   0 = main/work screen (credit available),
 ;   1 = Admin (X14/M303=1),
@@ -502,10 +502,6 @@ AND M485
 ORB
 OUT M302
 LD X14
-ANI M488
-LDI X14
-AND M488
-ORB
 OUT M303
 LD> D300 K0
 AND<= D300 K100
