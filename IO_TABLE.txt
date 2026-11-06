@@ -145,3 +145,17 @@ M439=1 -> M410 zostaje ustawione.
 M439=0 -> M410 zostaje wyzerowane.
 Zmiana P1..P6 podczas działającego programu nie zmienia M410.
 Zmiana M439 podczas działającego programu nie zmienia bieżącego M410; do sterowania bieżącym stanem służy M410.
+
+
+WSC-7048R — NOWY WARIANT HARDWARE (NIE WDROŻONY W PLC)
+----------------------------------------------------
+Pełna inwentaryzacja: plc/PITSTART_WIRE_NUMBERS.csv
+Projekt okablowania: docs/WSC7048R_WIRING.md
+Przewody styków PitStart: wspólny 1; P1=2 P2=3 P3=4 P4=5 P5=6 P6=8;
+Pilotaggio/Pompa=7; Coin/Counter=9.
+CN8: wspólny 10; INVERTER_OK=11; MANUAL/FREE prawdopodobnie=13.
+CN9.1: przewód 12 = NIEUSTALONY; NIE PODŁĄCZAĆ przed pomiarem.
+CN10: ADMIN-=14 (CN10.1), ADMIN+=15 (CN10.3); wymaga weryfikacji elektrycznej.
+DOCZELOWO: Y0 Coin, Y1 Pilotaggio, Y2..Y7=P1..P6, Y23=RM5 Inhibit,
+Y20..Y22=światła/rezerwa. UWAGA: bieżący firmware stosuje INNĄ mapę,
+w tym Y2=RM5 Inhibit i Y3..Y10=P1..P6. Zmiana wymaga nowego programu.
