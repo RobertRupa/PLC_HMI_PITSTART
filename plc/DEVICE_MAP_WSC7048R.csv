@@ -1,17 +1,17 @@
 Device,Type,Function,Startup/Notes
 X0,Input,INVERTER_OK / AUTOMATE_PRESENT,Wire 11 CN8.1; common wire 10 CN8.2; M300 with existing M480
 X1,Input,PRACA RUN feedback,Wire 12 CN9.1 unverified; do not connect until identified; existing M481
-X2,Input,DIAGNOSTIC formerly X3,Effective M305 = X2 XOR M483
-X3,Input,MANUAL_FREE from PitStart,Wire 13 CN8.3 common wire 10 CN8.4; effective M302 = X3 XOR M485
-X4,Input,DIAGNOSTIC formerly X2,Effective M304 = X4 XOR M482
+X2,Input,MANUAL_FREE PitStart,Wire 13 CN8.3; effective M302 = X2 XOR M485
+X3,Input,DIAGNOSTIC (prior X4),Effective M304 = X3 XOR M482
+X4,Input,DIAGNOSTIC (prior X2),Effective M305 = X4 XOR M483
 X5,Input,STOP_BUTTON moved from X4,Effective M306 = X5 XOR M484; PLC software STOP not E-STOP
-X6,Input,PROGRAM_2_BUTTON,Combined with M402
-X7,Input,PROGRAM_3_BUTTON,Combined with M403
-X10,Input,PROGRAM_4_BUTTON,Combined with M404
-X11,Input,PROGRAM_5_BUTTON,Combined with M405
-X12,Input,PROGRAM_6_BUTTON,Combined with M406
-X13,Input,PROGRAM_1_BUTTON moved from X5,Combined with HMI M401 into M441
 X14,Input,ADMIN_SWITCH original mode,Direct X14 to M303; CN10 wires 14 and 15 require electrical verification
+X15,Input,PROGRAM_1_BUTTON,Physical P1 OR HMI M401 -> M441
+X16,Input,PROGRAM_2_BUTTON,Physical P2 OR HMI M402 -> M442
+X17,Input,PROGRAM_3_BUTTON,Physical P3 OR HMI M403 -> M443
+X20,Input,PROGRAM_4_BUTTON,Physical P4 OR HMI M404 -> M444
+X21,Input,PROGRAM_5_BUTTON,Physical P5 OR HMI M405 -> M445
+X22,Input,PROGRAM_6_BUTTON,Physical P6 OR HMI M406 -> M446
 X27,Input,RM5_CH1,Only RM5 pulse input used by PLC
 Y0,Output,PITSTART_CREDITS / Counter,One pulse = 0.10 EUR; wire 9 CN5.10
 Y1,Output,PILOTAGGIO / POMPA,M410 AND M412 AND NOT M486; wire 7 CN5.7
@@ -27,7 +27,7 @@ Y22,Output,RESERVED,No OUT instruction; do not connect to load yet
 Y23,Output,RM5 INHIBIT PRIMARY,M300=0 OR M435=1; RM5 CN5.6 via interface
 M300,Bit,AUTOMATE_PRESENT / INVERTER_OK,X0
 M301,Bit,PRACA / machine actually running,X1
-M302,Bit,MANUAL_FREE status,X3 XOR M485
+M302,Bit,MANUAL_FREE status,X2 XOR M485
 M303,Bit,ADMIN_SCREEN_REQUEST,X14
 M320,Bit,RM5_ACCEPTED_PULSE,One-scan pulse from rising X27 after validation
 M321,Bit,RM5_PACKET_ACTIVE,Set while collecting current RM5 pulse packet
@@ -63,12 +63,12 @@ M437,Bit,RM5_PENDING_AT_LIMIT,RO pending packet has filled remaining slots
 M438,Bit,STARTUP_RESET_ACTIVE,RO while T204 startup reset window is active
 M439,Bit,PILOTAGGIO_DEFAULT,HMI RW default ON; applied after complete Y0 queue if M410 is OFF
 M440,Bit,STOP_CMD,Effective X5 via M306 OR M400
-M441,Bit,PROGRAM_1_CMD,X13 OR M401
-M442,Bit,PROGRAM_2_CMD,X6 OR M402
-M443,Bit,PROGRAM_3_CMD,X7 OR M403
-M444,Bit,PROGRAM_4_CMD,X10 OR M404
-M445,Bit,PROGRAM_5_CMD,X11 OR M405
-M446,Bit,PROGRAM_6_CMD,X12 OR M406
+M441,Bit,PROGRAM_1_CMD,X15 OR M401
+M442,Bit,PROGRAM_2_CMD,X16 OR M402
+M443,Bit,PROGRAM_3_CMD,X17 OR M403
+M444,Bit,PROGRAM_4_CMD,X20 OR M404
+M445,Bit,PROGRAM_5_CMD,X21 OR M405
+M446,Bit,PROGRAM_6_CMD,X22 OR M406
 M447,Bit,NEW_PROGRAM_START,Internal diagnostic one-scan marker; does not change M410
 M448,Bit,COUNTDOWN_LOCAL_ACTIVE,NOT M429 AND M412; not a latch in V1.5.7
 M449,Bit,COUNTDOWN_ACTIVE,When M429=0 follows M412; when M429=1 follows M301 RUN
@@ -136,12 +136,12 @@ T203,Timer,HMI wake hold,K300 approx 3 s
 T204,Timer,Startup reset window,K100
 M480,Bit,INVERT_X0,HMI RW: 0 normal / 1 inverted; effective M300
 M481,Bit,INVERT_X1,HMI RW: 0 normal / 1 inverted; effective M301
-M482,Bit,INVERT_DIAGNOSTIC_X4,HMI RW: 0 normal / 1 inverted; effective M304 diagnostic
-M483,Bit,INVERT_DIAGNOSTIC_X2,HMI RW: 0 normal / 1 inverted; effective M305 diagnostic
+M482,Bit,INVERT_DIAGNOSTIC_X3,HMI RW 0 normal 1 inverted
+M483,Bit,INVERT_DIAGNOSTIC_X4,HMI RW 0 normal 1 inverted
 M484,Bit,INVERT_X5_STOP,HMI RW: 0 normal / 1 inverted; effective M306 feeds M440
-M485,Bit,INVERT_X3_MANUAL_FREE,HMI RW: 0 normal / 1 inverted; effective M302
-M304,Bit,X4_EFFECTIVE,Raw X4 XOR M482
-M305,Bit,X2_EFFECTIVE,Raw X2 XOR M483
+M485,Bit,INVERT_X2_MANUAL_FREE,HMI RW 0 normal 1 inverted
+M304,Bit,X3_EFFECTIVE,Raw X3 XOR M482
+M305,Bit,X4_EFFECTIVE,Raw X4 XOR M483
 M306,Bit,STOP_X5_EFFECTIVE,Raw X5 XOR M484
 M487,Bit,DISABLE_Y1_CHANGE_DELAY,HMI RW: 0=500ms Y1 delay enabled; 1=delay disabled
 M498,Bit,RM5_INHIBIT_DIAGNOSTIC,Same condition as Y23; old physical Y2 inhibit coil retargeted
