@@ -189,14 +189,16 @@ D549 * D557 / D550 <= 32767 s
 
 Domyślna taryfa daje 1500 s przy maksymalnym domyślnym kredycie 5,00 EUR.
 
-## Odmiana sprzętowa WSC-7048R V1.5.17
+## Odmiana sprzętowa WSC-7048R V1.5.18
 
-Aktualny wariant drabinki WSC: [main_wsc7048r_v1.5.17.csv](main_wsc7048r_v1.5.17.csv) — **nie zastępuje programu WSB V1.5.10 opisanego powyżej**.
+Aktualny wariant drabinki WSC: [main_wsc7048r_v1.5.18.csv](main_wsc7048r_v1.5.18.csv) — **nie zastępuje programu WSB V1.5.10 opisanego powyżej**.
 
-Uruchomienie PLC ustawia każdorazowo D300=10, D549=50, D550=50, D551..D556=35/35/50/35/50/70 oraz zeruje M429 (Sync RUN OFF) i M490 (tryb czasu). W WSC: X3 Manual/Free, X5 STOP, X13 P1, X14 Admin bez zmian. WSC Y2..Y7 P1..P6, Y20 światła, Y23 RM5 Inhibit.
+Uruchomienie PLC ustawia każdorazowo D300=10, D549=50, D550=50, D551..D556=35/35/50/35/50/70 oraz zeruje M429 (Sync RUN OFF) i M490 (tryb czasu). W WSC: X2 Manual/Free, X3 i X4 diagnostyczne, X5 STOP, X15/X16/X17/X20/X21/X22 P1..P6, X14 Admin bez zmian. WSC Y2..Y7 P1..P6, Y20 światła, Y23 RM5 Inhibit.
 
 D596 to rejestr wyświetlania HMI: M490=0 -> D350 w sekundach; M490=1 -> D580 w jednostkach 0,10 EUR. Numeric Display należy wskazać na D596, a przełącznik HMI ustawić na M490. Plik HMI nie jest modyfikowany. 
 
 `D597` — 1 tylko gdy M427=1 i M490=0 (licznik czasu), inaczej 0. `D598` — 1 tylko gdy M427=1 i M490=1 (licznik kredytów), inaczej 0. Oba pola RO; `D596` pozostaje wartością licznika.
 
-W V1.5.17: `Y20` jest sterowane wyłącznie przez `LD= D585 K0; OUT Y20`, bez M414 i M412. `D585` jest indeksem ekranu zadanym przez PLC, nie potwierdzeniem tego, co rzeczywiście wyświetla panel. `LB555` Touch Control pozostaje konfiguracją lokalną HMI do ręcznego usunięcia w KinSealStudio; plik binarny HMI nie został zmieniony.
+W V1.5.18: `Y20` jest sterowane wyłącznie przez `LD= D585 K0; OUT Y20`, bez M414 i M412. `D585` jest indeksem ekranu zadanym przez PLC, nie potwierdzeniem tego, co rzeczywiście wyświetla panel. `LB555` Touch Control pozostaje konfiguracją lokalną HMI do ręcznego usunięcia w KinSealStudio; plik binarny HMI nie został zmieniony.
+
+W V1.5.18 fizyczne wejścia P1..P6 to X15, X16, X17, X20, X21, X22 (adresacja ósemkowa FX). Wejścia X2/X3/X4 odpowiednio Manual/Free/diagnostyka/diagnostyka. Przełączniki inwersji podążają za funkcjami: M485 dla X2, M482 dla X3, M483 dla X4, M484 dla X5 STOP. Wcześniejsze opisy WSB i mapowania historyczne w pliku powyżej nie dotyczą wariantu WSC.
