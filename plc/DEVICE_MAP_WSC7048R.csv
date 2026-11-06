@@ -52,7 +52,7 @@ M419,Bit,HMI_WAKE_REQUEST,RO held approx 3 s after accepted X27
 M420-M425,Bit,Program 1..6 active,RO latches
 M426,Bit,TIME_DISPLAY_VALID,D558>0 AND D557>0 AND D560>0
 M427,Bit,CREDIT_AVAILABLE,D560>0
-M429,Bit,SYNC_COUNTDOWN_WITH_PRACA,HMI RW default ON
+M429,Bit,SYNC_COUNTDOWN_WITH_PRACA,HMI RW default OFF
 M430,Bit,RUN_TIME_ENABLE,RO mirror of M449 COUNTDOWN_ACTIVE
 M431,Bit,AUTO_START_PROGRAM_ENABLE,HMI RW default ON
 M432,Bit,AUTO_START_TRIGGER,RO one-scan auto start trigger
@@ -79,7 +79,7 @@ M470-M475,Bit,EFFECTIVE_SELECT_P1_P6,Manual/HMI OR auto select
 M8000,Special bit,PLC_ALWAYS_ON,Mitsubishi special relay
 M8002,Special bit,PLC_FIRST_SCAN,Mitsubishi special relay
 M8013,Special bit,PLC_1S_CLOCK,Used for consumption tick
-D300,Data,RM5 CH1 value in 0.10 EUR units,HMI RW 1..100 default 10
+D300,Data,RM5 CH1 value in 0.10 EUR units,HMI RW default 25 at each start
 D320,Data,Current RM5 packet raw pulse count,Internal
 D330,Data,Y0 / Counter pulse queue,Internal
 D350,Data,Remaining time seconds for selected tariff,RO 16-bit; see time-range warning
@@ -100,8 +100,8 @@ D540,Data,Remaining whole minutes,RO quotient of D350 / 60
 D541,Data,Remaining seconds part,RO remainder of D350 / 60
 D542-D543,Data,Current RM5 packet value in Y0 pulses,32-bit MUL result; low word D542 is used
 D549,Data,Maximum credit in 0.10 EUR units,HMI RW 1..999 default 50
-D550,Data,Common base price in 0.10 EUR units,HMI RW 1..50 startup range; M415 also requires <=D549
-D551-D556,Data,Program 1..6 seconds at base price,HMI RW 1..600 default 300
+D550,Data,Common base price in 0.10 EUR units,HMI RW default 5 at each start; must be <=D549
+D551-D556,Data,Program 1..6 seconds at base price,HMI RW startup 35 35 50 35 50 70
 D557,Data,Selected program service time,RO
 D558,Data,Last selected program number 1..6,RO; STOP does not clear it
 D559,Data,TIME_BAR_MAX seconds,RO session/program maximum
@@ -146,3 +146,5 @@ M305,Bit,X2_EFFECTIVE,Raw X2 XOR M483
 M306,Bit,STOP_X5_EFFECTIVE,Raw X5 XOR M484
 M487,Bit,DISABLE_Y1_CHANGE_DELAY,HMI RW: 0=500ms Y1 delay enabled; 1=delay disabled
 M498,Bit,RM5_INHIBIT_DIAGNOSTIC,Same condition as Y23; old physical Y2 inhibit coil retargeted
+M490,Bit,HMI_DISPLAY_CREDITS_MODE,HMI RW: 0 display remaining seconds / 1 display 0.10 EUR credits; reset OFF on boot
+D596,Data,HMI_DISPLAY_VALUE,RO: M490=0 -> D350 remaining seconds; M490=1 -> D580 credits in 0.10 EUR units
