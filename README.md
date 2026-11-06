@@ -86,6 +86,15 @@ Szczegóły: [docs/HMI.md](docs/HMI.md).
 
 Schemat elektryczny i zasady COM/RM5: [docs/WIRING.md](docs/WIRING.md).
 
+## WSC-7048R — wariant nowego urządzenia (projekt)
+
+**Dokumentacja na etapie walidacji elektrycznej, nie jest to aktualnie wgrany program PLC.**
+
+- [Rozpiska numerów przewodów, CN4/CN5/CN8/CN9/CN10 (CSV)](plc/PITSTART_WIRE_NUMBERS.csv)
+- [Projekt mapowania WSC-7048R, połączeń COM, zasilania 24 V, 0 V i PE](docs/WSC7048R_WIRING.md)
+
+Przewód 13 (CN8.3) jest prawdopodobnie wejściem Manual/Free, natomiast funkcja przewodu 12 (CN9.1) jest niepotwierdzona. Nie podpinać do wejścia PLC przed identyfikacją sygnału. Przyporządkowanie C0/C1/C4/COM5 zweryfikować z opisem fizycznych zacisków danego WSC-7048R.
+
 ## I/O
 
 ### Wejścia
