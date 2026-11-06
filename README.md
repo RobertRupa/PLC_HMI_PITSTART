@@ -95,7 +95,7 @@ Schemat elektryczny i zasady COM/RM5: [docs/WIRING.md](docs/WIRING.md).
 
 Konfiguracja logiki wejść PITSTART: M480 (X0), M481 (X1), M485 (X13), **M488 (X14 ADMIN)**. Ustawienie 0 = bez inwersji, 1 = inwersja. Szczegóły i ostrzeżenia: [WSC7048R_WIRING.md](docs/WSC7048R_WIRING.md). Nowy plik importu: [main_wsc7048r_v1.5.11.csv](plc/main_wsc7048r_v1.5.11.csv). Kontrolka M488 w HMI wymaga dodania w edytorze projektu HMI; samo dodanie bitu PLC jej nie tworzy.
 
-Pliki sterowania docelowego: [Instruction List WSC](plc/MAIN_WSC7048R_GXDEV_ENTRY.txt), [CSV GX Developer WSC](plc/main_wsc7048r_v1.5.10.csv), [mapa PLC WSC](plc/DEVICE_MAP_WSC7048R.csv). Wersja WSC bazuje na logice V1.5.10, z nowymi adresami wyjść; nie została jeszcze skompilowana ani przetestowana na urządzeniu. Stary wariant WSB pozostaje nienaruszony.
+Pliki sterowania docelowego: [Instruction List WSC](plc/MAIN_WSC7048R_GXDEV_ENTRY.txt), [CSV GX Developer WSC (aktualny V1.5.11)](plc/main_wsc7048r_v1.5.11.csv), [mapa PLC WSC](plc/DEVICE_MAP_WSC7048R.csv). Wersja WSC bazuje na logice V1.5.10, z nowymi adresami wyjść; nie została jeszcze skompilowana ani przetestowana na urządzeniu. Stary wariant WSB pozostaje nienaruszony.
 
 Przewód 13 (CN8.3) jest prawdopodobnie wejściem Manual/Free, natomiast funkcja przewodu 12 (CN9.1) jest niepotwierdzona. Nie podpinać do wejścia PLC przed identyfikacją sygnału. Przyporządkowanie C0/C1/C4/COM5 zweryfikować z opisem fizycznych zacisków danego WSC-7048R.
 
