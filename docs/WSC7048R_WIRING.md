@@ -44,7 +44,7 @@
 | Y22 | Sygnalizacja / rezerwa | nowy | — | C4 proponowana |
 | Y23 | RM5 INHIBIT | nowy (RM5 CN5.6) | — | COM5 proponowana |
 
-**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami jest już w plikach `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` i `plc/main_wsc7048r_v1.5.10.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
+**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.12.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
 
 ### Wejścia (propozycja)
 
@@ -52,16 +52,16 @@
 |---|---|---|---|
 | X0 | AUTOMATE_PRESENT / INVERTER_OK | 11 / CN8.1 | CN8.2 / przewód 10 to drugi biegun wejścia w oryginale; dopasować izolacją |
 | X1 | PRACA / RUN | 12 / CN9.1 **tylko po identyfikacji** | Pozostawić niepodłączone, jeśli brak dowodu |
-| X2 | diagnostyka / rezerwa | — | Nie podłączać |
-| X3 | diagnostyka / rezerwa | — | Nie podłączać |
-| X4 | STOP (przycisk fizyczny) | nowa wiązka | W aktualnym PLC X4 logiczny STOP; nie jest obwodem bezpieczeństwa |
-| X5 | Panel P1 | nowa wiązka | styk przycisku |
+| X2 | diagnostyka (wcześniej X3) | — | M305 = X2 XOR M483 |
+| X3 | MANUAL/FREE | 13 / CN8.3 | M302 = X3 XOR M485; przewód 10 na CN8.4 jest wspólnym |
+| X4 | diagnostyka (wcześniej X2) | — | M304 = X4 XOR M482 |
+| X5 | STOP (przycisk fizyczny) | nowa wiązka | M306 = X5 XOR M484; nie zastępuje awaryjnego STOP |
 | X6 | Panel P2 | nowa wiązka | styk przycisku |
 | X7 | Panel P3 | nowa wiązka | styk przycisku |
 | X10 | Panel P4 | nowa wiązka | styk przycisku |
 | X11 | Panel P5 | nowa wiązka | styk przycisku |
 | X12 | Panel P6 | nowa wiązka | styk przycisku |
-| X13 | MANUAL/FREE | 13 / CN8.3 | CN8.4 / przewód 10 drugi biegun; funkcja w PLC obecnie tylko status |
+| X13 | Panel P1 (przeniesiony z X5) | nowa wiązka | wybór P1; M441 |
 | X14 | ADMIN | 14/15 / CN10.1,CN10.3 | przez właściwy interfejs / izolator; **nie podawać -/+ bezpośrednio** |
 | X15–X26 | dodatkowe / rezerwa | — | indywidualna diagnostyka i ekspansja |
 | X27 | RM5 Evolution CH1 | RM5 CN5.7 | wyjście NPN/open collector: sprawdzić konfigurację wejścia i common |
@@ -115,7 +115,7 @@ PE zasilania ------------------------------------ szyna PE
 
 - [MAIN_WSC7048R_GXDEV_ENTRY.txt](../plc/MAIN_WSC7048R_GXDEV_ENTRY.txt) — Instruction List do wprowadzania w GX Developer.
 - [MAIN_WSC7048R.txt](../plc/MAIN_WSC7048R.txt) — komentowane źródło programu.
-- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.11.csv** zachowuje oryginalny ADMIN.
+- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.12.csv** zachowuje oryginalny ADMIN.
 - [DEVICE_MAP_WSC7048R.csv](../plc/DEVICE_MAP_WSC7048R.csv) — mapa urządzeń wariantu WSC.
 - [DEVICE_COMMENTS_WSC7048R.csv](../plc/DEVICE_COMMENTS_WSC7048R.csv) — komentarze urządzeń wariantu WSC.
 
@@ -133,17 +133,21 @@ Przewody i piny PITSTART służą wyłącznie do opisu połączeń oraz mapowani
 |---|---|---|
 | X0 | 11 / CN8.1, wspólny 10 / CN8.2 | X0 XOR M480 -> M300 |
 | X1 | 12 / CN9.1, funkcja NIEPOTWIERDZONA | X1 XOR M481 -> M301; nie podłączać bez identyfikacji |
-| X13 | 13 / CN8.3, prawdopodobnie MANUAL/FREE, wspólny 10 / CN8.4 | X13 XOR M485 -> M302 |
+| X3 | 13 / CN8.3, prawdopodobnie MANUAL/FREE, wspólny 10 / CN8.4 | X3 XOR M485 -> M302 |
 | X14 | 14/15 / CN10.1 / CN10.3 | **LD X14; OUT M303** — ADMIN bez inwersji |
 
 Flagi M480/M481/M485 istniały wcześniej i pozostały bez zmian. Nową inwersję ADMIN wycofano. Nie ma M488 w wykonywanym programie PLC. Nie zmieniono projektu HMI.
 
 Przewody 14/15 opisują polaryzację wiązki, nie uprawniają do podłączenia ich bezpośrednio do X14. Wymagane jest sprawdzenie typu i napięcia sygnału.
 
+### Nowe mapowanie wejść
+
+Przyjęto bezkolizyjne przeniesienie: **X13 Manual/Free → X3, X2 diagnostyczne → X4, X4 STOP → X5, X5 Program 1 → X13, X3 diagnostyczne → X2**. Flagi inwersji przypisane są do funkcji, nie do dawnego numeru wejścia: M485 obsługuje teraz Manual/Free na X3; M484 obsługuje STOP na X5. ADMIN X14/M303 pozostaje bez zmian.
+
 ### Aktualna drabinka
 
 - `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` — ADMIN jak wcześniej (X14 -> M303).
-- `plc/main_wsc7048r_v1.5.11.csv` — nowy stan CSV bez inwersji X14.
+- `plc/main_wsc7048r_v1.5.12.csv` — nowy stan CSV bez inwersji X14.
 - `plc/DEVICE_MAP_WSC7048R.csv` — opisy i mapowanie przewodów.
 
 Drabinka nie jest potwierdzona kompilacją ani testem sprzętowym.
