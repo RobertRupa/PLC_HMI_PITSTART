@@ -93,7 +93,7 @@ Schemat elektryczny i zasady COM/RM5: [docs/WIRING.md](docs/WIRING.md).
 - [Rozpiska numerów przewodów, CN4/CN5/CN8/CN9/CN10 (CSV)](plc/PITSTART_WIRE_NUMBERS.csv)
 - [Projekt mapowania WSC-7048R, połączeń COM, zasilania 24 V, 0 V i PE](docs/WSC7048R_WIRING.md)
 
-Konfiguracja logiki wejść PITSTART: M480 (X0), M481 (X1), M485 (X13), **M488 (X14 ADMIN)**. Ustawienie 0 = bez inwersji, 1 = inwersja. Szczegóły i ostrzeżenia: [WSC7048R_WIRING.md](docs/WSC7048R_WIRING.md). Nowy plik importu: [main_wsc7048r_v1.5.11.csv](plc/main_wsc7048r_v1.5.11.csv). Kontrolka M488 w HMI wymaga dodania w edytorze projektu HMI; samo dodanie bitu PLC jej nie tworzy.
+Opisy przewodów PITSTART dodano wyłącznie do mapy I/O i komentarzy PLC. **ADMIN pozostaje bez zmian: X14 bezpośrednio steruje M303.** Zachowano wcześniejsze M480 (X0), M481 (X1), M485 (X13), bez nowej inwersji ADMIN. [Dokumentacja WSC](docs/WSC7048R_WIRING.md), [CSV GX Developer](plc/main_wsc7048r_v1.5.11.csv).
 
 Pliki sterowania docelowego: [Instruction List WSC](plc/MAIN_WSC7048R_GXDEV_ENTRY.txt), [CSV GX Developer WSC (aktualny V1.5.11)](plc/main_wsc7048r_v1.5.11.csv), [mapa PLC WSC](plc/DEVICE_MAP_WSC7048R.csv). Wersja WSC bazuje na logice V1.5.10, z nowymi adresami wyjść; nie została jeszcze skompilowana ani przetestowana na urządzeniu. Stary wariant WSB pozostaje nienaruszony.
 
