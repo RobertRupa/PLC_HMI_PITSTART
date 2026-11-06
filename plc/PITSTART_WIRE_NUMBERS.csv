@@ -1,0 +1,24 @@
+Connector,Pin,Wire,Function,PLC_Proposed,Confidence,Notes
+CN10,1,14,ADMIN_MINUS,X14_INTERFACE,USER,Host PLC admin minus; verify electrical type
+CN10,3,15,ADMIN_PLUS,X14_INTERFACE,USER,Host PLC admin plus; galvanic interface required until measured
+CN8,2,10,INPUT_COMMON,,USER,Paired with CN8.1; continuity check to CN8.4
+CN8,4,10,INPUT_COMMON,,USER,Paired with CN8.3; continuity check to CN8.2
+CN8,1,11,INVERTER_OK,X0,USER_AND_MANUAL,Verify voltage/polarity and isolation
+CN8,3,13,MANUAL_FREE_PROBABLE,X13,MANUAL_INFERENCE,Needs measurement
+CN9,1,12,UNKNOWN,,UNKNOWN,DO NOT connect to X1 without identification
+CN4,3,1,OUTPUT_CONTACT_COMMON,C0_OR_C1,USER,Do not assume 0V or +24V
+CN4,6,1,OUTPUT_CONTACT_COMMON,C0_OR_C1,USER,Do not assume 0V or +24V
+CN4,9,1,OUTPUT_CONTACT_COMMON,C0_OR_C1,USER,Do not assume 0V or +24V
+CN4,12,1,OUTPUT_CONTACT_COMMON,C0_OR_C1,USER,Do not assume 0V or +24V
+CN4,1,2,PROGRAM_1,Y2,USER,Target new PLC firmware only
+CN4,4,3,PROGRAM_2,Y3,USER,Target new PLC firmware only
+CN4,7,4,PROGRAM_3,Y4,USER,Target new PLC firmware only
+CN4,10,5,PROGRAM_4,Y5,USER,Target new PLC firmware only
+CN5,3,1,OUTPUT_CONTACT_COMMON,C0_OR_C1,USER,Do not assume 0V or +24V
+CN5,6,1,OUTPUT_CONTACT_COMMON,C0_OR_C1,USER,Do not assume 0V or +24V
+CN5,9,1,OUTPUT_CONTACT_COMMON,C0_OR_C1,USER,Do not assume 0V or +24V
+CN5,12,1,OUTPUT_CONTACT_COMMON,C0_OR_C1,USER,Do not assume 0V or +24V
+CN5,1,6,PROGRAM_5,Y6,USER,Target new PLC firmware only
+CN5,4,8,PROGRAM_6,Y7,USER,Target new PLC firmware only
+CN5,7,7,PILOTAGGIO_PUMP,Y1,USER,Dry control contact
+CN5,10,9,COIN_COUNTER,Y0,USER,One pulse 0.10 EUR
