@@ -44,7 +44,7 @@
 | Y22 | Sygnalizacja / rezerwa | nowy | — | C4 proponowana |
 | Y23 | RM5 INHIBIT | nowy (RM5 CN5.6) | — | COM5 proponowana |
 
-**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.12.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
+**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.13.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
 
 ### Wejścia (propozycja)
 
@@ -115,7 +115,7 @@ PE zasilania ------------------------------------ szyna PE
 
 - [MAIN_WSC7048R_GXDEV_ENTRY.txt](../plc/MAIN_WSC7048R_GXDEV_ENTRY.txt) — Instruction List do wprowadzania w GX Developer.
 - [MAIN_WSC7048R.txt](../plc/MAIN_WSC7048R.txt) — komentowane źródło programu.
-- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.12.csv** zachowuje oryginalny ADMIN.
+- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.13.csv** zachowuje oryginalny ADMIN.
 - [DEVICE_MAP_WSC7048R.csv](../plc/DEVICE_MAP_WSC7048R.csv) — mapa urządzeń wariantu WSC.
 - [DEVICE_COMMENTS_WSC7048R.csv](../plc/DEVICE_COMMENTS_WSC7048R.csv) — komentarze urządzeń wariantu WSC.
 
@@ -147,7 +147,22 @@ Przyjęto bezkolizyjne przeniesienie: **X13 Manual/Free → X3, X2 diagnostyczne
 ### Aktualna drabinka
 
 - `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` — ADMIN jak wcześniej (X14 -> M303).
-- `plc/main_wsc7048r_v1.5.12.csv` — nowy stan CSV bez inwersji X14.
+- `plc/main_wsc7048r_v1.5.13.csv` — nowy stan CSV bez inwersji X14.
 - `plc/DEVICE_MAP_WSC7048R.csv` — opisy i mapowanie przewodów.
 
 Drabinka nie jest potwierdzona kompilacją ani testem sprzętowym.
+
+## Parametry WSC V1.5.13 i licznik HMI
+
+Zestaw startowy przy każdym uruchomieniu PLC w RUN: `D300=25`, `D550=5`, `D551=35`, `D552=35`, `D553=50`, `D554=35`, `D555=50`, `D556=70`, `M429=0` (Sync time with RUN OFF). Wartości zapisane przez operatora podczas pracy nie są nadpisywane do następnego wejścia w RUN.
+
+- `D596` — **nowy rejestr licznika HMI (read-only)**, 16-bit Unsigned Decimal.
+- `M490=0` — wyświetl `D350`, pozostały czas w sekundach (tryb startowy).
+- `M490=1` — wyświetl `D580`, dostępne jednostki kredytu po 0,10 EUR.
+- `D560` / `D582` — kredyt w centach EUR, `D580` — całe jednostki 0,10 EUR. Nie są to minuty.
+- HMI: Numeric Display → PLC `D596`; opcjonalny przełącznik → `M490`.
+- `D350`, `D540`, `D541` i `D559` pozostają nietknięte: istniejący widok czasu nie zmieni zachowania automatycznie.
+
+Program HMI `projects/hmi/pitstart.hs` **nie został zmieniony**. Aby zmieniać tryb z ekranu, trzeba dodać do projektu HMI kontrolkę M490 i skierować pole wyświetlacza na D596. Fizyczny ADMIN nadal uruchamia się z X14 bez inwersji.
+
+Aktualny plik importu: [main_wsc7048r_v1.5.13.csv](../plc/main_wsc7048r_v1.5.13.csv). Wariant wymaga kompilacji w GX Developer i testów na WSC-7048R.
