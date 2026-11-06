@@ -1,8 +1,8 @@
 ; WSC-7048R hardware variant, based on PLC V1.5.10 (logic unchanged except output addresses)
 ; DO NOT load on old WSB/WS7020 wiring. Bench validation required.
-; Y0 Counter wire 9 CN5.10; Y1 Pilotaggio wire 7 CN5.7.
+; Y0 Counter wire 9 CN5.10; Y1 Pump Control wire 7 CN5.7.
 ; P1..P6: Y2..Y7 = wires 2,3,4,5,6,8.
-; Y20 Work lights only when PLC HMI_SCREEN_INDEX D585 == 0 (Home); Y23 RM5 INHIBIT. Y21,Y22 reserved unused.
+; Y20 Work Lights only when PLC HMI_SCREEN_INDEX D585 == 0 (Home); Y23 RM5 INHIBIT. Y21,Y22 reserved unused.
 ; M498 = RM5 inhibit diagnostic bit (same logic as Y23), previously physical Y2.
 ; Proposed COM wiring MUST be checked against actual WSC7048R terminal diagram.
 LD M8000
@@ -148,7 +148,7 @@ MOV K1 D516
 LD M8002
 MOV K5 D517
 LD M8002
-MOV K18 D518
+MOV K19 D518
 LD M8002
 RST M320
 LD M8002
@@ -618,31 +618,31 @@ OR M321
 OR M330
 OR M331
 OUT M436
-LD X5
+LD X15
 ANI M484
-LDI X5
+LDI X15
 AND M484
 ORB
 OUT M306
 LD M306
 OR M400
 OUT M440
-LD X15
+LD X16
 OR M401
 OUT M441
-LD X16
+LD X17
 OR M402
 OUT M442
-LD X17
+LD X20
 OR M403
 OUT M443
-LD X20
+LD X21
 OR M404
 OUT M444
-LD X21
+LD X22
 OR M405
 OUT M445
-LD X22
+LD X23
 OR M406
 OUT M446
 LDP M441
