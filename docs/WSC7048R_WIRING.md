@@ -44,7 +44,7 @@
 | Y22 | Sygnalizacja / rezerwa | nowy | — | C4 proponowana |
 | Y23 | RM5 INHIBIT | nowy (RM5 CN5.6) | — | COM5 proponowana |
 
-**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.15.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
+**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.16.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
 
 ### Wejścia (propozycja)
 
@@ -115,7 +115,7 @@ PE zasilania ------------------------------------ szyna PE
 
 - [MAIN_WSC7048R_GXDEV_ENTRY.txt](../plc/MAIN_WSC7048R_GXDEV_ENTRY.txt) — Instruction List do wprowadzania w GX Developer.
 - [MAIN_WSC7048R.txt](../plc/MAIN_WSC7048R.txt) — komentowane źródło programu.
-- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.15.csv** zachowuje oryginalny ADMIN.
+- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.16.csv** zachowuje oryginalny ADMIN.
 - [DEVICE_MAP_WSC7048R.csv](../plc/DEVICE_MAP_WSC7048R.csv) — mapa urządzeń wariantu WSC.
 - [DEVICE_COMMENTS_WSC7048R.csv](../plc/DEVICE_COMMENTS_WSC7048R.csv) — komentarze urządzeń wariantu WSC.
 
@@ -147,14 +147,14 @@ Przyjęto bezkolizyjne przeniesienie: **X13 Manual/Free → X3, X2 diagnostyczne
 ### Aktualna drabinka
 
 - `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` — ADMIN jak wcześniej (X14 -> M303).
-- `plc/main_wsc7048r_v1.5.15.csv` — nowy stan CSV bez inwersji X14.
+- `plc/main_wsc7048r_v1.5.16.csv` — nowy stan CSV bez inwersji X14.
 - `plc/DEVICE_MAP_WSC7048R.csv` — opisy i mapowanie przewodów.
 
 Drabinka nie jest potwierdzona kompilacją ani testem sprzętowym.
 
-## Parametry WSC V1.5.15 i licznik HMI
+## Parametry WSC V1.5.16 i licznik HMI
 
-Zestaw startowy przy każdym uruchomieniu PLC w RUN: `D300=25`, `D550=5`, `D551=35`, `D552=35`, `D553=50`, `D554=35`, `D555=50`, `D556=70`, `M429=0` (Sync time with RUN OFF). Wartości zapisane przez operatora podczas pracy nie są nadpisywane do następnego wejścia w RUN.
+Zestaw startowy przy każdym uruchomieniu PLC w RUN: `D300=10`, `D549=50`, `D550=50`, `D551=35`, `D552=35`, `D553=50`, `D554=35`, `D555=50`, `D556=70`, `M429=0` (Sync time with RUN OFF). Wartości zapisane przez operatora podczas pracy nie są nadpisywane do następnego wejścia w RUN.
 
 - `D596` — **nowy rejestr licznika HMI (read-only)**, 16-bit Unsigned Decimal.
 - `M490=0` — wyświetl `D350`, pozostały czas w sekundach (tryb startowy).
@@ -165,7 +165,7 @@ Zestaw startowy przy każdym uruchomieniu PLC w RUN: `D300=25`, `D550=5`, `D551=
 
 Program HMI `projects/hmi/pitstart.hs` **nie został zmieniony**. Aby zmieniać tryb z ekranu, trzeba dodać do projektu HMI kontrolkę M490 i skierować pole wyświetlacza na D596. Fizyczny ADMIN nadal uruchamia się z X14 bez inwersji.
 
-Aktualny plik importu: [main_wsc7048r_v1.5.15.csv](../plc/main_wsc7048r_v1.5.15.csv). Wariant wymaga kompilacji w GX Developer i testów na WSC-7048R.
+Aktualny plik importu: [main_wsc7048r_v1.5.16.csv](../plc/main_wsc7048r_v1.5.16.csv). Wariant wymaga kompilacji w GX Developer i testów na WSC-7048R.
 
 ### Dwa rejestry 0/1 dla liczników HMI
 
@@ -177,4 +177,8 @@ Aktualny plik importu: [main_wsc7048r_v1.5.15.csv](../plc/main_wsc7048r_v1.5.15.
 
 Obydwa rejestry są 16-bit RO i mają wartość wyłącznie 0 lub 1. `D596` dalej udostępnia wartość do wyświetlenia (czas lub kredyty); `D597` i `D598` sterują widocznością dwóch niezależnych obiektów HMI. Aby uzyskać osobne wartości bez przełączania, można podłączyć licznik czasu bezpośrednio do D350, a licznik kredytu do D580.
 
-Nowy plik importu: [main_wsc7048r_v1.5.15.csv](../plc/main_wsc7048r_v1.5.15.csv). ADMIN X14 pozostaje bez zmian.
+Nowy plik importu: [main_wsc7048r_v1.5.16.csv](../plc/main_wsc7048r_v1.5.16.csv). ADMIN X14 pozostaje bez zmian.
+
+### Nowy zestaw domyślny RM5 — 5 impulsów = 5 EUR
+
+W wersji V1.5.16 jeden impuls RM5 CH1 odpowiada 1,00 EUR (`D300=10`), a pięć impulsów daje 5,00 EUR. `D549=50` ustala limit kredytu na 5,00 EUR; `D550=50` oznacza cenę bazową 5,00 EUR. `D551=35` oznacza 35 sekund programu P1 za cenę bazową. Pozostałe czasy pozostają 35/50/35/50/70 s. `M429=0` — Sync time with RUN OFF. D596/D597/D598 i ADMIN X14 bez zmian. Uwaga: limit dokładnie 5 EUR może blokować doładowanie w trakcie sesji, gdy brak miejsca na następny pełny impuls. Wartości startowe są narzucane po wejściu PLC w RUN.
