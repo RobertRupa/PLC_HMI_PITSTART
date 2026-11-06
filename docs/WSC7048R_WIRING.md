@@ -1,6 +1,6 @@
 # WSC-7048R / PitStart — wariant okablowania (projekt do walidacji)
  
-> **DRAFT / NIE PODŁĄCZAĆ BEZ POMIARÓW.** To wariant docelowy WSC-7048R, nie bieżąca mapa działającego PLC WSB. Nie zmieniono programu PLC ani projektu HMI. Zweryfikować etykietę modelu, podział i oznaczenia grup wyjść na obudowie, typ wejść, parametry styków i okablowanie maszyny. Wszystkie pomiary napięć wykonywać odpowiednimi przyrządami przez osobę uprawnioną.
+> **DRAFT / NIE PODŁĄCZAĆ BEZ POMIARÓW.** To wariant docelowy WSC-7048R, nie bieżąca mapa działającego PLC WSB. Wariant źródłowy logiki PLC i CSV do importu zapisano osobno; **nie są przetestowane ani wgrane**. Projekt HMI pozostał bez zmian. Zweryfikować etykietę modelu, podział i oznaczenia grup wyjść na obudowie, typ wejść, parametry styków i okablowanie maszyny. Wszystkie pomiary napięć wykonywać odpowiednimi przyrządami przez osobę uprawnioną.
 
 ## Inwentaryzacja przewodów po numerach (dane z wiązki)
 
@@ -44,7 +44,7 @@
 | Y22 | Sygnalizacja / rezerwa | nowy | — | C4 proponowana |
 | Y23 | RM5 INHIBIT | nowy (RM5 CN5.6) | — | COM5 proponowana |
 
-**BARDZO WAŻNE:** obecny kod ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Powyższa mapa wymaga przebudowy instrukcji PLC, komentarzy i projektu, ponownego build/importu i testów. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
+**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami jest już w plikach `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` i `plc/main_wsc7048r_v1.5.10.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
 
 ### Wejścia (propozycja)
 
@@ -111,4 +111,16 @@ PE zasilania ------------------------------------ szyna PE
 - [obecny schemat WSB](WIRING.md), [manual WSC](manuals/hmi/WSC_HMI_PLC_All_in_one_User_Manual_V1.13.pdf)
 - [obecna mapa PLC](../plc/DEVICE_MAP.csv), [RM5](RM5.md)
 
-Proponowane mapowanie **nie jest wdrożonym firmware**. 
+## Przygotowany wariant programu PLC
+
+- [MAIN_WSC7048R_GXDEV_ENTRY.txt](../plc/MAIN_WSC7048R_GXDEV_ENTRY.txt) — Instruction List do wprowadzania w GX Developer.
+- [MAIN_WSC7048R.txt](../plc/MAIN_WSC7048R.txt) — komentowane źródło programu.
+- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — CSV importu GX Developer; zachowano numery kroków, ponieważ zmieniono tylko operandy OUT.
+- [DEVICE_MAP_WSC7048R.csv](../plc/DEVICE_MAP_WSC7048R.csv) — mapa urządzeń wariantu WSC.
+- [DEVICE_COMMENTS_WSC7048R.csv](../plc/DEVICE_COMMENTS_WSC7048R.csv) — komentarze urządzeń wariantu WSC.
+
+Zmiany względem źródła V1.5.10: `OUT Y2` -> `OUT M498` (diagnostyka INHIBIT), `OUT Y23` pozostaje aktywnym INHIBIT, programy `Y3..Y7,Y10` -> `Y2..Y7`, światła `Y27` -> `Y20`. Licznik `Y0` i pompa `Y1` bez zmian. `Y21,Y22` pozostają nieużywane.
+
+**Nie dokonano pełnej konwersji projektu natywnego PLC ani próby kompilacji.** Potwierdzić format importu CSV, typ wyjść i adresy dostępne w WSC-7048R. Fizyczny STOP awaryjny poza logiką PLC.
+
+Proponowane mapowanie **nie jest jeszcze zwalidowanym firmware**. 
