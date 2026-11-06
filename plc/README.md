@@ -189,10 +189,12 @@ D549 * D557 / D550 <= 32767 s
 
 Domyślna taryfa daje 1500 s przy maksymalnym domyślnym kredycie 5,00 EUR.
 
-## Odmiana sprzętowa WSC-7048R V1.5.13
+## Odmiana sprzętowa WSC-7048R V1.5.14
 
-Aktualny wariant drabinki WSC: [main_wsc7048r_v1.5.13.csv](main_wsc7048r_v1.5.13.csv) — **nie zastępuje programu WSB V1.5.10 opisanego powyżej**.
+Aktualny wariant drabinki WSC: [main_wsc7048r_v1.5.14.csv](main_wsc7048r_v1.5.14.csv) — **nie zastępuje programu WSB V1.5.10 opisanego powyżej**.
 
 Uruchomienie PLC ustawia każdorazowo D300=25, D550=5, D551..D556=35/35/50/35/50/70 oraz zeruje M429 (Sync RUN OFF) i M490 (tryb czasu). W WSC: X3 Manual/Free, X5 STOP, X13 P1, X14 Admin bez zmian. WSC Y2..Y7 P1..P6, Y20 światła, Y23 RM5 Inhibit.
 
 D596 to rejestr wyświetlania HMI: M490=0 -> D350 w sekundach; M490=1 -> D580 w jednostkach 0,10 EUR. Numeric Display należy wskazać na D596, a przełącznik HMI ustawić na M490. Plik HMI nie jest modyfikowany. 
+
+`D597` — nowe pole HMI do odczytu: `0` przy `M427=0` (brak kredytu), `1` przy `M427=1 && M490=0` (licznik czasu), `2` przy `M427=1 && M490=1` (licznik kredytów). Wartość do pokazania nadal znajduje się w `D596`. `D597` nie zmienia logiki naliczania kredytu ani M427.
