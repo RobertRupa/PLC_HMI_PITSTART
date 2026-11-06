@@ -44,7 +44,7 @@
 | Y22 | Sygnalizacja / rezerwa | nowy | — | C4 proponowana |
 | Y23 | RM5 INHIBIT | nowy (RM5 CN5.6) | — | COM5 proponowana |
 
-**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.13.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
+**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.14.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
 
 ### Wejścia (propozycja)
 
@@ -115,7 +115,7 @@ PE zasilania ------------------------------------ szyna PE
 
 - [MAIN_WSC7048R_GXDEV_ENTRY.txt](../plc/MAIN_WSC7048R_GXDEV_ENTRY.txt) — Instruction List do wprowadzania w GX Developer.
 - [MAIN_WSC7048R.txt](../plc/MAIN_WSC7048R.txt) — komentowane źródło programu.
-- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.13.csv** zachowuje oryginalny ADMIN.
+- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.14.csv** zachowuje oryginalny ADMIN.
 - [DEVICE_MAP_WSC7048R.csv](../plc/DEVICE_MAP_WSC7048R.csv) — mapa urządzeń wariantu WSC.
 - [DEVICE_COMMENTS_WSC7048R.csv](../plc/DEVICE_COMMENTS_WSC7048R.csv) — komentarze urządzeń wariantu WSC.
 
@@ -147,12 +147,12 @@ Przyjęto bezkolizyjne przeniesienie: **X13 Manual/Free → X3, X2 diagnostyczne
 ### Aktualna drabinka
 
 - `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` — ADMIN jak wcześniej (X14 -> M303).
-- `plc/main_wsc7048r_v1.5.13.csv` — nowy stan CSV bez inwersji X14.
+- `plc/main_wsc7048r_v1.5.14.csv` — nowy stan CSV bez inwersji X14.
 - `plc/DEVICE_MAP_WSC7048R.csv` — opisy i mapowanie przewodów.
 
 Drabinka nie jest potwierdzona kompilacją ani testem sprzętowym.
 
-## Parametry WSC V1.5.13 i licznik HMI
+## Parametry WSC V1.5.14 i licznik HMI
 
 Zestaw startowy przy każdym uruchomieniu PLC w RUN: `D300=25`, `D550=5`, `D551=35`, `D552=35`, `D553=50`, `D554=35`, `D555=50`, `D556=70`, `M429=0` (Sync time with RUN OFF). Wartości zapisane przez operatora podczas pracy nie są nadpisywane do następnego wejścia w RUN.
 
@@ -165,4 +165,14 @@ Zestaw startowy przy każdym uruchomieniu PLC w RUN: `D300=25`, `D550=5`, `D551=
 
 Program HMI `projects/hmi/pitstart.hs` **nie został zmieniony**. Aby zmieniać tryb z ekranu, trzeba dodać do projektu HMI kontrolkę M490 i skierować pole wyświetlacza na D596. Fizyczny ADMIN nadal uruchamia się z X14 bez inwersji.
 
-Aktualny plik importu: [main_wsc7048r_v1.5.13.csv](../plc/main_wsc7048r_v1.5.13.csv). Wariant wymaga kompilacji w GX Developer i testów na WSC-7048R.
+Aktualny plik importu: [main_wsc7048r_v1.5.14.csv](../plc/main_wsc7048r_v1.5.14.csv). Wariant wymaga kompilacji w GX Developer i testów na WSC-7048R.
+
+### Nowy D597: wybór widoku licznika
+
+| M427 (kredyt dostępny) | M490 (tryb) | D597 | Znaczenie |
+|---|---|---:|---|
+| 0 | 0 lub 1 | 0 | Ukryj liczniki / wyświetl brak kredytu |
+| 1 | 0 | 1 | Pokaż licznik czasu |
+| 1 | 1 | 2 | Pokaż licznik kredytów |
+
+`D597` jest 16-bitowym rejestrem RO. W HMI można go zastosować jako warunek widoczności obiektów lub wskazanie warunkujące zmianę ekranów; zależy to od możliwości HMI Studio. `D596` jest nadal wartością licznika; `D597` wybiera odpowiedni tryb wyświetlania. Nowy plik CSV: [main_wsc7048r_v1.5.14.csv](../plc/main_wsc7048r_v1.5.14.csv). ADMIN X14 bez zmian.
