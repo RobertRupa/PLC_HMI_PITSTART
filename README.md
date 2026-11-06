@@ -93,13 +93,13 @@ Schemat elektryczny i zasady COM/RM5: [docs/WIRING.md](docs/WIRING.md).
 - [Rozpiska numerów przewodów, CN4/CN5/CN8/CN9/CN10 (CSV)](plc/PITSTART_WIRE_NUMBERS.csv)
 - [Projekt mapowania WSC-7048R, połączeń COM, zasilania 24 V, 0 V i PE](docs/WSC7048R_WIRING.md)
 
-Aktualne wejścia WSC: X3=MANUAL/FREE (przewód 13), X4=dotychczasowe diagnostyczne X2, X5=STOP, X13=przycisk P1 (przeniesiony z X5), X2=dotychczasowe diagnostyczne X3. Zmiana obejmuje instrukcje PLC i mapę I/O. **ADMIN pozostaje bez zmian: X14 bezpośrednio steruje M303.** Zachowano wcześniejsze M480 (X0), M481 (X1), M485 (X3), bez nowej inwersji ADMIN. [Dokumentacja WSC](docs/WSC7048R_WIRING.md), [CSV GX Developer](plc/main_wsc7048r_v1.5.14.csv).
+Aktualne wejścia WSC: X3=MANUAL/FREE (przewód 13), X4=dotychczasowe diagnostyczne X2, X5=STOP, X13=przycisk P1 (przeniesiony z X5), X2=dotychczasowe diagnostyczne X3. Zmiana obejmuje instrukcje PLC i mapę I/O. **ADMIN pozostaje bez zmian: X14 bezpośrednio steruje M303.** Zachowano wcześniejsze M480 (X0), M481 (X1), M485 (X3), bez nowej inwersji ADMIN. [Dokumentacja WSC](docs/WSC7048R_WIRING.md), [CSV GX Developer](plc/main_wsc7048r_v1.5.15.csv).
 
-Pliki sterowania docelowego: [Instruction List WSC](plc/MAIN_WSC7048R_GXDEV_ENTRY.txt), [CSV GX Developer WSC (aktualny V1.5.14)](plc/main_wsc7048r_v1.5.14.csv), [mapa PLC WSC](plc/DEVICE_MAP_WSC7048R.csv). Wersja WSC bazuje na logice V1.5.10, z nowymi adresami wyjść; nie została jeszcze skompilowana ani przetestowana na urządzeniu. Stary wariant WSB pozostaje nienaruszony.
+Pliki sterowania docelowego: [Instruction List WSC](plc/MAIN_WSC7048R_GXDEV_ENTRY.txt), [CSV GX Developer WSC (aktualny V1.5.15)](plc/main_wsc7048r_v1.5.15.csv), [mapa PLC WSC](plc/DEVICE_MAP_WSC7048R.csv). Wersja WSC bazuje na logice V1.5.10, z nowymi adresami wyjść; nie została jeszcze skompilowana ani przetestowana na urządzeniu. Stary wariant WSB pozostaje nienaruszony.
 
 Przewód 13 (CN8.3) jest prawdopodobnie wejściem Manual/Free, natomiast funkcja przewodu 12 (CN9.1) jest niepotwierdzona. Nie podpinać do wejścia PLC przed identyfikacją sygnału. Przyporządkowanie C0/C1/C4/COM5 zweryfikować z opisem fizycznych zacisków danego WSC-7048R.
 
-### WSC-7048R V1.5.14 — ustawienia startowe oraz licznik HMI
+### WSC-7048R V1.5.15 — ustawienia startowe oraz licznik HMI
 
 **Dotyczy wyłącznie wariantu WSC, nie domyślnego firmware WSB opisanego w dalszej części README.**
 
@@ -113,7 +113,7 @@ Przewód 13 (CN8.3) jest prawdopodobnie wejściem Manual/Free, natomiast funkcja
 
 **Nowy licznik HMI:** podłącz Numeric Display (16-bit Unsigned Decimal, read-only) do adresu PLC **D596**. `M490=0` → `D596=D350` (pozostały czas w sekundach); `M490=1` → `D596=D580` (pozostałe jednostki kredytu po 0,10 EUR). Przełącznik RW powiązany z `M490` można dodać w HMI Studio. Stare obiekty HMI odczytujące D350/D540/D541 pozostają niezmienione. D582 nadal pokazuje cenową wartość kredytu w centach.
 
-**Nowy rejestr D597 — selektor widoku licznika:** `0` — brak dostępnego kredytu (`M427=0`), `1` — pokazuj czas (`M427=1`, `M490=0`), `2` — pokazuj kredyty (`M427=1`, `M490=1`). `D597` jest tylko do odczytu i może sterować widocznością odpowiednich liczników w HMI. `D596` pozostaje wartością liczbową. Nie zmieniono pliku projektu HMI.
+**Dwa osobne rejestry widoczności liczników (RO, 0/1):** `D597=1` tylko dla `M427=1` i `M490=0` (licznik czasu); `D598=1` tylko dla `M427=1` i `M490=1` (licznik kredytów). W innych przypadkach dany rejestr wynosi `0`. `D596` pozostaje wartością liczbową. Projekt graficzny HMI nie został zmieniony.
 
 Wartości domyślne są **wpisywane przy każdym wejściu PLC w RUN**, również jeśli poprzednio zapisano inne poprawne wartości. Zmiany wykonane w HMI podczas pracy pozostają aktywne do kolejnego uruchomienia PLC. Uwaga: jeśli HMI miałoby inicjalizować te same adresy przy starcie, należy wyłączyć taki zapis, aby nie nadpisywał wartości PLC.
 
