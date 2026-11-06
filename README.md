@@ -93,9 +93,9 @@ Schemat elektryczny i zasady COM/RM5: [docs/WIRING.md](docs/WIRING.md).
 - [Rozpiska numerów przewodów, CN4/CN5/CN8/CN9/CN10 (CSV)](plc/PITSTART_WIRE_NUMBERS.csv)
 - [Projekt mapowania WSC-7048R, połączeń COM, zasilania 24 V, 0 V i PE](docs/WSC7048R_WIRING.md)
 
-Opisy przewodów PITSTART dodano wyłącznie do mapy I/O i komentarzy PLC. **ADMIN pozostaje bez zmian: X14 bezpośrednio steruje M303.** Zachowano wcześniejsze M480 (X0), M481 (X1), M485 (X13), bez nowej inwersji ADMIN. [Dokumentacja WSC](docs/WSC7048R_WIRING.md), [CSV GX Developer](plc/main_wsc7048r_v1.5.11.csv).
+Aktualne wejścia WSC: X3=MANUAL/FREE (przewód 13), X4=dotychczasowe diagnostyczne X2, X5=STOP, X13=przycisk P1 (przeniesiony z X5), X2=dotychczasowe diagnostyczne X3. Zmiana obejmuje instrukcje PLC i mapę I/O. **ADMIN pozostaje bez zmian: X14 bezpośrednio steruje M303.** Zachowano wcześniejsze M480 (X0), M481 (X1), M485 (X3), bez nowej inwersji ADMIN. [Dokumentacja WSC](docs/WSC7048R_WIRING.md), [CSV GX Developer](plc/main_wsc7048r_v1.5.12.csv).
 
-Pliki sterowania docelowego: [Instruction List WSC](plc/MAIN_WSC7048R_GXDEV_ENTRY.txt), [CSV GX Developer WSC (aktualny V1.5.11)](plc/main_wsc7048r_v1.5.11.csv), [mapa PLC WSC](plc/DEVICE_MAP_WSC7048R.csv). Wersja WSC bazuje na logice V1.5.10, z nowymi adresami wyjść; nie została jeszcze skompilowana ani przetestowana na urządzeniu. Stary wariant WSB pozostaje nienaruszony.
+Pliki sterowania docelowego: [Instruction List WSC](plc/MAIN_WSC7048R_GXDEV_ENTRY.txt), [CSV GX Developer WSC (aktualny V1.5.12)](plc/main_wsc7048r_v1.5.12.csv), [mapa PLC WSC](plc/DEVICE_MAP_WSC7048R.csv). Wersja WSC bazuje na logice V1.5.10, z nowymi adresami wyjść; nie została jeszcze skompilowana ani przetestowana na urządzeniu. Stary wariant WSB pozostaje nienaruszony.
 
 Przewód 13 (CN8.3) jest prawdopodobnie wejściem Manual/Free, natomiast funkcja przewodu 12 (CN9.1) jest niepotwierdzona. Nie podpinać do wejścia PLC przed identyfikacją sygnału. Przyporządkowanie C0/C1/C4/COM5 zweryfikować z opisem fizycznych zacisków danego WSC-7048R.
 
