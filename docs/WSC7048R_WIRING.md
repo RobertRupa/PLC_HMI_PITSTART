@@ -20,7 +20,7 @@
 | CN5.3, CN5.6, CN5.9, CN5.12 | 1 | wspólny styków P5,P6,pompy,coin | NIE zakładać 0V ani +24V |
 | CN5.1 | 6 | Program 5 | Wyjście styku |
 | CN5.4 | 8 | Program 6 | Wyjście styku |
-| CN5.7 | 7 | Pilotaggio / pompa | Wyjście styku; NIE zasilać silnika bezpośrednio |
+| CN5.7 | 7 | Pump Control | Wyjście styku; NIE zasilać silnika bezpośrednio |
 | CN5.10 | 9 | Coin / Counter | Impulsy 0,10 EUR wg manuala |
 
 **Wiązka 1:** według oznaczeń jest wspólnym przewodem dla *styków*, nie jest to automatycznie GND, COM wejść PLC czy PE. Zanim zmostkujesz C0/C1: pomiar ciągłości 1 na CN4 i CN5 przy wyłączonym zasilaniu oraz pomiar napięcia względem 0V, PE i innych przewodów przy zabezpieczonym układzie. Nie łączyć różnych źródeł zasilania przez mostek COM.
@@ -32,49 +32,40 @@
 | WSC wyjście | Funkcja | Przewód wiązki | Pin oryginału | Grupa proponowana |
 |---|---|---:|---|---|
 | Y0 | PITSTART_COUNTER / COIN (impulsy) | 9 | CN5.10 | C0 |
-| Y1 | PILOTAGGIO / POMPA (styk sterujący) | 7 | CN5.7 | C0 |
+| Y1 | Pump Control (styk sterujący) | 7 | CN5.7 | C0 |
 | Y2 | Program 1 | 2 | CN4.1 | C0 |
 | Y3 | Program 2 | 3 | CN4.4 | C0 |
 | Y4 | Program 3 | 4 | CN4.7 | C1 |
 | Y5 | Program 4 | 5 | CN4.10 | C1 |
 | Y6 | Program 5 | 6 | CN5.1 | C1 |
 | Y7 | Program 6 | 8 | CN5.4 | C1 |
-| Y20 | Światła robocze (przez stycznik/przekaźnik) | nowy | — | C4 proponowana |
+| Y20 | Work Lights (przez stycznik/przekaźnik) | nowy | — | C4 proponowana |
 | Y21 | Oświetlenie pomocnicze / rezerwa | nowy | — | C4 proponowana |
 | Y22 | Sygnalizacja / rezerwa | nowy | — | C4 proponowana |
 | Y23 | RM5 INHIBIT | nowy (RM5 CN5.6) | — | COM5 proponowana |
 
-**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pilotaggio, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.18.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
+**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pump Control, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.19.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
 
-### Wejścia (propozycja)
+### Wejścia — aktualne WSC-7048R V1.5.19
 
-| PLC | Sygnał | Wiązka | Warunek |
+| PLC | Funkcja | Przewód / złącze PITSTART | Logika |
 |---|---|---|---|
-| X0 | AUTOMATE_PRESENT / INVERTER_OK | 11 / CN8.1 | CN8.2 / przewód 10 to drugi biegun wejścia w oryginale; dopasować izolacją |
-| X1 | PRACA / RUN | 12 / CN9.1 **tylko po identyfikacji** | Pozostawić niepodłączone, jeśli brak dowodu |
+| X0 | INVERTER_OK | 11 / CN8.1 (wspólny 10 / CN8.2) | M300 = X0 XOR M480 |
+| X1 | PRACA / RUN (niepotwierdzone) | 12 / CN9.1 — nie łączyć bez identyfikacji | M301 = X1 XOR M481 |
+| X2 | MANUAL/FREE | 13 / CN8.3 (wspólny 10 / CN8.4) | M302 = X2 XOR M485 |
+| X3 | Diagnostyka | — | M304 = X3 XOR M482 |
+| X4 | Diagnostyka | — | M305 = X4 XOR M483 |
+| X14 | ADMIN | 14 i 15 / CN10.1 i CN10.3 | M303 = X14; wymagany właściwy interfejs |
+| **X15** | **STOP (logiczny, nie awaryjny)** | nowy przycisk | M306 = X15 XOR M484 |
+| **X16** | **Przycisk P1** | nowy przycisk | M441 = X16 OR M401 |
+| **X17** | **Przycisk P2** | nowy przycisk | M442 = X17 OR M402 |
+| **X20** | **Przycisk P3** | nowy przycisk | M443 = X20 OR M403 |
+| **X21** | **Przycisk P4** | nowy przycisk | M444 = X21 OR M404 |
+| **X22** | **Przycisk P5** | nowy przycisk | M445 = X22 OR M405 |
+| **X23** | **Przycisk P6** | nowy przycisk | M446 = X23 OR M406 |
+| X27 | RM5 CH1 | złącze RM5 CN5.7 (nie złącze PITSTART) | impulsy RM5 |
 
-
-
-| X5 | STOP (przycisk fizyczny) | nowa wiązka | M306 = X5 XOR M484; nie zastępuje awaryjnego STOP |
-| X2 | MANUAL/FREE | 13 / CN8.3 | M302 = X2 XOR M485; przewód 10 CN8.4 wspólny |
-| X3 | diagnostyka (przedtem X4) | — | M304 = X3 XOR M482 |
-| X4 | diagnostyka (przedtem X2) | — | M305 = X4 XOR M483 |
-| X15 | Panel P1 | nowa wiązka | M441 = X15 OR M401 |
-| X16 | Panel P2 | nowa wiązka | M442 = X16 OR M402 |
-| X17 | Panel P3 | nowa wiązka | M443 = X17 OR M403 |
-| X20 | Panel P4 | nowa wiązka | M444 = X20 OR M404 |
-| X21 | Panel P5 | nowa wiązka | M445 = X21 OR M405 |
-| X22 | Panel P6 | nowa wiązka | M446 = X22 OR M406 |
-| X6,X7,X10-X13,X23-X26 | wolne / niewykorzystywane przez ten wariant do przycisków | — | zachować zgodnie z fizycznym zaciskiem |
-
-
-
-
-
-
-| X14 | ADMIN | 14/15 / CN10.1,CN10.3 | przez właściwy interfejs / izolator; **nie podawać -/+ bezpośrednio** |
-
-| X27 | RM5 Evolution CH1 | RM5 CN5.7 | wyjście NPN/open collector: sprawdzić konfigurację wejścia i common |
+X5 nie służy już do STOP. X6, X7, X10–X13 oraz X24–X26 nie są używane w tym wariancie do przycisków.
 
 **Uwaga adresacyjna:** FX X0..X7, X10..X17, X20..X27; nie istnieją X8,X9,X18,X19. Wspólna zacisków wejściowych **nie jest tym samym** co grupa przekaźników wyjściowych. WSC może mieć więcej niż jeden wspólny zacisk wejść; oznaczenia potwierdzić ze zdjęcia obudowy.
 
@@ -125,7 +116,7 @@ PE zasilania ------------------------------------ szyna PE
 
 - [MAIN_WSC7048R_GXDEV_ENTRY.txt](../plc/MAIN_WSC7048R_GXDEV_ENTRY.txt) — Instruction List do wprowadzania w GX Developer.
 - [MAIN_WSC7048R.txt](../plc/MAIN_WSC7048R.txt) — komentowane źródło programu.
-- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.18.csv** zachowuje oryginalny ADMIN.
+- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.19.csv** zachowuje oryginalny ADMIN.
 - [DEVICE_MAP_WSC7048R.csv](../plc/DEVICE_MAP_WSC7048R.csv) — mapa urządzeń wariantu WSC.
 - [DEVICE_COMMENTS_WSC7048R.csv](../plc/DEVICE_COMMENTS_WSC7048R.csv) — komentarze urządzeń wariantu WSC.
 
@@ -152,17 +143,17 @@ Przewody 14/15 opisują polaryzację wiązki, nie uprawniają do podłączenia i
 
 ### Nowe mapowanie wejść
 
-Wariant V1.5.18: X2=MANUAL/FREE (M485), X3=diagnostyka M304 (M482), X4=diagnostyka M305 (M483), X5=STOP (M484), P1..P6 na X15, X16, X17, X20, X21, X22. X14 ADMIN i X27 RM5 bez zmian. Adresowanie FX jest ósemkowe: po X17 następuje X20. ADMIN X14/M303 pozostaje bez zmian.
+Wariant V1.5.19: X2=MANUAL/FREE (M485), X3=diagnostyka (M482), X4=diagnostyka (M483), X15=STOP (M484), P1–P6 na X16, X17, X20, X21, X22, X23. X14 ADMIN i X27 RM5 bez zmian. Adresacja Mitsubishi FX jest ósemkowa: X17 -> X20.
 
 ### Aktualna drabinka
 
 - `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` — ADMIN jak wcześniej (X14 -> M303).
-- `plc/main_wsc7048r_v1.5.18.csv` — nowy stan CSV bez inwersji X14.
+- `plc/main_wsc7048r_v1.5.19.csv` — nowy stan CSV bez inwersji X14.
 - `plc/DEVICE_MAP_WSC7048R.csv` — opisy i mapowanie przewodów.
 
 Drabinka nie jest potwierdzona kompilacją ani testem sprzętowym.
 
-## Parametry WSC V1.5.18 i licznik HMI
+## Parametry WSC V1.5.19 i licznik HMI
 
 Zestaw startowy przy każdym uruchomieniu PLC w RUN: `D300=10`, `D549=50`, `D550=50`, `D551=35`, `D552=35`, `D553=50`, `D554=35`, `D555=50`, `D556=70`, `M429=0` (Sync time with RUN OFF). Wartości zapisane przez operatora podczas pracy nie są nadpisywane do następnego wejścia w RUN.
 
@@ -175,7 +166,7 @@ Zestaw startowy przy każdym uruchomieniu PLC w RUN: `D300=10`, `D549=50`, `D550
 
 Program HMI `projects/hmi/pitstart.hs` **nie został zmieniony**. Aby zmieniać tryb z ekranu, trzeba dodać do projektu HMI kontrolkę M490 i skierować pole wyświetlacza na D596. Fizyczny ADMIN nadal uruchamia się z X14 bez inwersji.
 
-Aktualny plik importu: [main_wsc7048r_v1.5.18.csv](../plc/main_wsc7048r_v1.5.18.csv). Wariant wymaga kompilacji w GX Developer i testów na WSC-7048R.
+Aktualny plik importu: [main_wsc7048r_v1.5.19.csv](../plc/main_wsc7048r_v1.5.19.csv). Wariant wymaga kompilacji w GX Developer i testów na WSC-7048R.
 
 ### Dwa rejestry 0/1 dla liczników HMI
 
@@ -187,13 +178,13 @@ Aktualny plik importu: [main_wsc7048r_v1.5.18.csv](../plc/main_wsc7048r_v1.5.18.
 
 Obydwa rejestry są 16-bit RO i mają wartość wyłącznie 0 lub 1. `D596` dalej udostępnia wartość do wyświetlenia (czas lub kredyty); `D597` i `D598` sterują widocznością dwóch niezależnych obiektów HMI. Aby uzyskać osobne wartości bez przełączania, można podłączyć licznik czasu bezpośrednio do D350, a licznik kredytu do D580.
 
-Nowy plik importu: [main_wsc7048r_v1.5.18.csv](../plc/main_wsc7048r_v1.5.18.csv). ADMIN X14 pozostaje bez zmian.
+Nowy plik importu: [main_wsc7048r_v1.5.19.csv](../plc/main_wsc7048r_v1.5.19.csv). ADMIN X14 pozostaje bez zmian.
 
 ### Nowy zestaw domyślny RM5 — 5 impulsów = 5 EUR
 
-W wersji V1.5.18 jeden impuls RM5 CH1 odpowiada 1,00 EUR (`D300=10`), a pięć impulsów daje 5,00 EUR. `D549=50` ustala limit kredytu na 5,00 EUR; `D550=50` oznacza cenę bazową 5,00 EUR. `D551=35` oznacza 35 sekund programu P1 za cenę bazową. Pozostałe czasy pozostają 35/50/35/50/70 s. `M429=0` — Sync time with RUN OFF. D596/D597/D598 i ADMIN X14 bez zmian. Uwaga: limit dokładnie 5 EUR może blokować doładowanie w trakcie sesji, gdy brak miejsca na następny pełny impuls. Wartości startowe są narzucane po wejściu PLC w RUN.
+W wersji V1.5.19 jeden impuls RM5 CH1 odpowiada 1,00 EUR (`D300=10`), a pięć impulsów daje 5,00 EUR. `D549=50` ustala limit kredytu na 5,00 EUR; `D550=50` oznacza cenę bazową 5,00 EUR. `D551=35` oznacza 35 sekund programu P1 za cenę bazową. Pozostałe czasy pozostają 35/50/35/50/70 s. `M429=0` — Sync time with RUN OFF. D596/D597/D598 i ADMIN X14 bez zmian. Uwaga: limit dokładnie 5 EUR może blokować doładowanie w trakcie sesji, gdy brak miejsca na następny pełny impuls. Wartości startowe są narzucane po wejściu PLC w RUN.
 
-## Zmiana w V1.5.18: światła i Touch Control
+## Zmiana w V1.5.19: światła i Touch Control
 
 - `Y20` (światła) = 1 wyłącznie gdy `D585=0` (ekran Home 000 wskazany przez PLC). Dla `D585=1` (Admin), `D585=2`, `D585=3` światła są wyłączone.
 - Usunięto z drabinki `SET M414` i poprzednie `LD M414; AND M412; OUT Y20`. `M414` nie ma już wpływu na `Y20`; poprzedniej kontrolki Work Lights nie należy pozostawiać na ekranie Admin.
@@ -201,21 +192,38 @@ W wersji V1.5.18 jeden impuls RM5 CH1 odpowiada 1,00 EUR (`D300=10`), a pięć i
 - `D585` jest ekranem **zadanym przez PLC**, a niekoniecznie ekranem faktycznie oglądanym przez operatora. Jeśli światła mają reagować na rzeczywistą stronę HMI, należy rozważyć `D586` (HMI Screen Index) po potwierdzeniu aktualizacji tego rejestru przez panel.
 - Przed włączeniem na urządzeniu sprawdzić stan wyjścia Y20 przy starcie PLC i zmianach ekranów 000/001/002/003.
 
-### Wejścia WSC V1.5.18 (aktualne)
 
-| Adres | Przypisanie |
-|---|---|
-| X2 | PITSTART MANUAL/FREE, przewód 13 |
-| X3 | diagnostyka dawnego X4 |
-| X4 | diagnostyka dawnego X2 |
-| X5 | STOP |
-| X14 | ADMIN, bezpośredni sygnał |
-| X15 | P1 |
-| X16 | P2 |
-| X17 | P3 |
-| X20 | P4 |
-| X21 | P5 |
-| X22 | P6 |
-| X27 | RM5 CH1 |
+## Zbiorcza tabela montażowa (WSC-7048R V1.5.19)
 
-Dotychczasowe przyciski P1-P6 z X13/X6/X7/X10/X11/X12 przepisano na kolejne adresy X15-X22. To zmiana sygnałów w logice PLC, a nie tylko opisów. Przed uruchomieniem przełożyć przewody i potwierdzić obecność fizycznych zacisków w danym WSC-7048R.
+| Funkcja | I/O na HMI/PLC | Nr przewodu | Nr złącza i pin CNx | Opis PITSTART |
+|---|---|---|---|---|
+| Inverter OK / obecność automatu | X0 | 11 | CN8.1 | Sygnał obecności/zezwolenia; drugi biegun CN8.2 przewód 10 |
+| RUN / praca (niepotwierdzone) | X1 | 12 | CN9.1 | Funkcja nieustalona, wymaga pomiaru; bez podłączenia |
+| Manual / Free | X2 | 13 | CN8.3 | Wejście Manual/Free wg manuala CN8.3–4; CN8.4 przewód 10 |
+| Diagnostyka | X3 | — | — | Brak przypisanego przewodu PITSTART |
+| Diagnostyka | X4 | — | — | Brak przypisanego przewodu PITSTART |
+| ADMIN | X14 | 14 (−), 15 (+) | CN10.1, CN10.3 | ADMIN HOST PLC; wymagany interfejs, nie łączyć wprost bez pomiaru |
+| STOP (przycisk) | **X15** | nowa wiązka | — | Przycisk zewnętrzny; nie jest sygnałem ze złącza PITSTART |
+| Program 1 — przycisk | **X16** | nowa wiązka | — | Przycisk panelu; odpowiada wyjściu PITSTART P1 na CN4.1 |
+| Program 2 — przycisk | **X17** | nowa wiązka | — | Przycisk panelu; odpowiada wyjściu PITSTART P2 na CN4.4 |
+| Program 3 — przycisk | **X20** | nowa wiązka | — | Przycisk panelu; odpowiada wyjściu PITSTART P3 na CN4.7 |
+| Program 4 — przycisk | **X21** | nowa wiązka | — | Przycisk panelu; odpowiada wyjściu PITSTART P4 na CN4.10 |
+| Program 5 — przycisk | **X22** | nowa wiązka | — | Przycisk panelu; odpowiada wyjściu PITSTART P5 na CN5.1 |
+| Program 6 — przycisk | **X23** | nowa wiązka | — | Przycisk panelu; odpowiada wyjściu PITSTART P6 na CN5.4 |
+| RM5 CH1 — impuls monety | X27 | osobny przewód RM5 | RM5 CN5.7 | Wejście monetnika, **nie** PITSTART CN5.7 |
+| Counter / Coin | Y0 | 9 | CN5.10 | Styk licznika, wspólny przewód 1 na CN5.12 |
+| Pump Control | **Y1** | 7 | CN5.7 | Styk sterowania pompą, wspólny przewód 1 na CN5.9 |
+| Program 1 — wyjście | Y2 | 2 | CN4.1 | Styk P1, wspólny przewód 1 na CN4.3 |
+| Program 2 — wyjście | Y3 | 3 | CN4.4 | Styk P2, wspólny przewód 1 na CN4.6 |
+| Program 3 — wyjście | Y4 | 4 | CN4.7 | Styk P3, wspólny przewód 1 na CN4.9 |
+| Program 4 — wyjście | Y5 | 5 | CN4.10 | Styk P4, wspólny przewód 1 na CN4.12 |
+| Program 5 — wyjście | Y6 | 6 | CN5.1 | Styk P5, wspólny przewód 1 na CN5.3 |
+| Program 6 — wyjście | Y7 | 8 | CN5.4 | Styk P6, wspólny przewód 1 na CN5.6 |
+| Work Lights | **Y20** | nowa wiązka | — | Światła niezależne od PITSTART; Y20 ON przy D585=0 (Home) |
+| Rezerwa | Y21, Y22 | — | — | Wyjścia nieużywane |
+| RM5 INHIBIT | Y23 | osobny przewód RM5 | złącze RM5, pin do potwierdzenia | Inhibit monetnika, **nie** przewód wspólny PITSTART CN5.6 |
+| PITSTART common — wyjścia P1–P4 | C0/C1 (propozycja) | 1 | CN4.3, CN4.6, CN4.9, CN4.12 | Wspólny styku NO; nie zakładać 0 V/+24 V |
+| PITSTART common — wyjścia P5–P6/pompa/counter | C0/C1 (propozycja) | 1 | CN5.3, CN5.6, CN5.9, CN5.12 | Wspólny styku NO; nie zakładać 0 V/+24 V |
+| PITSTART common — wejścia CN8 | COM wejść przez interfejs | 10 | CN8.2, CN8.4 | Wspólny obwodów wejść; odrębny od przewodu 1 |
+
+Uwaga: kolumna I/O podaje **adres logiczny w PLC/HMI**, nie numer fizycznego styku listwy WSC. Fizyczne zaciski WSC i grupy COM sprawdzić w dokumentacji konkretnej rewizji. Złącza RM5 i PITSTART mają własne oznaczenia CN5 — są to **różne złącza**.
