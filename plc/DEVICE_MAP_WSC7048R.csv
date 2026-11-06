@@ -21,7 +21,7 @@ Y4,Output,PROGRAM 3,M422 AND M300 AND credit; wire 4 CN4.7
 Y5,Output,PROGRAM 4,M423 AND M300 AND credit; wire 5 CN4.10
 Y6,Output,PROGRAM 5,M424 AND M300 AND credit; wire 6 CN5.1
 Y7,Output,PROGRAM 6,M425 AND M300 AND credit; wire 8 CN5.4
-Y20,Output,WORK LIGHTS,M414 AND M412; new accessory wire
+Y20,Output,WORK LIGHTS,ON when D585=0 (PLC Home screen); OFF for D585 1 2 3
 Y21,Output,RESERVED,No OUT instruction; do not connect to load yet
 Y22,Output,RESERVED,No OUT instruction; do not connect to load yet
 Y23,Output,RM5 INHIBIT PRIMARY,M300=0 OR M435=1; RM5 CN5.6 via interface
@@ -44,7 +44,6 @@ M410,Bit,PILOTAGGIO_ENABLE,HMI RW default ON
 M411,Bit,RESET_DIAGNOSTIC_SESSION_COUNTERS,HMI momentary
 M412,Bit,WORK_ACTIVE,RO; active program AND M300 AND credit AND no STOP
 M413,Bit,RM5_VALUE_OK,D300 valid
-M414,Bit,WORK_LIGHTS_ENABLE,HMI RW default ON
 M415,Bit,TARIFF_CONFIG_OK,Checks individual configuration ranges
 M416,Bit,ONE_SECOND_CONSUMPTION_TICK,Internal pulse gated by M449 M426 and not M436
 M417,Bit,NEW_SESSION_PULSE,Internal pulse before first accepted RM5 credit of a new session
