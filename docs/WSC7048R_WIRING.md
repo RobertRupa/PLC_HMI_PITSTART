@@ -44,9 +44,9 @@
 | Y22 | Sygnalizacja / rezerwa | nowy | — | C4 proponowana |
 | Y23 | RM5 INHIBIT | nowy (RM5 CN5.6) | — | COM5 proponowana |
 
-**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pump Control, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.19.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
+**BARDZO WAŻNE:** dotychczasowy kod WSB ma Y0 Counter, Y1 Pump Control, Y2 RM5 INHIBIT, Y3..Y7/Y10 P1..P6, Y23 mirror INHIBIT oraz Y27 światła. Wariant WSC z przeadresowanymi wyjściami i wejściami jest w `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` oraz `plc/main_wsc7048r_v1.5.20.csv`. Wymaga kompilacji w GX Developer oraz testów na rzeczywistym WSC. Nie przepinać Y2 do Program 1 przy aktualnym programie. Samo rozłożenie wyjść na grupy C0/C1/C4/COM5 to hipoteza wymagająca weryfikacji z tabliczką połączeń egzemplarza; nazwy COM nie są uniwersalne między WSB, WS i WSC.
 
-### Wejścia — aktualne WSC-7048R V1.5.19
+### Wejścia — aktualne WSC-7048R V1.5.20
 
 | PLC | Funkcja | Przewód / złącze PITSTART | Logika |
 |---|---|---|---|
@@ -116,7 +116,7 @@ PE zasilania ------------------------------------ szyna PE
 
 - [MAIN_WSC7048R_GXDEV_ENTRY.txt](../plc/MAIN_WSC7048R_GXDEV_ENTRY.txt) — Instruction List do wprowadzania w GX Developer.
 - [MAIN_WSC7048R.txt](../plc/MAIN_WSC7048R.txt) — komentowane źródło programu.
-- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.19.csv** zachowuje oryginalny ADMIN.
+- [main_wsc7048r_v1.5.10.csv](../plc/main_wsc7048r_v1.5.10.csv) — wcześniejszy wariant. Aktualny **main_wsc7048r_v1.5.20.csv** zachowuje oryginalny ADMIN.
 - [DEVICE_MAP_WSC7048R.csv](../plc/DEVICE_MAP_WSC7048R.csv) — mapa urządzeń wariantu WSC.
 - [DEVICE_COMMENTS_WSC7048R.csv](../plc/DEVICE_COMMENTS_WSC7048R.csv) — komentarze urządzeń wariantu WSC.
 
@@ -143,17 +143,17 @@ Przewody 14/15 opisują polaryzację wiązki, nie uprawniają do podłączenia i
 
 ### Nowe mapowanie wejść
 
-Wariant V1.5.19: X2=MANUAL/FREE (M485), X3=diagnostyka (M482), X4=diagnostyka (M483), X15=STOP (M484), P1–P6 na X16, X17, X20, X21, X22, X23. X14 ADMIN i X27 RM5 bez zmian. Adresacja Mitsubishi FX jest ósemkowa: X17 -> X20.
+Wariant V1.5.20: X2=MANUAL/FREE (M485), X3=diagnostyka (M482), X4=diagnostyka (M483), X15=STOP (M484), P1–P6 na X16, X17, X20, X21, X22, X23. X14 ADMIN i X27 RM5 bez zmian. Adresacja Mitsubishi FX jest ósemkowa: X17 -> X20.
 
 ### Aktualna drabinka
 
 - `plc/MAIN_WSC7048R_GXDEV_ENTRY.txt` — ADMIN jak wcześniej (X14 -> M303).
-- `plc/main_wsc7048r_v1.5.19.csv` — nowy stan CSV bez inwersji X14.
+- `plc/main_wsc7048r_v1.5.20.csv` — nowy stan CSV bez inwersji X14.
 - `plc/DEVICE_MAP_WSC7048R.csv` — opisy i mapowanie przewodów.
 
 Drabinka nie jest potwierdzona kompilacją ani testem sprzętowym.
 
-## Parametry WSC V1.5.19 i licznik HMI
+## Parametry WSC V1.5.20 i licznik HMI
 
 Zestaw startowy przy każdym uruchomieniu PLC w RUN: `D300=10`, `D549=50`, `D550=50`, `D551=35`, `D552=35`, `D553=50`, `D554=35`, `D555=50`, `D556=70`, `M429=0` (Sync time with RUN OFF). Wartości zapisane przez operatora podczas pracy nie są nadpisywane do następnego wejścia w RUN.
 
@@ -166,7 +166,7 @@ Zestaw startowy przy każdym uruchomieniu PLC w RUN: `D300=10`, `D549=50`, `D550
 
 Program HMI `projects/hmi/pitstart.hs` **nie został zmieniony**. Aby zmieniać tryb z ekranu, trzeba dodać do projektu HMI kontrolkę M490 i skierować pole wyświetlacza na D596. Fizyczny ADMIN nadal uruchamia się z X14 bez inwersji.
 
-Aktualny plik importu: [main_wsc7048r_v1.5.19.csv](../plc/main_wsc7048r_v1.5.19.csv). Wariant wymaga kompilacji w GX Developer i testów na WSC-7048R.
+Aktualny plik importu: [main_wsc7048r_v1.5.20.csv](../plc/main_wsc7048r_v1.5.20.csv). Wariant wymaga kompilacji w GX Developer i testów na WSC-7048R.
 
 ### Dwa rejestry 0/1 dla liczników HMI
 
@@ -178,13 +178,13 @@ Aktualny plik importu: [main_wsc7048r_v1.5.19.csv](../plc/main_wsc7048r_v1.5.19.
 
 Obydwa rejestry są 16-bit RO i mają wartość wyłącznie 0 lub 1. `D596` dalej udostępnia wartość do wyświetlenia (czas lub kredyty); `D597` i `D598` sterują widocznością dwóch niezależnych obiektów HMI. Aby uzyskać osobne wartości bez przełączania, można podłączyć licznik czasu bezpośrednio do D350, a licznik kredytu do D580.
 
-Nowy plik importu: [main_wsc7048r_v1.5.19.csv](../plc/main_wsc7048r_v1.5.19.csv). ADMIN X14 pozostaje bez zmian.
+Nowy plik importu: [main_wsc7048r_v1.5.20.csv](../plc/main_wsc7048r_v1.5.20.csv). ADMIN X14 pozostaje bez zmian.
 
 ### Nowy zestaw domyślny RM5 — 5 impulsów = 5 EUR
 
-W wersji V1.5.19 jeden impuls RM5 CH1 odpowiada 1,00 EUR (`D300=10`), a pięć impulsów daje 5,00 EUR. `D549=50` ustala limit kredytu na 5,00 EUR; `D550=50` oznacza cenę bazową 5,00 EUR. `D551=35` oznacza 35 sekund programu P1 za cenę bazową. Pozostałe czasy pozostają 35/50/35/50/70 s. `M429=0` — Sync time with RUN OFF. D596/D597/D598 i ADMIN X14 bez zmian. Uwaga: limit dokładnie 5 EUR może blokować doładowanie w trakcie sesji, gdy brak miejsca na następny pełny impuls. Wartości startowe są narzucane po wejściu PLC w RUN.
+W wersji V1.5.20 jeden impuls RM5 CH1 odpowiada 1,00 EUR (`D300=10`), a pięć impulsów daje 5,00 EUR. `D549=50` ustala limit kredytu na 5,00 EUR; `D550=50` oznacza cenę bazową 5,00 EUR. `D551=35` oznacza 35 sekund programu P1 za cenę bazową. Pozostałe czasy pozostają 35/50/35/50/70 s. `M429=0` — Sync time with RUN OFF. D596/D597/D598 i ADMIN X14 bez zmian. Uwaga: limit dokładnie 5 EUR może blokować doładowanie w trakcie sesji, gdy brak miejsca na następny pełny impuls. Wartości startowe są narzucane po wejściu PLC w RUN.
 
-## Zmiana w V1.5.19: światła i Touch Control
+## Zmiana w V1.5.20: światła i Touch Control
 
 - `Y20` (światła) = 1 wyłącznie gdy `D585=0` (ekran Home 000 wskazany przez PLC). Dla `D585=1` (Admin), `D585=2`, `D585=3` światła są wyłączone.
 - Usunięto z drabinki `SET M414` i poprzednie `LD M414; AND M412; OUT Y20`. `M414` nie ma już wpływu na `Y20`; poprzedniej kontrolki Work Lights nie należy pozostawiać na ekranie Admin.
@@ -193,7 +193,7 @@ W wersji V1.5.19 jeden impuls RM5 CH1 odpowiada 1,00 EUR (`D300=10`), a pięć i
 - Przed włączeniem na urządzeniu sprawdzić stan wyjścia Y20 przy starcie PLC i zmianach ekranów 000/001/002/003.
 
 
-## Zbiorcza tabela montażowa (WSC-7048R V1.5.19)
+## Zbiorcza tabela montażowa (WSC-7048R V1.5.20)
 
 | Funkcja | I/O na HMI/PLC | Nr przewodu | Nr złącza i pin CNx | Opis PITSTART |
 |---|---|---|---|---|
@@ -227,3 +227,15 @@ W wersji V1.5.19 jeden impuls RM5 CH1 odpowiada 1,00 EUR (`D300=10`), a pięć i
 | PITSTART common — wejścia CN8 | COM wejść przez interfejs | 10 | CN8.2, CN8.4 | Wspólny obwodów wejść; odrębny od przewodu 1 |
 
 Uwaga: kolumna I/O podaje **adres logiczny w PLC/HMI**, nie numer fizycznego styku listwy WSC. Fizyczne zaciski WSC i grupy COM sprawdzić w dokumentacji konkretnej rewizji. Złącza RM5 i PITSTART mają własne oznaczenia CN5 — są to **różne złącza**.
+
+## V1.5.20 — opcjonalne kasowanie kredytów po STOP
+
+| Adres | Funkcja | Dostęp HMI | Domyślnie |
+|---|---|---|---|
+| M491 | RESET_CREDIT_ON_STOP: 0 zachowaj kredyty / 1 skasuj po STOP | RW toggle Admin | OFF (0) przy wejściu w RUN |
+| M492 | STOP_CREDIT_RESET_PULSE — jednoskanowy impuls resetu | RO diagnostyka | 0 |
+| M400 | HMI STOP przycisk chwilowy | RW momentary | — |
+| X15 | Fizyczny przycisk STOP | wejście PLC | — |
+| D560 | Pozostały kredyt w centach | RO | — |
+
+Przy M491=1 narastające M440 = X15 po inwersji M484 OR M400 wyzwala pojedynczy reset. PLC kasuje nie tylko D560, ale także kolejkę Y0 i aktywną paczkę RM5, żeby kredyt nie wrócił po zatrzymaniu. W trakcie przyjmowania monet takie kasowanie oznacza utratę niezliczonych jeszcze impulsów bez zwrotu monet; wymaga świadomej decyzji operatora i testów bezpieczeństwa/logiki rozliczania. M491 jest ustawiany na 0 po uruchomieniu PLC w RUN. Projekt binarny HMI pitstart.hs nie jest zmodyfikowany.
