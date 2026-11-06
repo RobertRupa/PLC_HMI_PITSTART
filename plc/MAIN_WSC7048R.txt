@@ -9,81 +9,6 @@ LD M8000
 OUT T204 K100
 LDI T204
 OUT M438
-; PLC_HMI_PITSTART WSC-7048R variant v1.5.12 based on V1.5.10
-; PitStart-compatible monetary-credit/time model
-;
-; Counter/PITSTART_CREDITS Y0 represents 0.10 EUR units.
-; Y23 = primary physical RM5 INHIBIT; M498 is identical diagnostic status.
-; No Y2/Y23 parallel mirror. Y2 now drives Program 1.
-; Program outputs: P1=Y2, P2=Y3, P3=Y4, P4=Y5, P5=Y6, P6=Y7.
-; FX octal addressing: Y20 is work lights; Y21/Y22 are reserved.
-; Default tariff: one RM5 pulse = 5 minutes.
-; D300=10, D550=10, D551..D556=300.
-; D300 = RM5 CH1 value in 0.10 EUR units. Example D300=10 => 1.00 EUR.
-; D549 = maximum admitted credit in 0.10 EUR units, valid 1..999. Default 50 => 5.00 EUR.
-; D550 = common base price in 0.10 EUR units. Default 10 => 1.00 EUR.
-; D551..D556 = service time in seconds for P1..P6 at D550 base price. Default 300 s.
-; D560 = remaining monetary credit in cents:
-;        10 = 0.10 EUR, 100 = 1.00 EUR.
-; D350 = calculated remaining service time for the last selected program.
-; D559 = TIME_BAR_MAX for HMI progress bar.
-;        Reset on new session / program change; increases when added credit raises D350.
-; D540/D541 = MM/SS for HMI.
-; D528 = global clock correction x100 (100=1.00x).
-; D588..D592 = internal RM5 max-credit / queue calculations.
-; D594 = free Y0 pulse slots below D549.
-; T204 = startup reset window; session/runtime registers are cleared while M438=1.
-;
-; Time/credit consumption occurs only during WORK_ACTIVE.
-; With M429=1, PRACA/X1 pauses countdown only when M410 PILOTAGGIO is enabled.
-; With M410=0, countdown continues even if X1/PRACA drops.
-; Accepted RM5 top-up temporarily pauses the countdown until the packet and Y0 queue are complete,
-; so an active program is not lost while the additional credit is being transferred.
-;
-; Auto start program:
-; M431 = AUTO_START_PROGRAM_ENABLE (HMI RW, default ON).
-; M439 = PILOTAGGIO_DEFAULT (HMI RW, default ON).
-; M447 = NEW_PROGRAM_START diagnostic pulse.
-;        M439 no longer changes M410 at program selection.
-;        If M410 is OFF, the current M439 value is applied after the complete Y0 pulse queue finishes.
-;        M410=ON is never overridden by M439.
-; D584 = AUTO_START_PROGRAM_NO (HMI RW, 1..6; default 1).
-; M432 = one-scan AUTO_START_TRIGGER after the complete Y0 CREDIT queue is idle and only if no program has been selected (D558=0).
-; M433 = AUTO_START_DONE latch, prevents repeated automatic starts in the same session.
-; M434 = AUTO_START_PROGRAM_OK.
-; M435 = RM5_INHIBIT_LIMIT; high when another RM5 input pulse cannot be fully credited,
-;        or when the pending RM5 packet has already filled the available credit capacity.
-; M436 = RM5_TOPUP_BUSY; active while an accepted RM5 packet / Y0 queue is being processed.
-; M437 = RM5_PENDING_AT_LIMIT; pending packet has reserved all remaining Y0 pulse slots.
-; M438 = STARTUP_RESET_ACTIVE; held during T204 startup window to clear runtime/session state.
-; M448 = COUNTDOWN_LOCAL_ACTIVE; internal branch used when Sync time with RUN (M429) is OFF.
-; Input mapping WSC: X13(old Manual/Free) -> X3; X2->X4; X4 STOP->X5; X5 P1->X13; X3 diagnostics->X2.
-; Inversion flags follow functions: M485 inverts Manual/Free at X3, M484 inverts STOP at X5.
-; M482 diagnostic operates physical X4; M483 diagnostic operates physical X2.
-; Original ADMIN X14 -> M303 is unchanged.
-; Inverted input = raw input XOR invert bit; 0=normal, 1=reverse.
-; ADMIN remains original direct input: X14 -> M303, no inversion.
-; M449 = COUNTDOWN_ACTIVE; selects M412 when M429=0, or M301/RUN when M429=1.
-; M430 = RUN_TIME_ENABLE; mirror of M449 for diagnostics.
-; M460..M465 = auto-select pulses P1..P6.
-; M470..M475 = effective select pulses (manual/HMI OR auto).
-;
-; HMI screen selection:
-; X14 -> M303 = ADMIN_SCREEN_REQUEST (direct signal).
-; D585 = HMI_SCREEN_INDEX:
-;   0 = main/work screen (credit available),
-;   1 = Admin (X14/M303=1),
-;   2 = STANOWISKO NIECZYNNE (Admin OFF and X0/M300=0),
-;   3 = STANOWISKO WOLNE (Admin OFF, X0/M300=1 and M427=0).
-; Priority: Admin > inactive > free > main.
-;
-; HMI screen feedback / wake diagnostics:
-; D586 = HMI_CURRENT_SCREEN_INDEX, written by HMI (HMI State -> Screen Index).
-; PLC never writes D586.
-; M419 = 3 s wake request after accepted RM5 pulse.
-; D587 = HMI_WAKE_REQUEST_WORD (0/1 mirror of M419).
-; D565 = wake/coin event counter.
-;
 LD M8002
 MOV K0 D320
 LD M8002
@@ -177,11 +102,7 @@ MOV K0 D591
 LD M8002
 MOV K0 D592
 LD M8002
-AND<= D300 K0
-MOV K10 D300
-LD M8002
-AND> D300 K100
-MOV K10 D300
+MOV K25 D300
 LD M8002
 AND<= D549 K0
 MOV K50 D549
@@ -189,47 +110,19 @@ LD M8002
 AND> D549 K999
 MOV K50 D549
 LD M8002
-AND<= D550 K0
-MOV K10 D550
+MOV K5 D550
 LD M8002
-AND> D550 K50
-MOV K10 D550
+MOV K35 D551
 LD M8002
-AND<= D551 K0
-MOV K300 D551
+MOV K35 D552
 LD M8002
-AND> D551 K600
-MOV K300 D551
+MOV K50 D553
 LD M8002
-AND<= D552 K0
-MOV K300 D552
+MOV K35 D554
 LD M8002
-AND> D552 K600
-MOV K300 D552
+MOV K50 D555
 LD M8002
-AND<= D553 K0
-MOV K300 D553
-LD M8002
-AND> D553 K600
-MOV K300 D553
-LD M8002
-AND<= D554 K0
-MOV K300 D554
-LD M8002
-AND> D554 K600
-MOV K300 D554
-LD M8002
-AND<= D555 K0
-MOV K300 D555
-LD M8002
-AND> D555 K600
-MOV K300 D555
-LD M8002
-AND<= D556 K0
-MOV K300 D556
-LD M8002
-AND> D556 K600
-MOV K300 D556
+MOV K70 D556
 LD M8002
 AND< D528 K50
 MOV K100 D528
@@ -247,15 +140,15 @@ MOV H3156 D500
 LD M8002
 MOV H352E D501
 LD M8002
-MOV H372E D502
+MOV H312E D502
 LD M8002
-MOV H0 D503
+MOV H0033 D503
 LD M8002
 MOV K1 D516
 LD M8002
 MOV K5 D517
 LD M8002
-MOV K7 D518
+MOV K13 D518
 LD M8002
 RST M320
 LD M8002
@@ -305,7 +198,9 @@ SET M410
 LD M8002
 SET M414
 LD M8002
-SET M429
+RST M429
+LD M8002
+RST M490
 LD M8002
 SET M431
 LD M8002
@@ -712,10 +607,6 @@ LD M331
 OUT T202 K10
 LD T202
 RST M331
-; End of complete Y0 queue: if Pilotaggio was disabled manually,
-; restore it from the current HMI default M439.
-; M439=1 -> SET M410. M439=0 -> M410 remains OFF.
-; Do not apply while a new RM5 packet is still being collected.
 LD T202
 AND<= D330 K0
 ANI M321
@@ -1091,9 +982,6 @@ AND M300
 AND> D560 K0
 ANI M440
 OUT M412
-; Countdown source selector:
-; M429=0 -> M449 follows M412/WORK_ACTIVE.
-; M429=1 -> M449 follows M301/PRACA-RUN, independently of STOP/M412.
 LDI M429
 AND M412
 OUT M448
@@ -1147,6 +1035,10 @@ LD M8000
 DIV D560 K10 D580
 LD M8000
 MOV D560 D582
+LDI M490
+MOV D350 D596
+LD M490
+MOV D580 D596
 LD M487
 RST M486
 LD M486
