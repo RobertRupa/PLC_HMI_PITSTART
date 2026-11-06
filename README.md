@@ -93,13 +93,13 @@ Schemat elektryczny i zasady COM/RM5: [docs/WIRING.md](docs/WIRING.md).
 - [Rozpiska numerów przewodów, CN4/CN5/CN8/CN9/CN10 (CSV)](plc/PITSTART_WIRE_NUMBERS.csv)
 - [Projekt mapowania WSC-7048R, połączeń COM, zasilania 24 V, 0 V i PE](docs/WSC7048R_WIRING.md)
 
-Aktualne wejścia WSC V1.5.19: X2 MANUAL/FREE, X3/X4 diagnostyka, X14 ADMIN, X15 STOP, X16/X17/X20/X21/X22/X23 P1..P6, X27 RM5. Wyjścia Y1=Pump Control, Y20=Work Lights. Tabela z przewodami i pinami PITSTART: [WSC7048R_WIRING.md](docs/WSC7048R_WIRING.md). [CSV GX Developer](plc/main_wsc7048r_v1.5.19.csv).
+Aktualne wejścia WSC V1.5.20: X2 MANUAL/FREE, X3/X4 diagnostyka, X14 ADMIN, X15 STOP, X16/X17/X20/X21/X22/X23 P1..P6, X27 RM5. Wyjścia Y1=Pump Control, Y20=Work Lights. Tabela z przewodami i pinami PITSTART: [WSC7048R_WIRING.md](docs/WSC7048R_WIRING.md). [CSV GX Developer](plc/main_wsc7048r_v1.5.20.csv).
 
-Pliki sterowania docelowego: [Instruction List WSC](plc/MAIN_WSC7048R_GXDEV_ENTRY.txt), [CSV GX Developer WSC (aktualny V1.5.19)](plc/main_wsc7048r_v1.5.19.csv), [mapa PLC WSC](plc/DEVICE_MAP_WSC7048R.csv). Wersja WSC bazuje na logice V1.5.10, z nowymi adresami wyjść; nie została jeszcze skompilowana ani przetestowana na urządzeniu. Stary wariant WSB pozostaje nienaruszony.
+Pliki sterowania docelowego: [Instruction List WSC](plc/MAIN_WSC7048R_GXDEV_ENTRY.txt), [CSV GX Developer WSC (aktualny V1.5.20)](plc/main_wsc7048r_v1.5.20.csv), [mapa PLC WSC](plc/DEVICE_MAP_WSC7048R.csv). Wersja WSC bazuje na logice V1.5.10, z nowymi adresami wyjść; nie została jeszcze skompilowana ani przetestowana na urządzeniu. Stary wariant WSB pozostaje nienaruszony.
 
 Przewód 13 (CN8.3) jest prawdopodobnie wejściem Manual/Free, natomiast funkcja przewodu 12 (CN9.1) jest niepotwierdzona. Nie podpinać do wejścia PLC przed identyfikacją sygnału. Przyporządkowanie C0/C1/C4/COM5 zweryfikować z opisem fizycznych zacisków danego WSC-7048R.
 
-### WSC-7048R V1.5.19 — ustawienia startowe, licznik HMI i światła na Home
+### WSC-7048R V1.5.20 — ustawienia startowe, licznik HMI i światła na Home
 
 **Dotyczy wyłącznie wariantu WSC, nie domyślnego firmware WSB opisanego w dalszej części README.**
 
@@ -119,6 +119,8 @@ Przewód 13 (CN8.3) jest prawdopodobnie wejściem Manual/Free, natomiast funkcja
 **Światła (wariant WSC):** nie ma już przełącznika M414 w logice PLC. Y20=1 wyłącznie wtedy, gdy D585=0 (PLC wybiera Home 000); dla Admin 001 i ekranów 002/003 Y20=0. To nie jest potwierdzenie aktualnie widocznej strony HMI, ponieważ D585 jest indeksem sterującym z PLC, a D586 odzwierciedla rzeczywisty ekran, jeśli HMI go raportuje.
 
 **Touch Control (HMI):** LB555 jest lokalnym przełącznikiem panelu, niezależnym od PLC. Docelowo usunąć kontrolkę konfiguracji LB555 i ustawić elementy dotykowe jako zawsze widoczne w KinSealStudio/HMI Studio; **nie zmodyfikowano binarnego projektu pitstart.hs**. Nie należy przedstawiać tego jako wdrożonej zmiany interfejsu.
+
+**Reset kredytu po STOP (V1.5.20):** przełącznik HMI `M491` (RW, domyślnie 0 przy wejściu w RUN). `M491=0` pozostawia kredyty; `M491=1` po zboczu `M440` (STOP `X15` lub HMI `M400`) zeruje `D560` i oczekującą kolejkę impulsów `D330`, anuluje bieżącą paczkę RM5 oraz zatrzymuje generowanie impulsu `Y0`. Pomocniczy `M492` jest tylko do odczytu (impuls 1 skanu). Nie następuje kasowanie historii/statystyk sesji ani taryf. **UWAGA:** użycie STOP w trakcie przyjmowania monet świadomie anuluje także impulsy czekające na naliczenie; zwrot monet nie jest realizowany. Projekt binarny HMI nie został zmodyfikowany — dodaj kontrolkę na M491 w HMI Studio.
 
 **Dwa osobne rejestry widoczności liczników (RO, 0/1):** `D597=1` tylko dla `M427=1` i `M490=0` (licznik czasu); `D598=1` tylko dla `M427=1` i `M490=1` (licznik kredytów). W innych przypadkach dany rejestr wynosi `0`. `D596` pozostaje wartością liczbową. Projekt graficzny HMI nie został zmieniony.
 
